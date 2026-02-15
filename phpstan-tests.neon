@@ -1,0 +1,28 @@
+parameters:
+	paths:
+		- tests
+
+	ignoreErrors:
+		# ignore "missing value type in iterable" warnings
+		- '#no value type specified in iterable type#'
+		# traits are analyzed against abstract base classes where collectionOf() returns
+		# the most general Collection/Set/List type; concrete test classes narrow the return type
+		-
+			identifier: method.notFound
+			path: tests/Collection/*
+		-
+			identifier: argument.type
+			path: tests/Collection/*
+		-
+			identifier: method.alreadyNarrowedType
+			path: tests/Collection/*
+		-
+			identifier: instanceof.alwaysTrue
+			path: tests/Collection/*
+		-
+			identifier: missingType.generics
+			path: tests/Collection/*
+		# same issue for Map tests - concrete classes narrow the return type
+		-
+			identifier: instanceof.alwaysTrue
+			path: tests/Map/*

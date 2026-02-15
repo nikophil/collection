@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 360">
+  <style>
+    .node { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace; font-size: 40px; fill: #374151; }
+    .main { fill: #3451b2; font-weight: 600; }
+    .muted { fill: #9ca3af; }
+    .line { stroke: #d1d5db; stroke-width: 1.5; fill: none; }
+  </style>
+
+  <!-- Collection (left side) -->
+  <text x="10" y="36" class="node main">Collection&lt;E&gt;</text>
+
+  <!-- List branch -->
+  <path d="M10 52 L10 88 L28 88" class="line"/>
+  <text x="34" y="100" class="node main">List&lt;E&gt;</text>
+  <path d="M34 116 L34 150 L52 150" class="line"/>
+  <text x="58" y="162" class="node muted">MutableList&lt;E&gt;</text>
+  <path d="M34 150 L34 194 L52 194" class="line"/>
+  <text x="58" y="206" class="node muted">ImmutableList&lt;E&gt;</text>
+
+  <!-- Set branch -->
+  <path d="M10 88 L10 246 L28 246" class="line"/>
+  <text x="34" y="258" class="node main">Set&lt;E&gt;</text>
+  <path d="M34 274 L34 308 L52 308" class="line"/>
+  <text x="58" y="320" class="node muted">MutableSet&lt;E&gt;</text>
+  <path d="M34 308 L34 342 L52 342" class="line"/>
+  <text x="58" y="354" class="node muted">ImmutableSet&lt;E&gt;</text>
+
+  <!-- Map (right side) -->
+  <text x="440" y="36" class="node main">Map&lt;K,V&gt;</text>
+  <path d="M440 52 L440 88 L458 88" class="line"/>
+  <text x="464" y="100" class="node muted">MutableMap&lt;K,V&gt;</text>
+  <path d="M440 88 L440 134 L458 134" class="line"/>
+  <text x="464" y="146" class="node muted">ImmutableMap&lt;K,V&gt;</text>
+</svg>

@@ -32,7 +32,7 @@ $body->count(); // 3
 $body->values->last(); // null
 ```
 
-The class is now a full `Map` — it can be passed to any function expecting a map, used in `foreach`, and has all the filtering/transformation methods. The `StringKeyValueStore::fromAssoc` accepts any iterable, so the JSON is only parsed when the map is first accessed.
+The class is now a full `Map` — it can be passed to any function expecting a map, used in `foreach`, and has all the filtering/transformation methods.
 
 ::: tip Why Map instead of ImmutableMap?
 `Map` is the read-only base interface — the widest type hint. Accepting `Map` in function signatures means the function works with mutable, immutable, and custom maps alike. Use `ImmutableMap` or `MutableMap` when you need their specific guarantees.

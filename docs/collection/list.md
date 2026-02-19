@@ -16,13 +16,13 @@ $lazy = listOf(fn() => loadElementsFromDatabase());
 
 ## Accessing Elements
 
-Lists implement `ArrayAccess`, so you can use familiar array syntax:
+Lists implement `ArrayAccess`, so you can use familiar array syntax. Array access is strict — it throws on invalid indices:
 
 ```php
 $list = listOf(['a', 'b', 'c']);
 
-$list[0]; // 'a' - returns null if out of bounds
-$list(0); // 'a' - throws IndexOutOfBoundsException if missing
+$list[0]; // 'a' - throws IndexOutOfBoundsException if out of bounds
+$list[0] ?? null; // 'a' - null if out of bounds (via ?? operator)
 isset($list[0]); // true
 isset($list[5]); // false
 
@@ -44,10 +44,6 @@ $list->lastIndexOf('b'); // 1
 $list->indexOfFirst(fn($v) => $v === 'b'); // 1
 $list->indexOfLast(fn($v) => $v === 'b'); // 1
 ```
-
-::: tip PhpStorm / IntelliJ users
-PhpStorm doesn't resolve `__invoke()` return types or generic types in callbacks. Install the [Noctud plugin](https://plugins.jetbrains.com/plugin/30173-noctud) to get autocomplete for `$list(0)` and type inference in `fn ($v) =>` closures.
-:::
 
 ## Slicing
 

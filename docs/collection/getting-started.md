@@ -101,19 +101,17 @@ $map = mutableMapOfPairs([[$user, 'admin']]); // MutableMap<User, string>
 
 ## Accessing Elements
 
-Every accessor comes in two flavors — one that throws and one that returns `null`:
+Array access is strict — it throws on missing keys/indices, just like `get()`. Use the `??` operator for safe fallback, or `getOrNull()` for the nullable variant:
 
 ```php
-$list(0); // throws if index is out of bounds
-$list[0]; // returns null if index is out of bounds
+$list[0]; // throws if index is out of bounds
+$list[0] ?? null; // null if index is out of bounds
+$list->getOrNull(0); // null if index is out of bounds
 
-$map('key'); // throws if key is missing
-$map['key']; // returns null if key is missing
+$map['key']; // throws if key is missing
+$map['key'] ?? null; // null if key is missing
+$map->getOrNull('key'); // null if key is missing
 ```
-
-::: tip PhpStorm / IntelliJ users
-Install the [Noctud plugin](https://plugins.jetbrains.com/plugin/30173-noctud) to get full autocomplete for `__invoke()` access, generic type inference in callbacks like `fn ($v) =>`, and view property suggestions.
-:::
 
 Sets do not support indexed access. Use `contains()` instead:
 

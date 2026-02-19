@@ -46,12 +46,6 @@ trait ListLogic
 	// --- Element Access ---
 
 	/** {@inheritDoc} */
-	public function __invoke(int $index)
-	{
-		return $this->get($index);
-	}
-
-	/** {@inheritDoc} */
 	public function get(int $index)
 	{
 		return $this->store->get($index, true);
@@ -149,7 +143,7 @@ trait ListLogic
 	/** {@inheritDoc} */
 	public function offsetGet(mixed $offset): mixed
 	{
-		return $this->getOrNull($offset);
+		return $this->get($offset);
 	}
 
 	/**

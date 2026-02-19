@@ -5,19 +5,14 @@
 ## Element Access
 
 ```php
-__invoke(int $index): E
-```
-Returns the element at the given index. Alias for `get()`. Allows `$list(0)` syntax. Throws `IndexOutOfBoundsException` if out of bounds. Note: `__invoke` syntax does not work when the list is a class property (e.g. `$this->list(0)` calls a method, not `__invoke`). Use `get()` in that context.
-
-```php
 get(int $index): E
 ```
-Returns the element at the given index. Throws `IndexOutOfBoundsException` if out of bounds.
+Returns the element at the given index. Throws `IndexOutOfBoundsException` if out of bounds. Array access syntax `$list[0]` is an alias for `$list->get(0)`.
 
 ```php
 getOrNull(int $index): E|null
 ```
-Returns the element at the index, or `null` if out of bounds. Same as array access syntax: `$list[0]` is an alias for `$list->getOrNull(0)`.
+Returns the element at the index, or `null` if out of bounds. Use `$list[0] ?? null` for the same behavior via array access.
 
 ```php
 getOrDefault(int $index, mixed $default): E|D
@@ -59,8 +54,8 @@ View from index `$from` (inclusive) to `$to` (exclusive). Throws `IndexOutOfBoun
 Lists implement `ArrayAccess<int, E>`:
 
 ```php
-$list[0]; // getOrNull(0) - returns null if missing
-$list(0); // get(0) via __invoke - throws if missing
+$list[0]; // get(0) - throws if out of bounds
+$list[0] ?? 'default'; // safe access via ?? operator
 isset($list[0]); // offsetExists - true if index is valid
 ```
 

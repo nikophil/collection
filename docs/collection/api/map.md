@@ -22,19 +22,14 @@ Live read-only view of the map's entries. Each `MapEntry` is a snapshot. `MapEnt
 ## Element Access
 
 ```php
-__invoke(mixed $key): V
-```
-Get value by key. Throws `NoSuchElementException` if missing. Usage: `$map($key)`. Note: `__invoke` syntax does not work when the map is a class property (e.g. `$this->map('key')` calls a method, not `__invoke`). Use `get()` in that context.
-
-```php
 get(mixed $key): V
 ```
-Alias for `__invoke`. Throws if missing. Works in all contexts including class properties.
+Get value by key. Throws `NoSuchElementException` if missing. Array access syntax `$map['key']` is an alias for `$map->get('key')`.
 
 ```php
 getOrNull(mixed $key): V|null
 ```
-Get value, or `null` if missing. Same as array access syntax: `$map['key']` is an alias for `$map->getOrNull('key')`.
+Get value, or `null` if missing. Use `$map['key'] ?? null` for the same behavior via array access.
 
 ```php
 getOrDefault(mixed $key, mixed $default): V|D
@@ -54,8 +49,8 @@ Get value if key exists. Otherwise, compute the default, store it in the map, an
 ## Array Access
 
 ```php
-$map['key']; // getOrNull - null if missing
-$map('key'); // get via __invoke - throws if missing
+$map['key']; // get - throws if missing
+$map['key'] ?? 'default'; // safe access via ?? operator
 isset($map['key']); // containsKey
 ```
 

@@ -223,7 +223,7 @@ $array['b'] = 'wrong'; // No warning, type widens
 
 **Accessing elements**
 
-Every accessor comes in two flavors: `get()` / `$list(99)` throws when the element is missing, `getOrNull()` / `$list[99]` returns null. Same pattern for `first`, `last`, `random`, and `single`.
+Array access is strict — `$list[99]` throws when the index is out of bounds, just like `get()`. Use `??` for safe fallback, or `getOrNull()` for the nullable variant. Same pattern for `first`, `last`, `random`, and `single`.
 
 <div class="side-by-side">
 <div>
@@ -231,8 +231,8 @@ Every accessor comes in two flavors: `get()` / `$list(99)` throws when the eleme
 Noctud Collection
 
 ```php
-$list(99); // throws if missing
-$list[99]; // null if missing
+$list[0]; // throws if missing
+$list[0] ?? null; // null if missing
 ```
 
 ```php
@@ -246,15 +246,15 @@ $list->lastOrNull(); // null if empty
 Native PHP
 
 ```php
-array_key_exists(99, $array) ? $array[99]
+array_key_exists(0, $array) ? $array[0]
     : throw new Exception();
-$array[99] ?? null;
+$array[0] ?? null;
 ```
 
 ```php
 count($array) > 0 ? $array[array_key_last($array)]
     : throw new Exception();
-count($array) > 0 ? $array[array_rand($array)] 
+count($array) > 0 ? $array[array_rand($array)]
     : null;
 ```
 
@@ -407,7 +407,7 @@ Data is only duplicated when either (mutable) side is actually modified — coll
 
 ## PhpStorm / IntelliJ Plugin
 
-PhpStorm doesn't fully understand PHP generics — type inference breaks in callbacks, `__invoke()` return types are ignored, and there's no autocomplete through view properties. The [**Noctud**](https://plugins.jetbrains.com/plugin/30173-noctud) plugin fixes these IDE limitations so collections work seamlessly in the editor.
+PhpStorm doesn't fully understand PHP generics — type inference breaks in callbacks and there's no autocomplete through view properties. The [**Noctud**](https://plugins.jetbrains.com/plugin/30173-noctud) plugin fixes these IDE limitations so collections work seamlessly in the editor.
 
 ::: tabs
 == View Autocomplete
@@ -421,12 +421,6 @@ Type `$map->random` and the plugin suggests methods from `values`, `keys`, and `
 Callback parameters like `fn ($v) =>` inside `filter()`, `map()`, or any higher-order method correctly resolve the generic type — the IDE knows exactly what `$v` is.
 
 ![Generic type inference fixed](/intellij_fixed_generics.png)
-
-== __invoke() Return Type
-
-`$list(0)` and `$map('key')` use `__invoke()` under the hood. The plugin resolves the return type, so you get full autocomplete after the call.
-
-![__invoke return type fixed](/intellij_fixed_invoke.png)
 :::
 
 <a href="https://plugins.jetbrains.com/plugin/30173-noctud" target="_blank" class="plugin-install">Install from JetBrains Marketplace →</a>

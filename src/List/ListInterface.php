@@ -29,15 +29,6 @@ interface ListInterface extends Collection, ArrayAccess
 
 	/**
 	 * Returns the element at the specified index, or throws if out of bounds.
-	 * Alias for {@see get()}.
-	 *
-	 * @throws IndexOutOfBoundsException
-	 * @return E
-	 */
-	public function __invoke(int $index);
-
-	/**
-	 * Returns the element at the specified index, or throws if out of bounds.
 	 *
 	 * @throws IndexOutOfBoundsException
 	 * @return E

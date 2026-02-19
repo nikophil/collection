@@ -71,16 +71,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	/**
 	 * Retrieves the value associated with the given key.
 	 * Throws an exception if the key does not exist in the map.
-	 *
-	 * @param K $key
-	 * @return V
-	 * @throws NoSuchElementException
-	 */
-	public function __invoke(string|int|bool|float|object $key);
-
-	/**
-	 * Retrieves the value associated with the given key.
-	 * Throws an exception if the key does not exist in the map.
+	 * Array access syntax `$map['key']` is an alias for this method.
 	 *
 	 * @param K $key
 	 * @return V
@@ -91,6 +82,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	/**
 	 * Retrieves the value associated with the given key.
 	 * Returns null if the key does not exist in the map.
+	 * Use `$map['key'] ?? null` for the same behavior via array access.
 	 *
 	 * @param K $key
 	 * @return V|null

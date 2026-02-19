@@ -34,13 +34,12 @@ trait MapContainsAndGet
 
 		// get existing key
 		$this->assertSame($presentValue, $map[$presentKey]);
-		$this->assertSame($presentValue, $map($presentKey));
 		$this->assertSame($presentValue, $map->get($presentKey));
 		$this->assertSame($presentValue, $map->getOrNull($presentKey));
 		$this->assertSame($presentValue, $map->getOrDefault($presentKey, null));
 
-		// get missing key
-		$this->assertSame(null, $map[$missingKey]);
+		// get missing key - safe access via ?? operator
+		$this->assertSame(null, $map[$missingKey] ?? null);
 		$this->assertSame(null, $map->getOrNull($missingKey));
 		$this->assertSame(null, $map->getOrDefault($missingKey, null));
 		$this->assertSame($presentValue, $map->getOrDefault($missingKey, $presentValue));
@@ -48,10 +47,24 @@ trait MapContainsAndGet
 		// get throws when missing
 		$this->expectException(NoSuchElementException::class);
 		$map->get($missingKey);
+	}
 
-		// invoke throws when missing
+	#[Test]
+	public function offsetGet_throws_on_missing_key(): void
+	{
+		$map = $this->mapOf(['a' => 1]);
+
 		$this->expectException(NoSuchElementException::class);
-		$map($missingKey);
+		$map['missing']; // @phpstan-ignore expr.resultUnused
+	}
+
+	#[Test]
+	public function offsetGet_with_null_coalescing_returns_default(): void
+	{
+		$map = $this->mapOf(['a' => 1]);
+
+		$this->assertSame('default', $map['missing'] ?? 'default');
+		$this->assertSame(1, $map['a'] ?? 'default');
 	}
 
 	public static function containsProvider(): iterable

@@ -17,28 +17,6 @@ use stdClass;
 trait ListAccess
 {
 	#[Test]
-	public function invoke_returns_element_at_index(): void
-	{
-		$object = new stdClass();
-		/** @var ListInterface $list */
-		$list = $this->collectionOf(['a', 'b', $object]);
-
-		$this->assertSame('a', $list(0));
-		$this->assertSame('b', $list(1));
-		$this->assertSame($object, $list(2));
-	}
-
-	#[Test]
-	public function invoke_throws_on_invalid_index(): void
-	{
-		/** @var ListInterface $list */
-		$list = $this->collectionOf(['a', 'b']);
-
-		$this->expectException(IndexOutOfBoundsException::class);
-		$list(5);
-	}
-
-	#[Test]
 	public function get_returns_element_at_index(): void
 	{
 		$object = new stdClass();
@@ -171,12 +149,22 @@ trait ListAccess
 	}
 
 	#[Test]
-	public function offsetGet_returns_null_for_invalid_index(): void
+	public function offsetGet_throws_on_invalid_index(): void
 	{
 		/** @var ListInterface<string> $list */
 		$list = $this->collectionOf(['a']);
 
-		$this->assertNull($list[5]);
-		$this->assertNull($list[-1]);
+		$this->expectException(IndexOutOfBoundsException::class);
+		$list[5]; // @phpstan-ignore expr.resultUnused
+	}
+
+	#[Test]
+	public function offsetGet_with_null_coalescing_returns_default(): void
+	{
+		/** @var ListInterface<string> $list */
+		$list = $this->collectionOf(['a']);
+
+		$this->assertSame('default', $list[5] ?? 'default');
+		$this->assertSame('a', $list[0] ?? 'default');
 	}
 }

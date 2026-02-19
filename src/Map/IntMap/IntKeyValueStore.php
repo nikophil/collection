@@ -109,7 +109,7 @@ final class IntKeyValueStore implements KeyValueStore
 				return null;
 			}
 
-			throw new NoSuchElementException();
+			throw new NoSuchElementException('Key not found in map');
 		}
 
 		if (!array_key_exists($key, $this->data)) {
@@ -117,7 +117,7 @@ final class IntKeyValueStore implements KeyValueStore
 				return null;
 			}
 
-			throw new NoSuchElementException();
+			throw new NoSuchElementException('Key not found in map');
 		}
 
 		return $this->data[$key];

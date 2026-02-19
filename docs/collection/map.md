@@ -55,8 +55,8 @@ $map['2'] = 'b'; // key is string("2"), not int
 ```php
 $map = mapOf(['name' => 'Rodney', 'age' => 38]);
 
-$map('name'); // 'Rodney' - throws if missing
-$map['name']; // 'Rodney' - null if missing
+$map['name']; // 'Rodney' - throws if missing
+$map['name'] ?? null; // 'Rodney' - null if missing (via ?? operator)
 $map->get('name'); // 'Rodney' - throws if missing
 $map->getOrNull('name'); // 'Rodney' - null if missing
 $map->getOrDefault('role', 'guest'); // 'guest'

@@ -143,7 +143,7 @@ final class HashKeyValueStore implements KeyValueStore
 				return null;
 			}
 
-			throw new NoSuchElementException();
+			throw new NoSuchElementException('Key not found in map');
 		}
 
 		return $this->values[$hash];

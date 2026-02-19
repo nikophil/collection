@@ -54,16 +54,17 @@ Use `stringMapOf`/`mutableStringMapOf` and `intMapOf`/`mutableIntMapOf` for bett
 performance and ~50% less memory — they use single-array storage and enforce key types at runtime.
 
 ### 📖 Accessing
-Always two options — nullable or throwing.
-The need for `array_key_exists()` checks or `?? null` is eliminated.
+Array access is strict by default — throws on missing keys/indices. Use `??` for safe fallback.
 ```php
-$list[0]; // null if missing, getOrNull()
-$list(0); // throws if missing, get()
+$list[0]; // throws if missing, get()
+$list[0] ?? null; // null if missing
+$list->getOrNull(0); // null if missing
 $list->firstOrNull(); // null if empty
 ```
 ```php
-$map['key']; // null if missing, getOrNull()
-$map('key'); // throws if missing, get()
+$map['key']; // throws if missing, get()
+$map['key'] ?? null; // null if missing
+$map->getOrNull('key'); // null if missing
 $map->values->first(); // throws if empty
 ```
 Sets support only the `contains` method, they have no array access by design.

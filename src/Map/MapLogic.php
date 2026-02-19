@@ -60,12 +60,6 @@ trait MapLogic
 	// --- Element Access ---
 
 	/** {@inheritDoc} */
-	public function __invoke(string|int|bool|float|object $key)
-	{
-		return $this->get($key);
-	}
-
-	/** {@inheritDoc} */
 	public function get(string|int|bool|float|object $key)
 	{
 		return $this->store->get($key, true); // @phpstan-ignore argument.type
@@ -752,7 +746,7 @@ trait MapLogic
 	/** {@inheritDoc} */
 	public function offsetGet(mixed $offset): mixed
 	{
-		return $this->getOrNull($offset);
+		return $this->get($offset);
 	}
 
 	public function __debugInfo(): array

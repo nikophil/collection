@@ -12,12 +12,14 @@ $list = listOf([1, 2, 3]);
 // Throwing — missing data is a bug
 $list->first(); // 1
 $list->single(); // throws — more than one element
-$list(5); // throws — index out of bounds
+$list[5]; // throws — index out of bounds
+$list->get(5); // throws — index out of bounds
 
 // Nullable — absence is expected
 $list->firstOrNull(); // 1
 $list->singleOrNull(); // null — more than one element
-$list[5]; // null — index out of bounds
+$list[5] ?? null; // null — index out of bounds
+$list->getOrNull(5); // null — index out of bounds
 ```
 
 The same pattern applies to predicate-based search — `find()` returns null, `expect()` throws:
@@ -27,13 +29,13 @@ $list->find(fn($n) => $n > 10); // null — no match
 $list->expect(fn($n) => $n > 10); // throws — no match
 ```
 
-For array-access, `__invoke` (`$list(0)`) throws while `[]` (`$list[0]`) returns null. Same on maps:
+Array access `$map['a']` is strict — it throws on missing keys, just like `get()`. Use `??` for safe fallback:
 
 ```php
 $map = mapOf(['a' => 1]);
 
-$map('a'); // 1 — throws if missing
-$map['a']; // 1 — null if missing
+$map['a']; // 1 — throws if missing
+$map['a'] ?? null; // 1 — null if missing
 $map->get('a'); // 1 — throws if missing
 $map->getOrNull('a'); // 1 — null if missing
 ```

@@ -7,7 +7,7 @@ Type-safe, mutable/immutable, sortable and key-preserving List/Map/Set collectio
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 [![Discord](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/jS3fKe6vW9)
 ```shell
-composer require noctud/collection:0.1.0-beta1
+composer require noctud/collection:0.1.0-beta2
 ```
 
 ## ✨ Features

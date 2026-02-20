@@ -26,8 +26,8 @@ final class JsonBody extends Body implements ImmutableMap
 }
 
 $body = new JsonBody('{"name": "Rodney", "age": 38, "city": null}');
-$body('name'); // "Rodney"
-$body['missing']; // null
+$body['name']; // "Rodney" - throws if missing
+$body['name'] ?? null; // "Rodney" - null if missing
 $body->count(); // 3
 $body->values->last(); // null
 ```

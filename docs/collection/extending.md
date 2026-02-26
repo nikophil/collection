@@ -17,11 +17,7 @@ final class JsonBody extends Body implements ImmutableMap
 
     public function __construct(public readonly string $json)
     {
-        $this->store = StringKeyValueStore::fromAssoc((function () use ($json) {
-            foreach (json_decode($json) as $key => $value) {
-                yield (string) $key => $value;
-            }
-        })());
+        $this->store = StringKeyValueStore::fromAssoc(json_decode($json, true));
     }
 }
 

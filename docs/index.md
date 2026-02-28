@@ -254,7 +254,7 @@ $array[0] ?? null;
 ```php
 count($array) > 0 ? $array[array_key_last($array)]
     : throw new Exception();
-count($array) > 0 ? $array[array_rand($array)]
+count($array) > 0 ? $array[array_key_last($array)]
     : null;
 ```
 

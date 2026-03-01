@@ -12,7 +12,7 @@ composer require noctud/collection:0.1.0-beta2
 
 ## ✨ Features
 - **Type-safe**: Full generics support. Static analyzers understand every element type through the chain.
-- **Key-preserving**: Map keys like null, float, bool or "1" retain their original types. No silent type casting.
+- **Key-preserving**: Map keys like `float`, `bool` or `"1"` retain their original types. No silent type casting.
 - **Object keys**: Use objects as map keys out of the box. Implement `Hashable` for custom identity semantics.
 - **Mutable & Immutable**: Choose the right variant. Immutable methods are marked with `#[NoDiscard]`.
 - **Lazy Init**: Construct collections from closures. Uses PHP 8.4 lazy objects — materialized only on first access.

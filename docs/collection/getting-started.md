@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-composer require noctud/collection:0.1.0-beta2
+composer require noctud/collection
 ```
 
 Requires **PHP 8.4** or later.

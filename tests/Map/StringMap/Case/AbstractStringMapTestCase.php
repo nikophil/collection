@@ -15,6 +15,7 @@ use Noctud\Collection\Map\Map;
 use Noctud\Collection\Tests\EnumerableCopyOnWrite;
 use PHPUnit\Framework\TestCase;
 use Noctud\Collection\Tests\Map\StringMap\StringMapConvert;
+use Noctud\Collection\Tests\Map\StringMap\StringMapCopyOnWrite;
 use Noctud\Collection\Tests\Map\StringMap\StringMapKeyEnforcement;
 use Noctud\Collection\Tests\Map\StringMap\StringMapBasics;
 
@@ -27,6 +28,7 @@ abstract class AbstractStringMapTestCase extends TestCase implements StringMapTe
 	use EnumerableCopyOnWrite;
 	use StringMapBasics;
 	use StringMapConvert;
+	use StringMapCopyOnWrite;
 	use StringMapKeyEnforcement;
 
 	/**

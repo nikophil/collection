@@ -15,6 +15,7 @@ use Noctud\Collection\Map\Map;
 use Noctud\Collection\Tests\EnumerableCopyOnWrite;
 use PHPUnit\Framework\TestCase;
 use Noctud\Collection\Tests\Map\IntMap\IntMapConvert;
+use Noctud\Collection\Tests\Map\IntMap\IntMapCopyOnWrite;
 use Noctud\Collection\Tests\Map\IntMap\IntMapKeyEnforcement;
 use Noctud\Collection\Tests\Map\IntMap\IntMapBasics;
 
@@ -27,6 +28,7 @@ abstract class AbstractIntMapTestCase extends TestCase implements IntMapTestCase
 	use EnumerableCopyOnWrite;
 	use IntMapBasics;
 	use IntMapConvert;
+	use IntMapCopyOnWrite;
 	use IntMapKeyEnforcement;
 
 	/**

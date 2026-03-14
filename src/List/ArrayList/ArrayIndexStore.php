@@ -30,13 +30,21 @@ final class ArrayIndexStore extends AbstractElementStore implements ReadWriteInd
 	 */
 	public function __construct(iterable $source = [])
 	{
-		$this->addAll($source);
+		if (is_array($source)) {
+			$this->elements = array_is_list($source) ? $source : array_values($source);
+		} else {
+			$this->addAll($source);
+		}
 	}
 
 	public function addAll(iterable $source): void
 	{
-		foreach ($source as $element) {
-			$this->elements[] = $element;
+		if (is_array($source)) {
+			array_push($this->elements, ...array_is_list($source) ? $source : array_values($source));
+		} else {
+			foreach ($source as $element) {
+				$this->elements[] = $element;
+			}
 		}
 	}
 

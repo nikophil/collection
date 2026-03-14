@@ -37,8 +37,12 @@ final class StringKeyValueStore implements KeyValueStore
 	{
 		/** @var self<NV> $store */
 		$store = new self();
-		foreach ($source as $k => $v) {
-			$store->data[$k] = $v;
+		if (is_array($source)) {
+			$store->data = $source;
+		} else {
+			foreach ($source as $k => $v) {
+				$store->data[$k] = $v;
+			}
 		}
 		return $store;
 	}

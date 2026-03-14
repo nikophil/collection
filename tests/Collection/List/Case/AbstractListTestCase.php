@@ -13,6 +13,7 @@ use Noctud\Collection\Tests\Collection\Case\AbstractCollectionTestCase;
 use Noctud\Collection\Tests\Collection\CollectionMutateWrite;
 use Noctud\Collection\Tests\Collection\List\ListAccess;
 use Noctud\Collection\Tests\Collection\List\ListConvert;
+use Noctud\Collection\Tests\Collection\List\ListCopyOnWrite;
 use Noctud\Collection\Tests\Collection\List\ListIndex;
 use Noctud\Collection\Tests\Collection\List\ListMutate;
 
@@ -21,6 +22,7 @@ abstract class AbstractListTestCase extends AbstractCollectionTestCase
 	use CollectionMutateWrite;
 	use ListAccess;
 	use ListConvert;
+	use ListCopyOnWrite;
 	use ListIndex;
 	use ListMutate;
 }

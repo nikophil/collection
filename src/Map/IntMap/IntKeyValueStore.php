@@ -38,11 +38,19 @@ final class IntKeyValueStore implements KeyValueStore
 	{
 		/** @var self<NV> $store */
 		$store = new self();
-		foreach ($source as $k => $v) {
-			if (!is_int($k)) { // @phpstan-ignore function.alreadyNarrowedType
-				throw new InvalidKeyTypeException(sprintf('IntMap requires int keys, got %s', get_debug_type($k)));
+		if (is_array($source)) {
+			if (array_is_list($source) || array_all($source, fn (mixed $v, int|string $k): bool => is_int($k))) { // @phpstan-ignore function.alreadyNarrowedType
+				$store->data = $source;
+			} else {
+				throw new InvalidKeyTypeException('IntMap requires int keys, got string');
 			}
-			$store->data[$k] = $v;
+		} else {
+			foreach ($source as $k => $v) {
+				if (!is_int($k)) { // @phpstan-ignore function.alreadyNarrowedType
+					throw new InvalidKeyTypeException(sprintf('IntMap requires int keys, got %s', get_debug_type($k)));
+				}
+				$store->data[$k] = $v;
+			}
 		}
 		return $store;
 	}

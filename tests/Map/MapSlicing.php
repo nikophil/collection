@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Tests\Map;
 
 use PHPUnit\Framework\Attributes\Test;
+use Noctud\Collection\Map\ImmutableMap;
 
 trait MapSlicing
 {
@@ -366,14 +367,14 @@ trait MapSlicing
 	{
 		$map = $this->mapOf(['a' => 1, 'b' => 2, 'c' => 3]);
 
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->takeFirst(2));
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->takeLast(2));
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->dropFirst(1));
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->dropLast(1));
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->takeWhile(fn ($v) => true));
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->dropWhile(fn ($v) => false));
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->takeLastWhile(fn ($v) => true));
-		$this->assertInstanceOf(\Noctud\Collection\Map\ImmutableMap::class, $map->dropLastWhile(fn ($v) => false));
+		$this->assertInstanceOf(ImmutableMap::class, $map->takeFirst(2));
+		$this->assertInstanceOf(ImmutableMap::class, $map->takeLast(2));
+		$this->assertInstanceOf(ImmutableMap::class, $map->dropFirst(1));
+		$this->assertInstanceOf(ImmutableMap::class, $map->dropLast(1));
+		$this->assertInstanceOf(ImmutableMap::class, $map->takeWhile(fn ($v) => true));
+		$this->assertInstanceOf(ImmutableMap::class, $map->dropWhile(fn ($v) => false));
+		$this->assertInstanceOf(ImmutableMap::class, $map->takeLastWhile(fn ($v) => true));
+		$this->assertInstanceOf(ImmutableMap::class, $map->dropLastWhile(fn ($v) => false));
 	}
 
 	#[Test]

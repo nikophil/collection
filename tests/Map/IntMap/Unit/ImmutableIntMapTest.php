@@ -16,6 +16,7 @@ use Noctud\Collection\Map\IntMap\ImmutableIntMap;
 use Noctud\Collection\Tests\Map\IntMap\Case\AbstractIntMapTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use function Noctud\Collection\intMapOf;
+use stdClass;
 
 final class ImmutableIntMapTest extends AbstractIntMapTestCase
 {
@@ -206,7 +207,7 @@ final class ImmutableIntMapTest extends AbstractIntMapTestCase
 	{
 		$map = $this->mapOf([1 => 'a']);
 
-		$obj = new \stdClass();
+		$obj = new stdClass();
 		$generator = (function () use ($obj) {
 			yield $obj => 'b';
 			yield 2 => 'c';

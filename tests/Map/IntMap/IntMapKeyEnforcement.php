@@ -260,7 +260,7 @@ trait IntMapKeyEnforcement
 	#[Test]
 	public function put_null_value_changed_tracking(): void
 	{
-		/** @var \Noctud\Collection\Map\MutableMap<int, string|null> $map */
+		/** @var MutableMap<int, string|null> $map */
 		$map = mutableIntMapOf([1 => 'a']);
 
 		$tracked = $map->tracked();

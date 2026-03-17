@@ -15,9 +15,7 @@ parameters:
 		# type-changing operations like map/flatMap.
 		-
 			message: '#MapEntry#'
-			paths:
-				- src/CollectionLogic.php
-				- src/Set/SetLogic.php
+			path: src/CollectionLogic.php
 		-
 			identifier: booleanOr.alwaysFalse
 			path: src/CollectionLogic.php
@@ -67,10 +65,6 @@ parameters:
 			path: src/Map/ImmutableMapLogic.php
 		-
 			message: '#MapValueCollection#'
-			path: src/CollectionLogic.php
-		-
-			identifier: argument.type
-			message: '#ReadWriteElementStore<mixed>::sort#'
 			path: src/CollectionLogic.php
 includes:
 	- phpstan-tests.neon

@@ -309,6 +309,11 @@ zip(iterable $other): ListInterface<array{E, U}>
 Pair elements from two iterables at the same position. Result length equals the shorter input.
 
 ```php
+zipWithNext(): ListInterface<array{E, E}>
+```
+Returns a list of pairs of each two adjacent elements. If the collection has fewer than two elements, returns an empty list.
+
+```php
 unzip(): array{ImmutableList<mixed>, ImmutableList<mixed>}
 ```
 Splits a collection of pairs into two lists — one from the first component (`[0]`), one from the second (`[1]`). Inverse of `zip()`.

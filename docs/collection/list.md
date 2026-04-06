@@ -80,6 +80,7 @@ $list->windowed(3); // [[1, 2, 3], [2, 3, 4]]
 $list->windowed(3, 2, true); // [[1, 2, 3], [3, 4]]
 $list->zip(['a', 'b']); // ImmutableList [[1, 'a'], [2, 'b']]
 $list->zip(['a', 'b'])->unzip(); // [ImmutableList [1, 2], ImmutableList ['a', 'b']]
+$list->zipWithNext(); // ImmutableList [[1, 2], [2, 3], [3, 4]]
 $list->partition(fn($n) => $n > 2); // [ImmutableList [3, 4], ImmutableList [1, 2]]
 $list->groupBy(fn($n) => $n % 2 === 0 ? 'even' : 'odd');
 // ImmutableMap { 'odd' => [1, 3], 'even' => [2, 4] }

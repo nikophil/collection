@@ -275,12 +275,12 @@ $map->flip(); // ImmutableMap {1 => 'a', 2 => 'b', 3 => 'c'}
 ```
 
 ::: tip flip() and duplicate values
-`flip()` throws `KeyCollisionException` when multiple keys share the same value, since the flipped map would lose entries. Use `KeyCollisionStrategy` to control this:
+`flip()` throws `ConversionException` when multiple keys share the same value, since the flipped map would lose entries. Use `KeyCollisionStrategy` to control this:
 
 ```php
 $map = mapOf(['a' => 1, 'b' => 1, 'c' => 2]);
 
-$map->flip(); // throws KeyCollisionException
+$map->flip(); // throws ConversionException
 $map->flip(KeyCollisionStrategy::KeepFirst); // Map {1 => 'a', 2 => 'c'}
 $map->flip(KeyCollisionStrategy::KeepLast); // Map {1 => 'b', 2 => 'c'}
 ```

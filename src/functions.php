@@ -107,7 +107,7 @@ if (!function_exists('Noctud\Collection\listOf')) {
 	 * @param iterable<array{0:K,1:V}>|Closure():iterable<array{0:K,1:V}> $data
 	 * @return ImmutableMap<K,V>
 	 */
-	function mapOfPairs(iterable|Closure $data = []): ImmutableMap
+	function mapOfPairs(iterable|Closure $data): ImmutableMap
 	{
 		return ImmutableHashMap::ofPairs($data);
 	}

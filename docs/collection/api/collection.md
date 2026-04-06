@@ -411,6 +411,16 @@ toArray(): array<int, E>
 ```
 Convert to a PHP array.
 
+```php
+toMutable(): MutableCollection<E>
+```
+Creates and returns a new in-memory mutable copy of this collection. Even if this collection is already mutable, a new copy is created.
+
+```php
+toImmutable(): ImmutableCollection<E>
+```
+Returns an immutable collection. If this collection is already immutable, it may return itself.
+
 ## MutableCollection Methods
 
 In addition to all `Collection` methods, `MutableCollection<E>` provides:

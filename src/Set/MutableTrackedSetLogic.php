@@ -44,7 +44,6 @@ trait MutableTrackedSetLogic
 	 * @param E $element
 	 * @return static
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Classes.ClassMemberSpacing.IncorrectCountOfBlankLinesBetweenMembers
 	public function add(mixed $element): MutableTrackedSet&TrackedResult
 	{
 		// For Set: changes only if item doesn't exist

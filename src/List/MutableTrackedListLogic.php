@@ -45,7 +45,6 @@ trait MutableTrackedListLogic
 	 * @param E $element
 	 * @return static
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Classes.ClassMemberSpacing.IncorrectCountOfBlankLinesBetweenMembers
 	public function add(mixed $element): MutableTrackedList&TrackedResult
 	{
 		$this->_changed = true;

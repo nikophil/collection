@@ -31,7 +31,6 @@ trait MutableCollectionLogic
 	 * {@inheritDoc}
 	 * @param E $element
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Classes.ClassMemberSpacing.IncorrectCountOfBlankLinesBetweenMembers
 	public function add(mixed $element): static
 	{
 		$this->store->add($element);

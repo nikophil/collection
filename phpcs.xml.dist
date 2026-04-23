@@ -15,11 +15,6 @@
     <arg name="colors"/>
     <exclude-pattern>*/bin/*</exclude-pattern>
 
-    <!-- PHPCS 3.x does not understand PHP 8.4 property hooks in interfaces -->
-    <rule ref="Internal.ParseError.InterfaceHasMemberVar">
-        <severity>0</severity>
-    </rule>
-
     <!-- =================================================================== -->
     <!-- PSR-2 BASE STANDARD -->
     <!-- =================================================================== -->

@@ -18,6 +18,9 @@ final class NarrowingGenerator
 	private const StartMarker = '// --- Narrowing Start (auto-generated) ---';
 	private const EndMarker = '// --- Narrowing End (auto-generated) ---';
 
+	public const SelfPreservingStartMarker = '// --- Self-Preserving Start (auto-generated) ---';
+	public const SelfPreservingEndMarker = '// --- Self-Preserving End (auto-generated) ---';
+
 	/**
 	 * Extract a method (PHPDoc + attributes + signature) from content by name.
 	 * Returns null if not found.
@@ -25,7 +28,11 @@ final class NarrowingGenerator
 	public static function extractMethod(string $content, string $methodName): ?string
 	{
 		// Match: optional PHPDoc + optional attributes + method signature ending with ;
-		$pattern = '/(\t\/\*\*(?:[^*]|\*(?!\/))*\*\/\s*)?(\s*(?:#\[[^\]]+\]\s*)*)public\s+function\s+'
+		// The attribute sub-pattern tolerates an inline trailing comment after an attribute
+		// (e.g. `#[NoDiscard] // @phpstan-ignore generics.notSubtype`). Without the
+		// `\h*(?:\/\/.*)?` the match would stop at the comment, drop the PHPDoc + attribute,
+		// and emit a bare signature (this is what mangled `flip` before).
+		$pattern = '/(\t\/\*\*(?:[^*]|\*(?!\/))*\*\/\s*)?(\s*(?:#\[[^\]]+\]\h*(?:\/\/.*)?\s*)*)public\s+function\s+'
 			. preg_quote($methodName, '/')
 			. '\s*\([^)]*\)[^;]*;/';
 
@@ -111,22 +118,27 @@ final class NarrowingGenerator
 	/**
 	 * Replace content between markers in a file.
 	 */
-	public static function writeBetweenMarkers(string $filePath, string $newContent): bool
+	public static function writeBetweenMarkers(
+		string $filePath,
+		string $newContent,
+		string $startMarker = self::StartMarker,
+		string $endMarker = self::EndMarker,
+	): bool
 	{
 		$content = file_get_contents($filePath);
 		if ($content === false) {
 			return false;
 		}
 
-		$startPos = strpos($content, self::StartMarker);
-		$endPos = strpos($content, self::EndMarker);
+		$startPos = strpos($content, $startMarker);
+		$endPos = strpos($content, $endMarker);
 
 		if ($startPos === false || $endPos === false) {
 			echo "Markers not found in $filePath\n";
 			return false;
 		}
 
-		$before = substr($content, 0, $startPos + strlen(self::StartMarker));
+		$before = substr($content, 0, $startPos + strlen($startMarker));
 		$after = substr($content, $endPos);
 
 		$result = $before . "\n\n" . $newContent . "\n\n\t" . $after;
@@ -192,6 +204,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'Set<E>',
 			'Collection<R>' => 'Set<R>',
 			'Collection<mixed>' => 'Set<mixed>',
+			'Collection<T>' => 'Set<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{Set<E>, Set<E>}',
@@ -221,6 +234,7 @@ final class NarrowingGenerator
 			'ImmutableCollection<E|NE>' => 'ImmutableSet<E|NE>',
 			'ImmutableCollection<R>' => 'ImmutableSet<R>',
 			'ImmutableCollection<mixed>' => 'ImmutableSet<mixed>',
+			'ImmutableCollection<T>' => 'ImmutableSet<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{ImmutableCollection<E>, ImmutableCollection<E>}' => 'array{ImmutableSet<E>, ImmutableSet<E>}',
@@ -273,6 +287,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ListInterface<E>',
 			'Collection<R>' => 'ListInterface<R>',
 			'Collection<mixed>' => 'ListInterface<mixed>',
+			'Collection<T>' => 'ListInterface<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ListInterface<E>, ListInterface<E>}',
@@ -301,6 +316,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableCollection<E>',
 			'Collection<R>' => 'ImmutableCollection<R>',
 			'Collection<mixed>' => 'ImmutableCollection<mixed>',
+			'Collection<T>' => 'ImmutableCollection<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableCollection<E>, ImmutableCollection<E>}',
@@ -326,6 +342,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableCollection<E>',
 			'Collection<R>' => 'ImmutableCollection<R>',
 			'Collection<mixed>' => 'ImmutableCollection<mixed>',
+			'Collection<T>' => 'ImmutableCollection<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableCollection<E>, ImmutableCollection<E>}',
@@ -351,6 +368,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableList<E>',
 			'Collection<R>' => 'ImmutableList<R>',
 			'Collection<mixed>' => 'ImmutableList<mixed>',
+			'Collection<T>' => 'ImmutableList<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableList<E>, ImmutableList<E>}',
@@ -376,6 +394,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableSet<E>',
 			'Collection<R>' => 'ImmutableSet<R>',
 			'Collection<mixed>' => 'ImmutableSet<mixed>',
+			'Collection<T>' => 'ImmutableSet<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableSet<E>, ImmutableSet<E>}',
@@ -406,6 +425,8 @@ final class NarrowingGenerator
 			'Map<K, NV>' => 'ImmutableMap<K, NV>',
 			'Map<V,K>' => 'ImmutableMap<V,K>',
 			'Map<V, K>' => 'ImmutableMap<V, K>',
+			'Map<K,T>' => 'ImmutableMap<K,T>',
+			'Map<K, T>' => 'ImmutableMap<K, T>',
 		], $blacklist);
 	}
 
@@ -423,6 +444,7 @@ final class NarrowingGenerator
 			'ImmutableCollection<E|NE>' => 'ImmutableList<E|NE>',
 			'ImmutableCollection<R>' => 'ImmutableList<R>',
 			'ImmutableCollection<mixed>' => 'ImmutableList<mixed>',
+			'ImmutableCollection<T>' => 'ImmutableList<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{ImmutableCollection<E>, ImmutableCollection<E>}' => 'array{ImmutableList<E>, ImmutableList<E>}',
@@ -528,6 +550,8 @@ final class NarrowingGenerator
 			'Map<K, NV>' => 'ImmutableMap<K, NV>',
 			'Map<V,K>' => 'ImmutableMap<V,K>',
 			'Map<V, K>' => 'ImmutableMap<V, K>',
+			'Map<K,T>' => 'ImmutableMap<K,T>',
+			'Map<K, T>' => 'ImmutableMap<K, T>',
 		], $blacklist);
 	}
 
@@ -659,5 +683,122 @@ final class NarrowingGenerator
 			'MutableMap<K,V>' => 'MutableTrackedMap<K,V>&TrackedResult',
 			'MutableMap<K, V>' => 'MutableTrackedMap<K, V>&TrackedResult',
 		], $blacklist);
+	}
+
+	/**
+	 * Generate the body (between Self-Preserving markers) of a SelfPreserving*Logic trait.
+	 *
+	 * Extracts every method on the source interface that natively returns $collectionType,
+	 * drops $blacklist (type-changing methods), and emits a `: static`-returning override
+	 * that delegates to an aliased copy of the base implementation. `partition` (when not
+	 * blacklisted) becomes `array{static, static}`. Mutation widening (`NE`/`NK`/`NV`) is
+	 * rewritten to the strict `E`/`K`/`V`. The `@phpstan-ignore return.type` on each body is
+	 * sound because the bundled factory returns `new static(...)`.
+	 *
+	 * @param array<string> $blacklist Method names to exclude from the auto-extracted set
+	 * @param array<string> $arrayMethods Methods returning `array{static, static}` (e.g. partition), taken from $interfaceContent
+	 * @param array<string> $extraSimpleMethods Extra `: static` methods not returning $collectionType (e.g. Set's intersect/union/subtract), taken from $extraSource
+	 * @param string $templateParams Generic parameters of the using collection, e.g. `E` or `K,V`
+	 */
+	public static function generateSelfPreserving(
+		string $interfaceContent,
+		string $extraSource,
+		string $baseTrait,
+		string $collectionType,
+		string $factoryMethod,
+		string $templateParams,
+		array $blacklist,
+		array $arrayMethods,
+		array $extraSimpleMethods,
+	): string
+	{
+		$methods = self::extractMethodsByReturnType($interfaceContent, $collectionType);
+		$methods = array_diff_key($methods, array_flip($blacklist));
+
+		$aliases = [];
+		$overrides = [];
+
+		foreach ($methods as $name => $extracted) {
+			$aliases[] = "\t\t" . $name . ' as private ' . $name . 'Impl;';
+			$overrides[] = self::buildSelfPreservingOverride($extracted, $name, false);
+		}
+
+		foreach ($extraSimpleMethods as $name) {
+			$extracted = self::extractMethod($extraSource, $name);
+			if ($extracted !== null) {
+				$aliases[] = "\t\t" . $name . ' as private ' . $name . 'Impl;';
+				$overrides[] = self::buildSelfPreservingOverride($extracted, $name, false);
+			}
+		}
+
+		foreach ($arrayMethods as $name) {
+			$extracted = self::extractMethod($interfaceContent, $name);
+			if ($extracted !== null) {
+				$aliases[] = "\t\t" . $name . ' as private ' . $name . 'Impl;';
+				$overrides[] = self::buildSelfPreservingOverride($extracted, $name, true);
+			}
+		}
+
+		$useBlock = "\t/** @use " . $baseTrait . '<' . $templateParams . "> */\n"
+			. "\tuse " . $baseTrait . " {\n"
+			. implode("\n", $aliases) . "\n"
+			. "\t}";
+
+		$factory = "\t/**\n"
+			. "\t * Builds derived instances as the using subtype.\n"
+			. "\t *\n"
+			. "\t * @param iterable<" . $templateParams . "> \$data\n"
+			. "\t * @return static\n"
+			. "\t */\n"
+			. "\tprotected function " . $factoryMethod . "(iterable \$data): " . $collectionType . "\n"
+			. "\t{\n"
+			. "\t\treturn new static(\$data); // @phpstan-ignore return.type\n"
+			. "\t}";
+
+		return $useBlock . "\n\n" . implode("\n\n", $overrides) . "\n\n" . $factory;
+	}
+
+	/**
+	 * Build one `: static`-returning delegating override from an extracted interface method.
+	 */
+	private static function buildSelfPreservingOverride(string $extracted, string $name, bool $isArray): string
+	{
+		preg_match('/public\s+function\s+' . preg_quote($name, '/') . '\s*\(([^)]*)\)/', $extracted, $sigMatch);
+		$params = trim($sigMatch[1] ?? '');
+
+		preg_match_all('/\$\w+/', $params, $varMatch);
+		$args = implode(', ', $varMatch[0]);
+
+		// Collect @template (minus the NE/NK/NV widening ones) and @param tags.
+		$tags = [];
+		foreach (preg_split('/\R/', $extracted) ?: [] as $line) {
+			$tag = ltrim($line, "\t *");
+			if (str_starts_with($tag, '@template') && !preg_match('/^@template\s+N[EKV]\b/', $tag)) {
+				$tags[] = $tag;
+			} elseif (str_starts_with($tag, '@param')) {
+				$tags[] = $tag;
+			}
+		}
+
+		// Rewrite mutation widening types to the strict element/key/value types.
+		$tags = array_map(static function (string $tag): string {
+			$tag = preg_replace('/\bNE\b/', 'E', $tag);
+			$tag = preg_replace('/\bNK\b/', 'K', $tag);
+			return preg_replace('/\bNV\b/', 'V', $tag) ?? $tag;
+		}, $tags);
+
+		$doc = "\t/**\n\t * {@inheritDoc}\n\t *\n";
+		foreach ($tags as $tag) {
+			$doc .= "\t * " . $tag . "\n";
+		}
+
+		$doc .= "\t * " . ($isArray ? '@return array{static, static}' : '@return static') . "\n\t */";
+
+		return $doc . "\n"
+			. "\t#[NoDiscard]\n"
+			. "\tpublic function " . $name . '(' . $params . '): ' . ($isArray ? 'array' : 'static') . "\n"
+			. "\t{\n"
+			. "\t\treturn \$this->" . $name . 'Impl(' . $args . '); // @phpstan-ignore return.type' . "\n"
+			. "\t}";
 	}
 }

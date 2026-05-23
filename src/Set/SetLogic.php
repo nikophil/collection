@@ -19,6 +19,7 @@ use Noctud\Collection\Operation\FlatMapOperation;
 use Noctud\Collection\Operation\FlattenOperation;
 use Noctud\Collection\Map\HashMap\HashKeyValueStore;
 use Noctud\Collection\Operation\MapKeyValueOperation;
+use Noctud\Collection\Operation\SetOperation;
 use Noctud\Collection\Operation\TakeOperation;
 use NoDiscard;
 use function Noctud\Collection\mutableSetOf;
@@ -359,6 +360,44 @@ trait SetLogic
 		}
 
 		return $this->newMapOf($store); // @phpstan-ignore return.type
+	}
+
+	// --- Set Operations ---
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Routed through newCollectionOf (rather than the free setOf) so that subtypes
+	 * which override the factory preserve their own type. Defaults to ImmutableSet.
+	 *
+	 * @return ImmutableSet<E>
+	 */
+	#[NoDiscard]
+	public function intersect(iterable $other): ImmutableSet
+	{
+		return $this->newCollectionOf(new SetOperation($this->store)->intersect($other));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @return ImmutableSet<E>
+	 */
+	#[NoDiscard]
+	public function union(iterable $other): ImmutableSet
+	{
+		return $this->newCollectionOf(new SetOperation($this->store)->union($other));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @return ImmutableSet<E>
+	 */
+	#[NoDiscard]
+	public function subtract(iterable $other): ImmutableSet
+	{
+		return $this->newCollectionOf(new SetOperation($this->store)->subtract($other));
 	}
 
 	// --- Conversion ---

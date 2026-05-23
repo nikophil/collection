@@ -36,6 +36,111 @@ The class is now a full `Map` — it can be passed to any function expecting a m
 
 That's it — one interface, one trait, and a store. The trait provides the entire collection API (`filter()`, `sorted()`, `forEach()`, `toArray()`, etc.), and the store handles raw data access.
 
+## Self-Preserving Collections
+
+By default, transformation methods return the **base** interface type. A custom `OrderItemCollection` that uses `ImmutableSetLogic` will have `filter()` typed as `ImmutableSet<OrderItem>`, not `OrderItemCollection`:
+
+```php
+class OrderItemCollection implements ImmutableSet
+{
+    use ImmutableSetLogic;
+
+    public function onlySwapped(): self
+    {
+        // PHPStan error: filter() returns ImmutableSet<OrderItem>, not OrderItemCollection
+        return $this->filter(static fn (OrderItem $i) => $i->isSwapped());
+    }
+}
+```
+
+This is intentional — the base type is the safe default for classes with structural invariants (the `JsonBody` example above can't be rebuilt from an arbitrary filtered subset). When your class **is** a thin typed wrapper that should return itself, opt in to self-preservation. There are two ways.
+
+### Option 1: the SelfPreserving\*Logic trait (recommended)
+
+Swap the logic trait for its self-preserving variant. Every shape-preserving operation now returns your own type — no annotations, no factory override. The only requirement is a constructor that accepts an `iterable`:
+
+```php
+use Noctud\Collection\Set\ImmutableSet;
+use Noctud\Collection\Set\SelfPreservingImmutableSetLogic;
+use Noctud\Collection\Set\HashSet\HashElementStore;
+
+/**
+ * @implements ImmutableSet<OrderItem>
+ * @phpstan-consistent-constructor
+ */
+class OrderItemCollection implements ImmutableSet
+{
+    /** @use SelfPreservingImmutableSetLogic<OrderItem> */
+    use SelfPreservingImmutableSetLogic;
+
+    /** @param iterable<OrderItem> $data */
+    public function __construct(iterable $data = [])
+    {
+        $this->store = new HashElementStore($data);
+    }
+
+    public function onlySwapped(): self // ✅ filter() now returns OrderItemCollection
+    {
+        return $this->filter(static fn (OrderItem $i) => $i->isSwapped());
+    }
+}
+```
+
+The variants are `SelfPreservingImmutableSetLogic`, `SelfPreservingImmutableListLogic`, and `SelfPreservingImmutableMapLogic`. The map variant builds derived maps with `new static(...)`, so its constructor should populate the store from the iterable (e.g. `HashKeyValueStore::fromAssoc($data)`).
+
+::: tip Use `self` or `static` in your own methods
+The trait narrows to `static` (late static binding) so subclasses stay precise. In your own domain methods you can return `self` (your concrete class, as above) or `static` (if you expect subclasses to keep their type). Returning the trait's `static` into a `: self` declaration is always safe.
+:::
+
+### Option 2: class-level `@method` overrides
+
+If you'd rather keep the base trait, declare `@method` overrides on the class and override the factory. Use your **concrete** element type in the annotations so element and closure types stay checked:
+
+```php
+/**
+ * @implements ImmutableSet<OrderItem>
+ * @phpstan-consistent-constructor
+ * @method self filter(Closure(OrderItem, int): bool $predicate)
+ * @method self sorted()
+ * @method array{self, self} partition(Closure(OrderItem, int): bool $predicate)
+ */
+class OrderItemCollection implements ImmutableSet
+{
+    use ImmutableSetLogic;
+
+    /** @param iterable<OrderItem> $data */
+    protected function newCollectionOf(iterable $data): ImmutableSet
+    {
+        return new self($data);
+    }
+
+    // constructor ...
+}
+```
+
+Add `@method` lines only for methods that genuinely keep the same shape. This is more verbose but useful when you only need a few methods narrowed, or when you can't add a constructor accepting an `iterable`.
+
+### What is and isn't narrowed
+
+Self-preservation applies only where the result is still a collection of the same element type:
+
+| Narrowed to your type | Left as the base type |
+|-----------------------|------------------------|
+| `filter`, `filterNotNull`, `filterKeys`/`filterValues` (Map) | `map`, `mapNotNull`, `flatMap`, `flatten`, `mapKeys`/`mapValues` (Map) |
+| `sorted*`, `reversed`, `shuffled` | `filterInstanceOf`, `filterValuesInstanceOf` (Map), `flip` (Map) |
+| `take*`/`drop*`, `distinct`/`distinctBy`, `slice` (List) | `groupBy` (`ImmutableMap`'s value type is invariant) |
+| `partition` → `array{static, static}` | `keys`/`values`/`entries` views, `toList`/`toSet`/`toMutable`/… conversions |
+| set operations `intersect`/`union`/`subtract` (Set only) | `intersect`/`union`/`subtract` on a **List** (they produce a Set) |
+| immutable mutations (`add`, `put`, `remove*`, …) | |
+
+::: warning Mutations become strict
+The base immutable mutations widen their type — `add(NE): ImmutableSet<E|NE>`. The self-preserving variant is strict instead — `add(E): static` — because a fixed-type collection cannot widen its element type while still being itself.
+:::
+
+::: tip Why immutable only?
+There is no `SelfPreserving` variant for mutable collections. Their mutation methods (`add`, `remove`, …) already return `static`, and their transformation methods (`filter`, `map`, …) always return **immutable** results — so "return my own mutable type" never applies. Self-preservation is meaningful only for immutable collections.
+:::
+
 ## Logic Traits
 
 The library provides these logic traits:
@@ -52,6 +157,9 @@ The library provides these logic traits:
 | `ImmutableListLogic` | Full immutable list behavior |
 | `ImmutableSetLogic` | Full immutable set behavior |
 | `ImmutableMapLogic` | Full immutable map behavior |
+| `SelfPreservingImmutableListLogic` | Immutable list behavior narrowed to your own subtype (see [Self-Preserving Collections](#self-preserving-collections)) |
+| `SelfPreservingImmutableSetLogic` | Immutable set behavior narrowed to your own subtype |
+| `SelfPreservingImmutableMapLogic` | Immutable map behavior narrowed to your own subtype |
 
 These traits contain all the methods defined on the interfaces — `filter()`, `sorted()`, `forEach()`, and so on. The store provides the raw data access, and the trait provides the high-level operations.
 

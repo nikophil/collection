@@ -68,3 +68,20 @@ jobs:
 
       - name: Run PHPCS
         run: vendor/bin/phpcs
+
+  codegen:
+    name: Codegen (generated code in sync)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Regenerate all narrowing + self-preserving code
+        run: php bin/generate-all.php
+
+      - name: Fail if regeneration changed committed files
+        run: git diff --exit-code -- src/

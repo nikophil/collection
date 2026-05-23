@@ -23,6 +23,17 @@
         <include>
             <directory suffix=".php">./src</directory>
         </include>
+        <exclude>
+            <!--
+                Auto-generated, opt-in self-preserving trait bodies (see bin/generate-self-preserving.php
+                and the codegen CI job). Their methods are thin `: static` delegates to the base immutable
+                logic traits, which the main suite already covers; the extending fixtures under
+                tests/Collection/*/Extending prove the newCollectionOf/new static() mechanism per category.
+            -->
+            <file>./src/Set/SelfPreservingImmutableSetLogic.php</file>
+            <file>./src/List/SelfPreservingImmutableListLogic.php</file>
+            <file>./src/Map/SelfPreservingImmutableMapLogic.php</file>
+        </exclude>
     </source>
 
 </phpunit>

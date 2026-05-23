@@ -6,9 +6,13 @@
  */
 
 /**
- * Generates all narrowed method signatures for Collection interfaces.
+ * Single entry point for all code generation.
  *
- * Usage: php generate-narrowing.php
+ * Runs every narrowing pass (Collection/List/Set/Map interfaces) and then, as the last
+ * step, regenerates the SelfPreserving*Logic trait bodies. The self-preserving pass reads
+ * the narrowed immutable interfaces produced above, so it MUST run after them.
+ *
+ * Usage: php generate-all.php
  */
 
 declare(strict_types=1);
@@ -82,3 +86,7 @@ if (!NarrowingGenerator::writeBetweenMarkers($trackedCollectionFile, $trackedCol
 require_once __DIR__ . '/generate-set-narrowing.php';
 require_once __DIR__ . '/generate-list-narrowing.php';
 require_once __DIR__ . '/generate-map-narrowing.php';
+
+// Self-preserving traits read the narrowed immutable interfaces generated above, so this
+// must run last. The codegen CI job runs this entry point and fails on any drift.
+require_once __DIR__ . '/generate-self-preserving.php';

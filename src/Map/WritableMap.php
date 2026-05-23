@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Noctud\Collection\Map;
 
 use Closure;
+use Noctud\Collection\Exception\ConversionException;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use NoDiscard;
 
 /**
@@ -279,7 +281,13 @@ interface WritableMap extends Map
 	public function mapValuesNotNull(Closure $transform): ImmutableMap;
 
 	/**
+	 * Returns a new map with keys and values swapped.
+	 * Each value in this map becomes a key in the result, and each key becomes a value.
+	 *
+	 * @param KeyCollisionStrategy $onCollision Strategy for handling duplicate values (which become duplicate keys).
 	 * @return ImmutableMap<V,K>
+	 * @throws ConversionException When duplicate values exist and strategy is Throw.
+	 * @throws InvalidKeyTypeException When a value cannot be used as a map key (e.g. arrays).
 	 */
 	#[NoDiscard] // @phpstan-ignore generics.notSubtype
 	public function flip(KeyCollisionStrategy $onCollision = KeyCollisionStrategy::Throw): ImmutableMap;

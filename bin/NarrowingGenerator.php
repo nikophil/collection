@@ -28,7 +28,11 @@ final class NarrowingGenerator
 	public static function extractMethod(string $content, string $methodName): ?string
 	{
 		// Match: optional PHPDoc + optional attributes + method signature ending with ;
-		$pattern = '/(\t\/\*\*(?:[^*]|\*(?!\/))*\*\/\s*)?(\s*(?:#\[[^\]]+\]\s*)*)public\s+function\s+'
+		// The attribute sub-pattern tolerates an inline trailing comment after an attribute
+		// (e.g. `#[NoDiscard] // @phpstan-ignore generics.notSubtype`). Without the
+		// `\h*(?:\/\/.*)?` the match would stop at the comment, drop the PHPDoc + attribute,
+		// and emit a bare signature (this is what mangled `flip` before).
+		$pattern = '/(\t\/\*\*(?:[^*]|\*(?!\/))*\*\/\s*)?(\s*(?:#\[[^\]]+\]\h*(?:\/\/.*)?\s*)*)public\s+function\s+'
 			. preg_quote($methodName, '/')
 			. '\s*\([^)]*\)[^;]*;/';
 
@@ -200,6 +204,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'Set<E>',
 			'Collection<R>' => 'Set<R>',
 			'Collection<mixed>' => 'Set<mixed>',
+			'Collection<T>' => 'Set<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{Set<E>, Set<E>}',
@@ -229,6 +234,7 @@ final class NarrowingGenerator
 			'ImmutableCollection<E|NE>' => 'ImmutableSet<E|NE>',
 			'ImmutableCollection<R>' => 'ImmutableSet<R>',
 			'ImmutableCollection<mixed>' => 'ImmutableSet<mixed>',
+			'ImmutableCollection<T>' => 'ImmutableSet<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{ImmutableCollection<E>, ImmutableCollection<E>}' => 'array{ImmutableSet<E>, ImmutableSet<E>}',
@@ -281,6 +287,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ListInterface<E>',
 			'Collection<R>' => 'ListInterface<R>',
 			'Collection<mixed>' => 'ListInterface<mixed>',
+			'Collection<T>' => 'ListInterface<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ListInterface<E>, ListInterface<E>}',
@@ -309,6 +316,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableCollection<E>',
 			'Collection<R>' => 'ImmutableCollection<R>',
 			'Collection<mixed>' => 'ImmutableCollection<mixed>',
+			'Collection<T>' => 'ImmutableCollection<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableCollection<E>, ImmutableCollection<E>}',
@@ -334,6 +342,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableCollection<E>',
 			'Collection<R>' => 'ImmutableCollection<R>',
 			'Collection<mixed>' => 'ImmutableCollection<mixed>',
+			'Collection<T>' => 'ImmutableCollection<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableCollection<E>, ImmutableCollection<E>}',
@@ -359,6 +368,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableList<E>',
 			'Collection<R>' => 'ImmutableList<R>',
 			'Collection<mixed>' => 'ImmutableList<mixed>',
+			'Collection<T>' => 'ImmutableList<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableList<E>, ImmutableList<E>}',
@@ -384,6 +394,7 @@ final class NarrowingGenerator
 			'Collection<E>' => 'ImmutableSet<E>',
 			'Collection<R>' => 'ImmutableSet<R>',
 			'Collection<mixed>' => 'ImmutableSet<mixed>',
+			'Collection<T>' => 'ImmutableSet<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{Collection<E>, Collection<E>}' => 'array{ImmutableSet<E>, ImmutableSet<E>}',
@@ -414,6 +425,8 @@ final class NarrowingGenerator
 			'Map<K, NV>' => 'ImmutableMap<K, NV>',
 			'Map<V,K>' => 'ImmutableMap<V,K>',
 			'Map<V, K>' => 'ImmutableMap<V, K>',
+			'Map<K,T>' => 'ImmutableMap<K,T>',
+			'Map<K, T>' => 'ImmutableMap<K, T>',
 		], $blacklist);
 	}
 
@@ -431,6 +444,7 @@ final class NarrowingGenerator
 			'ImmutableCollection<E|NE>' => 'ImmutableList<E|NE>',
 			'ImmutableCollection<R>' => 'ImmutableList<R>',
 			'ImmutableCollection<mixed>' => 'ImmutableList<mixed>',
+			'ImmutableCollection<T>' => 'ImmutableList<T>',
 		], $blacklist, [
 			'partition' => [
 				'array{ImmutableCollection<E>, ImmutableCollection<E>}' => 'array{ImmutableList<E>, ImmutableList<E>}',
@@ -536,6 +550,8 @@ final class NarrowingGenerator
 			'Map<K, NV>' => 'ImmutableMap<K, NV>',
 			'Map<V,K>' => 'ImmutableMap<V,K>',
 			'Map<V, K>' => 'ImmutableMap<V, K>',
+			'Map<K,T>' => 'ImmutableMap<K,T>',
+			'Map<K, T>' => 'ImmutableMap<K, T>',
 		], $blacklist);
 	}
 

@@ -68,3 +68,20 @@ jobs:
 
       - name: Run PHPCS
         run: vendor/bin/phpcs
+
+  codegen:
+    name: Codegen (self-preserving traits in sync)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Regenerate self-preserving traits
+        run: php bin/generate-self-preserving.php
+
+      - name: Fail if regeneration changed committed files
+        run: git diff --exit-code -- src/Set/SelfPreservingImmutableSetLogic.php src/List/SelfPreservingImmutableListLogic.php src/Map/SelfPreservingImmutableMapLogic.php

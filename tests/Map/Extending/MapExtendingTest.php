@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Noctud\Collection\Tests\Collection\Map\Extending;
+namespace Noctud\Collection\Tests\Map\Extending;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

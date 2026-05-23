@@ -23,6 +23,13 @@ parameters:
 			identifier: missingType.generics
 			path: tests/Collection/*
 		# same issue for Map tests - concrete classes narrow the return type
+		# (includes the Map extending fixtures under tests/Map/Extending)
 		-
 			identifier: instanceof.alwaysTrue
+			path: tests/Map/*
+		-
+			identifier: argument.type
+			path: tests/Map/*
+		-
+			identifier: missingType.generics
 			path: tests/Map/*

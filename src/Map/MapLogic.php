@@ -36,11 +36,21 @@ use function Noctud\Collection\mutableMapOf;
  *
  * @template K of string|int|bool|float|object
  * @template V
- * @property KeyValueStore<K,V> $store
  */
 trait MapLogic
 {
 	// --- Properties ---
+
+	/**
+	 * Backing store shared by every Map variant.
+	 *
+	 * Declared on the read-only base trait (not on the Immutable/Mutable/Tracked
+	 * logic traits) because a Map has a single store interface — unlike Set/List,
+	 * whose variants narrow a read-only base store to a read-write one.
+	 *
+	 * @var KeyValueStore<K,V>
+	 */
+	protected KeyValueStore $store;
 
 	/** @var Set<K> */
 	public Set $keys {

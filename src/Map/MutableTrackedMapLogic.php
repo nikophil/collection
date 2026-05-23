@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Noctud\Collection\Map;
 
 use Closure;
-use Noctud\Collection\Store\KeyValueStore;
 use Noctud\Collection\TrackedResult;
 use NoDiscard;
 
@@ -21,7 +20,6 @@ use NoDiscard;
  * @template K of string|int|bool|float|object
  * @template V
  * @mixin MutableTrackedMap<K,V>
- * @property KeyValueStore<K,V> $store
  */
 trait MutableTrackedMapLogic
 {
@@ -29,9 +27,6 @@ trait MutableTrackedMapLogic
 	use MapLogic;
 
 	// --- Tracking ---
-
-	/** @var KeyValueStore<K,V> */
-	private KeyValueStore $store;
 
 	private bool $_changed = false; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 

@@ -12,22 +12,17 @@ namespace Noctud\Collection\Map;
 use Closure;
 use Noctud\Collection\Map\HashMap\HashKeyValueStore;
 use Noctud\Collection\Map\HashMap\MutableTrackedHashMap;
-use Noctud\Collection\Store\KeyValueStore;
 use NoDiscard;
 
 /**
  * @template K of string|int|bool|float|object
  * @template V
  * @mixin MutableMap<K,V>
- * @property KeyValueStore<K,V> $store
  */
 trait MutableMapLogic
 {
 	/** @use MapLogic<K,V> */
 	use MapLogic;
-
-	/** @var KeyValueStore<K,V> */
-	private KeyValueStore $store;
 
 	// --- Tracking ---
 

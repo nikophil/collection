@@ -12,21 +12,16 @@ namespace Noctud\Collection\Map;
 use Closure;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\Operation\FilterOperation;
-use Noctud\Collection\Store\KeyValueStore;
 
 /**
  * @template K of string|int|bool|float|object
  * @template V
  * @mixin ImmutableMap<K,V>
- * @property KeyValueStore<K,V> $store
  */
 trait ImmutableMapLogic
 {
 	/** @use MapLogic<K,V> */
 	use MapLogic;
-
-	/** @var KeyValueStore<K,V> */
-	protected KeyValueStore $store;
 
 	// --- Mutation (returns new) ---
 

@@ -1,5 +1,6 @@
 {
     "name": "noctud/collection",
+    "description": "🗺️ Type-safe, key-preserving, mutable/immutable List/Set/Map for PHP",
     "type": "library",
     "license": "MIT",
     "minimum-stability": "stable",

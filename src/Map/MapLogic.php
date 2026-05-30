@@ -276,7 +276,9 @@ trait MapLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableMap<mixed,V>
+	 * @template NK of string|int|bool|float|object
+	 * @param Closure(V, K):NK $transform
+	 * @return ImmutableMap<NK,V>
 	 */
 	#[NoDiscard] // @phpstan-ignore generics.notSubtype
 	public function mapKeys(Closure $transform): ImmutableMap
@@ -287,7 +289,9 @@ trait MapLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableMap<K,mixed>
+	 * @template NV
+	 * @param Closure(V, K):NV $transform
+	 * @return ImmutableMap<K,NV>
 	 */
 	#[NoDiscard]
 	public function mapValues(Closure $transform): ImmutableMap
@@ -298,7 +302,9 @@ trait MapLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableMap<K,mixed>
+	 * @template NV
+	 * @param Closure(V, K):(NV|null) $transform
+	 * @return ImmutableMap<K,NV>
 	 */
 	#[NoDiscard]
 	public function mapValuesNotNull(Closure $transform): ImmutableMap

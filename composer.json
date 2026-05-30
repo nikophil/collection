@@ -8,7 +8,7 @@
         "php": ">=8.4"
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^13.0",
         "squizlabs/php_codesniffer": "^4.0",
         "slevomat/coding-standard": "^8.16"
@@ -30,5 +30,16 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "scripts": {
+        "qa": [
+            "@phpstan",
+            "@phpcs",
+            "@phpunit"
+        ],
+        "phpstan": "phpstan analyse",
+        "phpcs": "phpcs",
+        "csf": "phpcbf",
+        "phpunit": "phpunit"
     }
 }

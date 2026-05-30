@@ -30,5 +30,16 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "scripts": {
+        "qa": [
+            "@phpstan",
+            "@phpcs",
+            "@phpunit"
+        ],
+        "phpstan": "phpstan analyse",
+        "phpcs": "phpcs",
+        "csf": "phpcbf",
+        "phpunit": "phpunit"
     }
 }

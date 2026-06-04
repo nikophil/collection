@@ -7,6 +7,8 @@ export default defineConfig({
     "Enterprise-grade, type-safe, mutable/immutable collections for PHP 8.4+",
   cleanUrls: true,
 
+  head: [["link", { rel: "icon", type: "image/svg+xml", href: "/logo.svg" }]],
+
   markdown: {
     config(md) {
       md.use(tabsMarkdownPlugin);
@@ -14,7 +16,7 @@ export default defineConfig({
   },
 
   themeConfig: {
-    logo: { light: "/logo.svg", dark: "/logo-dark.svg" },
+    logo: { light: "/logo.svg", dark: "/logo.svg" },
 
     nav: [
       { text: "Getting Started", link: "/collection/getting-started" },
@@ -31,6 +33,7 @@ export default defineConfig({
             text: "Getting Started",
             link: "/collection/getting-started",
           },
+          { text: "Cheatsheet", link: "/collection/cheatsheet" },
           { text: "Design", link: "/collection/design" },
           { text: "FAQ", link: "/collection/faq" },
         ],

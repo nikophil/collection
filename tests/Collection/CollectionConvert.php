@@ -11,6 +11,7 @@ namespace Noctud\Collection\Tests\Collection;
 
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Set\ImmutableSet;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 trait CollectionConvert
@@ -27,6 +28,20 @@ trait CollectionConvert
 	{
 		$collection = $this->collectionOf([]);
 		$this->assertSame([], $collection->toArray());
+	}
+
+	#[Test]
+	#[DataProvider('shouldReturnListProvider')]
+	public function toArray_returns_list(array $data): void
+	{
+		$collection = $this->collectionOf($data);
+		$this->assertTrue(array_is_list($collection->toArray()));
+	}
+
+	public static function shouldReturnListProvider(): iterable
+	{
+		yield 'with list' => [['a', 'b', 'c']];
+		yield 'with associative array' => [['a' => 1, 'b' => 2, 'c' => 3]];
 	}
 
 	#[Test]

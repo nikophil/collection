@@ -72,7 +72,7 @@ interface ReadOnlyElementStore extends IteratorAggregate
 	/**
 	 * Returns all elements as a PHP array.
 	 *
-	 * @return array<non-negative-int,E>
+	 * @return list<E>
 	 */
 	public function toArray(): array;
 

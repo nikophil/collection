@@ -16,6 +16,12 @@ parameters:
 		-
 			identifier: method.alreadyNarrowedType
 			path: tests/Collection/*
+		# defensive array_is_list() assertions verify at runtime what PHPStan
+		# treats as statically certain from the list<E> return PHPDocs; they
+		# guard against future regressions of the list invariant
+		-
+			identifier: function.alreadyNarrowedType
+			path: tests/Collection/*
 		-
 			identifier: instanceof.alwaysTrue
 			path: tests/Collection/*
@@ -33,16 +39,3 @@ parameters:
 		-
 			identifier: missingType.generics
 			path: tests/Map/*
-		# PHPUnit assertions that verify runtime behaviour PHPStan 2.2+ treats as
-		# statically certain (via PHPUnit's @phpstan-assert PHPDocs): key-type
-		# enforcement, empty-collection null returns, and trait-context placeholders
-		# read as always-true/false. These live in shared traits analysed in many
-		# concrete contexts; PHPStan matches ignore paths against the *using* test
-		# class, so scope by the directories that use them, mirroring the
-		# method.alreadyNarrowedType entry for tests/Collection above.
-		-
-			identifier: method.alreadyNarrowedType
-			path: tests/Map/*
-		-
-			identifier: method.impossibleType
-			path: tests/Collection/*

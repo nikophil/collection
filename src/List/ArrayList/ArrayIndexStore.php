@@ -18,7 +18,7 @@ use Traversable;
 /**
  * Internal storage for ArrayList.
  *
- * @property-read array<non-negative-int,E> $elements
+ * @property-read list<E> $elements
  * @template E
  * @extends AbstractElementStore<E>
  * @implements ReadWriteIndexedStore<E>

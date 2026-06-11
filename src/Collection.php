@@ -715,7 +715,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Convert to a primitive PHP array preserving iteration order.
 	 *
-	 * @return array<int,E>
+	 * @return list<E>
 	 */
 	#[NoDiscard]
 	public function toArray(): array;

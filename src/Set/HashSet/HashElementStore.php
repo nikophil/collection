@@ -115,9 +115,6 @@ final class HashElementStore extends AbstractElementStore implements ReadWriteEl
 		return new ArrayIterator(array_values($this->elements)); // @phpstan-ignore return.type
 	}
 
-	/**
-	 * @return array<int,E>
-	 */
 	public function toArray(): array
 	{
 		return array_values($this->elements);

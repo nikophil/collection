@@ -64,11 +64,8 @@ final class MapKeyStore implements ReadOnlyElementStore
 		return $this->store->containsKey($element); // @phpstan-ignore argument.type
 	}
 
-	/**
-	 * @return array<E>
-	 */
 	public function toArray(): array
 	{
-		return iterator_to_array($this);
+		return iterator_to_array($this, preserve_keys: false);
 	}
 }

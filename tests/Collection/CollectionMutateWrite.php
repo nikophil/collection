@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Tests\Collection;
 
 use Noctud\Collection\MutableCollection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 trait CollectionMutateWrite
@@ -338,5 +339,41 @@ trait CollectionMutateWrite
 			$result = $collection->retainAll([]);
 			$this->assertSame([], $result->toArray());
 		}
+	}
+
+	#[Test]
+	#[DataProvider('shouldReturnListProvider')]
+	public function toArray_returns_list_after_removal(array $data): void
+	{
+		$collection = $this->collectionOf($data);
+
+		if ($collection instanceof MutableCollection) {
+			$collection->removeElement(2);
+			$this->assertTrue(array_is_list($collection->toArray()));
+		} else {
+			$result = $collection->removeElement(2);
+			$this->assertTrue(array_is_list($result->toArray()));
+		}
+	}
+
+	#[Test]
+	#[DataProvider('shouldReturnListProvider')]
+	public function toArray_returns_list_after_adding_element(array $data): void
+	{
+		$collection = $this->collectionOf($data);
+
+		if ($collection instanceof MutableCollection) {
+			$collection->add(2);
+			$this->assertTrue(array_is_list($collection->toArray()));
+		} else {
+			$result = $collection->add(2);
+			$this->assertTrue(array_is_list($result->toArray()));
+		}
+	}
+
+	public static function shouldReturnListProvider(): iterable
+	{
+		yield 'with list' => [['a', 'b', 'c']];
+		yield 'with associative array' => [['a' => 1, 'b' => 2, 'c' => 3]];
 	}
 }

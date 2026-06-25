@@ -489,7 +489,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	 * - Objects are not supported
 	 *
 	 * @param KeyCollisionStrategy $onCollision Strategy for handling key collisions during conversion.
-	 * @return array<array-key,V>
+	 * @return (K is array-key ? array<K,V> : array<array-key,V>)
 	 * @throws ConversionException
 	 */
 	#[NoDiscard]

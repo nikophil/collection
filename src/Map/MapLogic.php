@@ -667,7 +667,10 @@ trait MapLogic
 
 	// --- Conversion ---
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 * @return array<array-key,V>
+	 */
 	#[NoDiscard]
 	public function toArray(KeyCollisionStrategy $onCollision = KeyCollisionStrategy::Throw): array
 	{

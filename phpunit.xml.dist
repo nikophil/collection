@@ -17,6 +17,11 @@
     <testsuites>
         <testsuite name="Tests">
             <directory>./tests/</directory>
+            <!--
+                tests/Type holds PHPStan assertType() type-inference tests, checked by
+                `phpstan analyse` (via phpstan-tests.neon), not by PHPUnit.
+            -->
+            <exclude>./tests/Type</exclude>
         </testsuite>
     </testsuites>
     <source>

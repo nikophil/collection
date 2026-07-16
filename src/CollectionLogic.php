@@ -305,6 +305,7 @@ trait CollectionLogic
 	}
 
 	/** {@inheritDoc} */
+	// @phpstan-ignore conditionalType.subjectNotFound (E is concrete, not a template, in extending fixtures)
 	public function sum(?Closure $selector = null): int|float
 	{
 		$sum = 0;

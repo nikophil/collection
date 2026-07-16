@@ -226,7 +226,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns the sum of all elements or values returned by the selector.
 	 *
-	 * @param Closure(E, int):(int|float)|null $selector
+	 * @template TSum
+	 * @param (Closure(E, int):TSum)|null $selector
+	 * @return ($selector is null ? (E is int ? int : int|float) : (TSum is int ? int : int|float))
 	 */
 	public function sum(?Closure $selector = null): int|float;
 

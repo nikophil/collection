@@ -235,7 +235,7 @@ interface ImmutableMap extends Map
 	/**
 	 * Creates a new map excluding entries with null values.
 	 *
-	 * @return ImmutableMap<K,V> New map without null values.
+	 * @return ImmutableMap<K, (V is null ? never : V)> New map without null values.
 	 */
 	#[NoDiscard]
 	public function filterValuesNotNull(): ImmutableMap;

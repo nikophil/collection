@@ -121,7 +121,7 @@ interface ListInterface extends Collection, ArrayAccess
 	/**
 	 * Filter non-null elements.
 	 *
-	 * @return ListInterface<E>
+	 * @return ListInterface<(E is null ? never : E)>
 	 */
 	#[NoDiscard]
 	public function filterNotNull(): ListInterface;

@@ -153,7 +153,7 @@ interface ImmutableSet extends Set, ImmutableCollection
 	/**
 	 * Filter non-null elements.
 	 *
-	 * @return ImmutableSet<E>
+	 * @return ImmutableSet<(E is null ? never : E)>
 	 */
 	#[NoDiscard]
 	public function filterNotNull(): ImmutableSet;

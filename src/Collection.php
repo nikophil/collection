@@ -292,8 +292,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * Returns the minimum value produced by the selector.
 	 * Throws if the collection is empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R
 	 * @throws NoSuchElementException
 	 */
 	public function minOf(Closure $selector): mixed;
@@ -301,8 +302,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns the minimum value produced by the selector, or null if empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R|null
 	 */
 	public function minOfOrNull(Closure $selector): mixed;
 
@@ -310,8 +312,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * Returns the maximum value produced by the selector.
 	 * Throws if the collection is empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R
 	 * @throws NoSuchElementException
 	 */
 	public function maxOf(Closure $selector): mixed;
@@ -319,8 +322,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns the maximum value produced by the selector, or null if empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R|null
 	 */
 	public function maxOfOrNull(Closure $selector): mixed;
 

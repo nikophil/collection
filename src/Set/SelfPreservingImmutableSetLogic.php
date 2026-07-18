@@ -36,9 +36,11 @@ use NoDiscard;
  * `newCollectionOf()` builds derived collections with `new static(...)`, so there is
  * no factory method to override.
  *
- * Two consequences of the `static` promise, both intentional:
+ * Three consequences of the `static` promise, all intentional:
  * - Mutations are **strict**: unlike the widening base `add(NE): ImmutableSet<E|NE>`,
  *   here `add(E): static`. A fixed-type collection cannot widen its element type.
+ * - `union()` is **strict** for the same reason: unlike the widening base
+ *   `union(iterable<NE>): Set<E|NE>`, here `union(iterable<E>): static`.
  * - Type-changing methods (map, flatMap, flatten, filterInstanceOf, groupBy, the
  *   to* conversions) are **not** narrowed — they still return the base type, because
  *   their result is no longer a collection of `E`. (`groupBy` additionally cannot be
@@ -424,7 +426,8 @@ trait SelfPreservingImmutableSetLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param iterable<E> $other
+	 * @template V
+	 * @param iterable<V> $other
 	 * @return static
 	 */
 	#[NoDiscard]
@@ -448,7 +451,7 @@ trait SelfPreservingImmutableSetLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param iterable<E> $other
+	 * @param iterable<mixed> $other
 	 * @return static
 	 */
 	#[NoDiscard]

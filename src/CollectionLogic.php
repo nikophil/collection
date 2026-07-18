@@ -957,7 +957,9 @@ trait CollectionLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableSet<E>
+	 * @template U
+	 * @param iterable<U> $other
+	 * @return ImmutableSet<E&U>
 	 */
 	#[NoDiscard]
 	public function intersect(iterable $other): ImmutableSet
@@ -968,7 +970,9 @@ trait CollectionLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableSet<E>
+	 * @template NE
+	 * @param iterable<NE> $other
+	 * @return ImmutableSet<E|NE>
 	 */
 	#[NoDiscard]
 	public function union(iterable $other): ImmutableSet
@@ -979,6 +983,7 @@ trait CollectionLogic
 	/**
 	 * {@inheritDoc}
 	 *
+	 * @param iterable<mixed> $other
 	 * @return ImmutableSet<E>
 	 */
 	#[NoDiscard]

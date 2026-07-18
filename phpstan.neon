@@ -38,6 +38,15 @@ parameters:
 				- src/Set/Set.php
 				- src/Set/ImmutableSet.php
 				- src/Set/WritableSet.php
+		# flatten()'s conditional return type cannot be evaluated in classes with a
+		# concrete E (the subject is already substituted), so the trait vs ancestor
+		# comparison sees structurally different but semantically equal conditionals.
+		-
+			message: '#::flatten\(\)#'
+			identifier: method.childReturnType
+			paths:
+				- src/List/ListLogic.php
+				- src/Set/SetLogic.php
 		# classes which implement ImmutableMap<string,...>. The trait's put()/putFirst()
 		# accepts string|int|bool|float|object but the store expects string.
 		-

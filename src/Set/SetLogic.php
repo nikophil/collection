@@ -118,9 +118,9 @@ trait SetLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableSet<mixed>
+	 * @return ImmutableSet<(E is iterable<mixed> ? value-of<E|array{}> : E)>
 	 */
-	#[NoDiscard]
+	#[NoDiscard] // @phpstan-ignore conditionalType.subjectNotFound, return.unresolvableType (in classes with a concrete E the conditional subject is already substituted and stays unevaluated)
 	public function flatten(): ImmutableSet
 	{
 		return $this->newCollectionOf(new FlattenOperation($this->store)->items());

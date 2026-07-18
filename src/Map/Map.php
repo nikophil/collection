@@ -198,7 +198,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	/**
 	 * Creates a new map excluding entries with null values.
 	 *
-	 * @return Map<K,V> New map without null values.
+	 * @return Map<K, (V is null ? never : V)> New map without null values.
 	 */
 	#[NoDiscard]
 	public function filterValuesNotNull(): Map;

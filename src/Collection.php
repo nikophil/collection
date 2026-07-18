@@ -360,7 +360,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Filter non-null elements.
 	 *
-	 * @return Collection<E>
+	 * @return Collection<(E is null ? never : E)>
 	 */
 	#[NoDiscard]
 	public function filterNotNull(): Collection;

@@ -179,9 +179,9 @@ trait ListLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableList<E>
+	 * @return ImmutableList<(E is null ? never : E)>
 	 */
-	#[NoDiscard]
+	#[NoDiscard] // @phpstan-ignore conditionalType.subjectNotFound (in classes with a concrete E the conditional subject is already substituted)
 	public function filterNotNull(): ImmutableList
 	{
 		return $this->newCollectionOf(new FilterOperation($this->store)->byValue(fn ($v) => $v !== null));

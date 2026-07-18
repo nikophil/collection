@@ -143,7 +143,7 @@ interface ImmutableCollection extends Collection
 	/**
 	 * Filter non-null elements.
 	 *
-	 * @return ImmutableCollection<E>
+	 * @return ImmutableCollection<(E is null ? never : E)>
 	 */
 	#[NoDiscard]
 	public function filterNotNull(): ImmutableCollection;

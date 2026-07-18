@@ -198,7 +198,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	/**
 	 * Creates a new map excluding entries with null values.
 	 *
-	 * @return Map<K,V> New map without null values.
+	 * @return Map<K, (V is null ? never : V)> New map without null values.
 	 */
 	#[NoDiscard]
 	public function filterValuesNotNull(): Map;
@@ -489,7 +489,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	 * - Objects are not supported
 	 *
 	 * @param KeyCollisionStrategy $onCollision Strategy for handling key collisions during conversion.
-	 * @return array<array-key,V>
+	 * @return (K is array-key ? array<K,V> : array<array-key,V>)
 	 * @throws ConversionException
 	 */
 	#[NoDiscard]

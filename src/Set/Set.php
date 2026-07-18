@@ -37,7 +37,7 @@ interface Set extends Collection
 	/**
 	 * Filter non-null elements.
 	 *
-	 * @return Set<E>
+	 * @return Set<(E is null ? never : E)>
 	 */
 	#[NoDiscard]
 	public function filterNotNull(): Set;

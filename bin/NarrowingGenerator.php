@@ -202,6 +202,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($collectionContent, 'Collection', [
 			': Collection' => ': Set',
 			'Collection<E>' => 'Set<E>',
+			'Collection<(E is null ? never : E)>' => 'Set<(E is null ? never : E)>',
 			'Collection<R>' => 'Set<R>',
 			'Collection<mixed>' => 'Set<mixed>',
 			'Collection<T>' => 'Set<T>',
@@ -231,6 +232,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($immutableCollectionContent, 'ImmutableCollection', [
 			': ImmutableCollection' => ': ImmutableSet',
 			'ImmutableCollection<E>' => 'ImmutableSet<E>',
+			'ImmutableCollection<(E is null ? never : E)>' => 'ImmutableSet<(E is null ? never : E)>',
 			'ImmutableCollection<E|NE>' => 'ImmutableSet<E|NE>',
 			'ImmutableCollection<R>' => 'ImmutableSet<R>',
 			'ImmutableCollection<mixed>' => 'ImmutableSet<mixed>',
@@ -285,6 +287,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($collectionContent, 'Collection', [
 			': Collection' => ': ListInterface',
 			'Collection<E>' => 'ListInterface<E>',
+			'Collection<(E is null ? never : E)>' => 'ListInterface<(E is null ? never : E)>',
 			'Collection<R>' => 'ListInterface<R>',
 			'Collection<mixed>' => 'ListInterface<mixed>',
 			'Collection<T>' => 'ListInterface<T>',
@@ -314,6 +317,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($collectionContent, 'Collection', [
 			': Collection' => ': ImmutableCollection',
 			'Collection<E>' => 'ImmutableCollection<E>',
+			'Collection<(E is null ? never : E)>' => 'ImmutableCollection<(E is null ? never : E)>',
 			'Collection<R>' => 'ImmutableCollection<R>',
 			'Collection<mixed>' => 'ImmutableCollection<mixed>',
 			'Collection<T>' => 'ImmutableCollection<T>',
@@ -340,6 +344,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($collectionContent, 'Collection', [
 			': Collection' => ': ImmutableCollection',
 			'Collection<E>' => 'ImmutableCollection<E>',
+			'Collection<(E is null ? never : E)>' => 'ImmutableCollection<(E is null ? never : E)>',
 			'Collection<R>' => 'ImmutableCollection<R>',
 			'Collection<mixed>' => 'ImmutableCollection<mixed>',
 			'Collection<T>' => 'ImmutableCollection<T>',
@@ -366,6 +371,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($collectionContent, 'Collection', [
 			': Collection' => ': ImmutableList',
 			'Collection<E>' => 'ImmutableList<E>',
+			'Collection<(E is null ? never : E)>' => 'ImmutableList<(E is null ? never : E)>',
 			'Collection<R>' => 'ImmutableList<R>',
 			'Collection<mixed>' => 'ImmutableList<mixed>',
 			'Collection<T>' => 'ImmutableList<T>',
@@ -392,6 +398,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($collectionContent, 'Collection', [
 			': Collection' => ': ImmutableSet',
 			'Collection<E>' => 'ImmutableSet<E>',
+			'Collection<(E is null ? never : E)>' => 'ImmutableSet<(E is null ? never : E)>',
 			'Collection<R>' => 'ImmutableSet<R>',
 			'Collection<mixed>' => 'ImmutableSet<mixed>',
 			'Collection<T>' => 'ImmutableSet<T>',
@@ -419,6 +426,7 @@ final class NarrowingGenerator
 			': Map' => ': ImmutableMap',
 			'Map<K,V>' => 'ImmutableMap<K,V>',
 			'Map<K, V>' => 'ImmutableMap<K, V>',
+			'Map<K, (V is null ? never : V)>' => 'ImmutableMap<K, (V is null ? never : V)>',
 			'Map<NK,V>' => 'ImmutableMap<NK,V>',
 			'Map<NK, V>' => 'ImmutableMap<NK, V>',
 			'Map<K,NV>' => 'ImmutableMap<K,NV>',
@@ -441,6 +449,7 @@ final class NarrowingGenerator
 		return self::generateNarrowing($immutableCollectionContent, 'ImmutableCollection', [
 			': ImmutableCollection' => ': ImmutableList',
 			'ImmutableCollection<E>' => 'ImmutableList<E>',
+			'ImmutableCollection<(E is null ? never : E)>' => 'ImmutableList<(E is null ? never : E)>',
 			'ImmutableCollection<E|NE>' => 'ImmutableList<E|NE>',
 			'ImmutableCollection<R>' => 'ImmutableList<R>',
 			'ImmutableCollection<mixed>' => 'ImmutableList<mixed>',
@@ -544,6 +553,7 @@ final class NarrowingGenerator
 			': Map' => ': ImmutableMap',
 			'Map<K,V>' => 'ImmutableMap<K,V>',
 			'Map<K, V>' => 'ImmutableMap<K, V>',
+			'Map<K, (V is null ? never : V)>' => 'ImmutableMap<K, (V is null ? never : V)>',
 			'Map<NK,V>' => 'ImmutableMap<NK,V>',
 			'Map<NK, V>' => 'ImmutableMap<NK, V>',
 			'Map<K,NV>' => 'ImmutableMap<K,NV>',

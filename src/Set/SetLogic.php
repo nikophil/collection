@@ -58,9 +58,9 @@ trait SetLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableSet<E>
+	 * @return ImmutableSet<(E is null ? never : E)>
 	 */
-	#[NoDiscard]
+	#[NoDiscard] // @phpstan-ignore conditionalType.subjectNotFound, conditionalType.alwaysFalse (in classes with a concrete or non-nullable E the conditional is already decided)
 	public function filterNotNull(): ImmutableSet
 	{
 		return $this->newCollectionOf(new FilterOperation($this->store)->byValue(fn ($v) => $v !== null));

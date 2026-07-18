@@ -203,7 +203,7 @@ interface ImmutableList extends ListInterface, ImmutableCollection
 	/**
 	 * Filter non-null elements.
 	 *
-	 * @return ImmutableList<E>
+	 * @return ImmutableList<(E is null ? never : E)>
 	 */
 	#[NoDiscard]
 	public function filterNotNull(): ImmutableList;

@@ -233,9 +233,9 @@ trait MapLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableMap<K,V>
+	 * @return ImmutableMap<K, (V is null ? never : V)>
 	 */
-	#[NoDiscard]
+	#[NoDiscard] // @phpstan-ignore conditionalType.subjectNotFound (in classes with a concrete V the conditional subject is already substituted)
 	public function filterValuesNotNull(): ImmutableMap
 	{
 		return $this->newMapOf(
@@ -677,7 +677,10 @@ trait MapLogic
 
 	// --- Conversion ---
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 * @return array<array-key,V>
+	 */
 	#[NoDiscard]
 	public function toArray(KeyCollisionStrategy $onCollision = KeyCollisionStrategy::Throw): array
 	{

@@ -43,6 +43,16 @@ interface ListInterface extends Collection, ArrayAccess
 	public function getOrNull(int $index): mixed;
 
 	/**
+	 * Returns the element at the specified index, or throws if out of bounds.
+	 * Alias of get() for array access syntax `$list[0]`.
+	 *
+	 * @param int $offset
+	 * @return E
+	 * @throws IndexOutOfBoundsException
+	 */
+	public function offsetGet(mixed $offset): mixed;
+
+	/**
 	 * Returns the element at the specified index, or the default value if out of bounds.
 	 *
 	 * @template D

@@ -190,6 +190,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * Returns the number of elements matching the predicate.
 	 *
 	 * @param Closure(E, int):bool $predicate
+	 * @return int<0, max>
 	 */
 	public function countWhere(Closure $predicate): int;
 

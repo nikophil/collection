@@ -43,6 +43,16 @@ interface ListInterface extends Collection, ArrayAccess
 	public function getOrNull(int $index): mixed;
 
 	/**
+	 * Returns the element at the specified index, or throws if out of bounds.
+	 * Alias of get() for array access syntax `$list[0]`.
+	 *
+	 * @param int $offset
+	 * @return E
+	 * @throws IndexOutOfBoundsException
+	 */
+	public function offsetGet(mixed $offset): mixed;
+
+	/**
 	 * Returns the element at the specified index, or the default value if out of bounds.
 	 *
 	 * @template D
@@ -170,8 +180,10 @@ interface ListInterface extends Collection, ArrayAccess
 
 	/**
 	 * Flatten a collection of iterables into a single collection.
+	 * Iterable elements are flattened one level; non-iterable elements are kept as-is.
+	 * The array{} in value-of keeps the type resolvable when E is never (empty collections).
 	 *
-	 * @return ListInterface<mixed>
+	 * @return ListInterface<(E is iterable<mixed> ? value-of<E|array{}> : E)>
 	 */
 	#[NoDiscard]
 	public function flatten(): ListInterface;

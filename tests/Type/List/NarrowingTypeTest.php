@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * This file is part of the Noctud Collection.
+ * Copyright (c) Noctud.dev
+ */
+
+declare(strict_types=1);
+
+namespace Noctud\Collection\Tests\Type\List;
+
+use Noctud\Collection\List\ListInterface;
+use stdClass;
+use function Noctud\Collection\listOf;
+use function Noctud\Collection\mutableListOf;
+use function PHPStan\Testing\assertType;
+
+$imm = listOf([1, 2, 3]);
+
+// Shape-preserving transforms narrow back to ImmutableList.
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->filter(fn (int $x): bool => $x > 0));
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->filterNotNull());
+assertType('Noctud\Collection\List\ImmutableList<int>', listOf([1, null])->filterNotNull());
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->takeFirst(2));
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->dropLast(1));
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->takeWhile(fn (int $x): bool => $x > 0));
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->distinct());
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->distinctBy(fn (int $x): int => $x));
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->sorted());
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->sortedBy(fn (int $x): int => $x));
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->reversed());
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->shuffled());
+assertType('Noctud\Collection\List\ImmutableList<int>', $imm->slice(0, 2));
+assertType(
+	'array{Noctud\Collection\List\ImmutableList<int>, Noctud\Collection\List\ImmutableList<int>}',
+	$imm->partition(fn (int $x): bool => $x > 0),
+);
+
+// Type-changing transforms move to the new element type but stay ImmutableList.
+assertType('Noctud\Collection\List\ImmutableList<bool>', $imm->map(fn (int $x): bool => $x > 0));
+assertType('Noctud\Collection\List\ImmutableList<stdClass>', $imm->filterInstanceOf(stdClass::class));
+
+// chunked/windowed always produce a list of lists. They return the base ListInterface even
+// on an ImmutableList: ListInterface's element type is invariant, so narrowing the nested
+// type would break variance in the shared trait — and ListInterface<...> is already correct.
+assertType('Noctud\Collection\List\ListInterface<Noctud\Collection\List\ListInterface<int>>', $imm->chunked(2));
+
+// A mutable list's transforms produce a fresh immutable list.
+$mut = mutableListOf([1, 2, 3]);
+assertType('Noctud\Collection\List\ImmutableList<int>', $mut->filter(fn (int $x): bool => $x > 0));
+assertType('Noctud\Collection\List\ImmutableList<bool>', $mut->map(fn (int $x): bool => $x > 0));
+assertType('Noctud\Collection\List\ImmutableList<int>', $mut->sorted());
+assertType('Noctud\Collection\List\ImmutableList<int>', mutableListOf([1, null])->filterNotNull());
+
+// The base ListInterface contract keeps everything at the ListInterface level.
+/** @var ListInterface<int> $list */
+$list = listOf([1, 2, 3]);
+assertType('Noctud\Collection\List\ListInterface<int>', $list->filter(fn (int $x): bool => $x > 0));
+assertType('Noctud\Collection\List\ListInterface<bool>', $list->map(fn (int $x): bool => $x > 0));
+assertType('Noctud\Collection\List\ListInterface<int>', $list->sorted());

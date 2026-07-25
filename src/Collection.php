@@ -190,6 +190,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * Returns the number of elements matching the predicate.
 	 *
 	 * @param Closure(E, int):bool $predicate
+	 * @return int<0, max>
 	 */
 	public function countWhere(Closure $predicate): int;
 
@@ -292,8 +293,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * Returns the minimum value produced by the selector.
 	 * Throws if the collection is empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R
 	 * @throws NoSuchElementException
 	 */
 	public function minOf(Closure $selector): mixed;
@@ -301,8 +303,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns the minimum value produced by the selector, or null if empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R|null
 	 */
 	public function minOfOrNull(Closure $selector): mixed;
 
@@ -310,8 +313,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * Returns the maximum value produced by the selector.
 	 * Throws if the collection is empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R
 	 * @throws NoSuchElementException
 	 */
 	public function maxOf(Closure $selector): mixed;
@@ -319,8 +323,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns the maximum value produced by the selector, or null if empty.
 	 *
-	 * @param Closure(E, int):mixed $selector
-	 * @return mixed
+	 * @template R of mixed
+	 * @param Closure(E, int):R $selector
+	 * @return R|null
 	 */
 	public function maxOfOrNull(Closure $selector): mixed;
 
@@ -409,8 +414,10 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 
 	/**
 	 * Flatten a collection of iterables into a single collection.
+	 * Iterable elements are flattened one level; non-iterable elements are kept as-is.
+	 * The array{} in value-of keeps the type resolvable when E is never (empty collections).
 	 *
-	 * @return Collection<mixed>
+	 * @return Collection<(E is iterable<mixed> ? value-of<E|array{}> : E)>
 	 */
 	#[NoDiscard]
 	public function flatten(): Collection;
@@ -582,8 +589,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns a set containing only elements present in both this collection and the given iterable.
 	 *
-	 * @param iterable<E> $other
-	 * @return Set<E>
+	 * @template V
+	 * @param iterable<V> $other
+	 * @return Set<E&V>
 	 */
 	#[NoDiscard]
 	public function intersect(iterable $other): Set;
@@ -591,8 +599,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns a set containing all elements from both this collection and the given iterable.
 	 *
-	 * @param iterable<E> $other
-	 * @return Set<E>
+	 * @template NE
+	 * @param iterable<NE> $other
+	 * @return Set<E|NE>
 	 */
 	#[NoDiscard]
 	public function union(iterable $other): Set;
@@ -600,7 +609,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns a set containing elements present in this collection but not in the given iterable.
 	 *
-	 * @param iterable<E> $other
+	 * @param iterable<mixed> $other
 	 * @return Set<E>
 	 */
 	#[NoDiscard]

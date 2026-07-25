@@ -80,6 +80,16 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	public function get(string|int|bool|float|object $key);
 
 	/**
+	 * Retrieves the value associated with the given key, or throws if absent.
+	 * Alias of get() for array access syntax `$map['key']`.
+	 *
+	 * @param K $offset
+	 * @return V
+	 * @throws NoSuchElementException
+	 */
+	public function offsetGet(mixed $offset): mixed;
+
+	/**
 	 * Retrieves the value associated with the given key.
 	 * Returns null if the key does not exist in the map.
 	 * Use `$map['key'] ?? null` for the same behavior via array access.
@@ -163,6 +173,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	 * Returns the number of entries matching the predicate.
 	 *
 	 * @param Closure(V, K):bool $predicate
+	 * @return int<0, max>
 	 */
 	public function countWhere(Closure $predicate): int;
 

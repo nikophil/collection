@@ -583,8 +583,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns a set containing only elements present in both this collection and the given iterable.
 	 *
-	 * @param iterable<E> $other
-	 * @return Set<E>
+	 * @template V
+	 * @param iterable<V> $other
+	 * @return Set<E&V>
 	 */
 	#[NoDiscard]
 	public function intersect(iterable $other): Set;
@@ -592,8 +593,9 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns a set containing all elements from both this collection and the given iterable.
 	 *
-	 * @param iterable<E> $other
-	 * @return Set<E>
+	 * @template NE
+	 * @param iterable<NE> $other
+	 * @return Set<E|NE>
 	 */
 	#[NoDiscard]
 	public function union(iterable $other): Set;
@@ -601,7 +603,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	/**
 	 * Returns a set containing elements present in this collection but not in the given iterable.
 	 *
-	 * @param iterable<E> $other
+	 * @param iterable<mixed> $other
 	 * @return Set<E>
 	 */
 	#[NoDiscard]

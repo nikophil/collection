@@ -376,7 +376,9 @@ trait SetLogic
 	 * Routed through newCollectionOf (rather than the free setOf) so that subtypes
 	 * which override the factory preserve their own type. Defaults to ImmutableSet.
 	 *
-	 * @return ImmutableSet<E>
+	 * @template U
+	 * @param iterable<U> $other
+	 * @return ImmutableSet<E&U>
 	 */
 	#[NoDiscard]
 	public function intersect(iterable $other): ImmutableSet
@@ -387,7 +389,9 @@ trait SetLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return ImmutableSet<E>
+	 * @template NE
+	 * @param iterable<NE> $other
+	 * @return ImmutableSet<E|NE>
 	 */
 	#[NoDiscard]
 	public function union(iterable $other): ImmutableSet
@@ -398,6 +402,7 @@ trait SetLogic
 	/**
 	 * {@inheritDoc}
 	 *
+	 * @param iterable<mixed> $other
 	 * @return ImmutableSet<E>
 	 */
 	#[NoDiscard]

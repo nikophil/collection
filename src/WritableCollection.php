@@ -185,8 +185,10 @@ interface WritableCollection extends Collection
 
 	/**
 	 * Flatten a collection of iterables into a single collection.
+	 * Iterable elements are flattened one level; non-iterable elements are kept as-is.
+	 * The array{} in value-of keeps the type resolvable when E is never (empty collections).
 	 *
-	 * @return ImmutableCollection<mixed>
+	 * @return ImmutableCollection<(E is iterable<mixed> ? value-of<E|array{}> : E)>
 	 */
 	#[NoDiscard]
 	public function flatten(): ImmutableCollection;

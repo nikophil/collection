@@ -31,8 +31,18 @@ assertType('Noctud\Collection\Collection<int>', $c->map(fn (string $x): int => (
 assertType('Noctud\Collection\Collection<int>', $c->mapNotNull(fn (string $x): ?int => $x !== '' ? 1 : null));
 assertType('Noctud\Collection\Collection<int>', $c->flatMap(fn (string $x): array => [(int) $x]));
 
-// flatten() keeps non-iterable elements as-is; see FlattenTypeTest for the nesting cases.
+// flatten() keeps non-iterable elements as-is.
 assertType('Noctud\Collection\Collection<string>', $c->flatten());
+
+// Plain arrays are iterables too.
+/** @var Collection<array<int>> $arrays */
+$arrays = listOf([[1, 2], [3]]);
+assertType('Noctud\Collection\Collection<int>', $arrays->flatten());
+
+// ...and the conditional distributes over union element types.
+/** @var Collection<array<int>|string> $mixed */
+$mixed = listOf([[1], 'a']);
+assertType('Noctud\Collection\Collection<int|string>', $mixed->flatten());
 
 // Slicing preserves the element type.
 assertType('Noctud\Collection\Collection<string>', $c->takeFirst(2));
@@ -64,7 +74,28 @@ assertType(
 	$c->groupBy(fn (string $x): string => $x, fn (string $x): int => (int) $x),
 );
 
-// Set operations.
+// Set operations: with a same-typed iterable, the element type is unchanged.
 assertType('Noctud\Collection\Set\Set<string>', $c->intersect(['a', 'b']));
 assertType('Noctud\Collection\Set\Set<string>', $c->union(['a', 'b']));
 assertType('Noctud\Collection\Set\Set<string>', $c->subtract(['a', 'b']));
+
+/** @var Collection<int|string> $scalars */
+$scalars = listOf([1, 'a']);
+/** @var iterable<int> $ints */
+$ints = [1, 2];
+/** @var iterable<mixed> $anything */
+$anything = [1, 'a'];
+
+// intersect narrows to E&V: only values that can belong to both sides.
+assertType('Noctud\Collection\Set\Set<int>', $scalars->intersect($ints));
+assertType('Noctud\Collection\Set\Set<string>', $c->intersect($anything));
+// Intersecting disjoint types is reported as an unresolvable return type.
+assertType('Noctud\Collection\Set\Set<*NEVER*>', $c->intersect($ints)); // @phpstan-ignore method.unresolvableReturnType
+
+// union widens to E|V: elements of both sides end up in the result.
+assertType('Noctud\Collection\Set\Set<int|string>', $c->union($ints));
+assertType('Noctud\Collection\Set\Set<int|string>', $scalars->union($ints));
+
+// subtract always keeps E: any iterable may be subtracted.
+assertType('Noctud\Collection\Set\Set<int|string>', $scalars->subtract($ints));
+assertType('Noctud\Collection\Set\Set<string>', $c->subtract($anything));

@@ -11,6 +11,7 @@ namespace Noctud\Collection\Tests\Type\Set;
 
 use Noctud\Collection\Set\Set;
 use stdClass;
+use function Noctud\Collection\listOf;
 use function Noctud\Collection\mutableSetOf;
 use function Noctud\Collection\setOf;
 use function PHPStan\Testing\assertType;
@@ -38,6 +39,16 @@ assertType(
 // Type-changing transforms move to the new element type but stay ImmutableSet.
 assertType('Noctud\Collection\Set\ImmutableSet<bool>', $imm->map(fn (int $x): bool => $x > 0));
 assertType('Noctud\Collection\Set\ImmutableSet<stdClass>', $imm->filterInstanceOf(stdClass::class));
+
+// flatten() extracts the element type of iterable elements (one level).
+assertType('Noctud\Collection\Set\ImmutableSet<int>', setOf([listOf([1, 2]), listOf([3])])->flatten());
+
+// Cross-typed set operations follow the same E&V / E|V / E rules as on Collection.
+/** @var iterable<string> $strings */
+$strings = ['a', 'b'];
+assertType('Noctud\Collection\Set\Set<*NEVER*>', $imm->intersect($strings)); // @phpstan-ignore method.unresolvableReturnType
+assertType('Noctud\Collection\Set\Set<int|string>', $imm->union($strings));
+assertType('Noctud\Collection\Set\Set<int>', $imm->subtract($strings));
 
 // The base Set contract keeps everything at the Set interface level.
 /** @var Set<int> $set */

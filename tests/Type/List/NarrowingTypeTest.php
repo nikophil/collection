@@ -40,6 +40,21 @@ assertType(
 assertType('Noctud\Collection\List\ImmutableList<bool>', $imm->map(fn (int $x): bool => $x > 0));
 assertType('Noctud\Collection\List\ImmutableList<stdClass>', $imm->filterInstanceOf(stdClass::class));
 
+// flatten() extracts the element type of iterable elements (one level).
+assertType('Noctud\Collection\List\ImmutableList<int>', listOf([listOf([1, 2]), listOf([3])])->flatten());
+
+// Only one level is flattened.
+assertType(
+	'Noctud\Collection\List\ImmutableList<Noctud\Collection\List\ImmutableList<int>>',
+	listOf([listOf([listOf([1])])])->flatten(),
+);
+
+// Non-iterable elements are kept as-is.
+assertType('Noctud\Collection\List\ImmutableList<string>', listOf(['a', 'b'])->flatten());
+
+// flatten() on an empty collection stays typed (E = never).
+assertType('Noctud\Collection\List\ImmutableList<*NEVER*>', listOf([])->flatten());
+
 // chunked/windowed always produce a list of lists. They return the base ListInterface even
 // on an ImmutableList: ListInterface's element type is invariant, so narrowing the nested
 // type would break variance in the shared trait — and ListInterface<...> is already correct.
@@ -51,6 +66,7 @@ assertType('Noctud\Collection\List\ImmutableList<int>', $mut->filter(fn (int $x)
 assertType('Noctud\Collection\List\ImmutableList<bool>', $mut->map(fn (int $x): bool => $x > 0));
 assertType('Noctud\Collection\List\ImmutableList<int>', $mut->sorted());
 assertType('Noctud\Collection\List\ImmutableList<int>', mutableListOf([1, null])->filterNotNull());
+assertType('Noctud\Collection\List\ImmutableList<int>', mutableListOf([listOf([1, 2])])->flatten());
 
 // The base ListInterface contract keeps everything at the ListInterface level.
 /** @var ListInterface<int> $list */

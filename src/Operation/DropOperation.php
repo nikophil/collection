@@ -50,14 +50,14 @@ final class DropOperation extends AbstractOperation
 	}
 
 	/**
-	 * @param callable(V):bool $predicate
+	 * @param callable(V, int):bool $predicate
 	 * @return Generator<V>
 	 */
 	public function byPredicate(callable $predicate): Generator
 	{
 		$dropping = true;
-		foreach ($this->data as $v) {
-			if ($dropping && $predicate($v)) {
+		foreach ($this->data as $i => $v) {
+			if ($dropping && $predicate($v, $i)) {
 				continue;
 			}
 			$dropping = false;

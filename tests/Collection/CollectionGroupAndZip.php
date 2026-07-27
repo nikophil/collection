@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Tests\Collection;
 
+use Generator;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\Map\ImmutableMap;
 use PHPUnit\Framework\Attributes\Test;
@@ -112,6 +113,27 @@ trait CollectionGroupAndZip
 	{
 		$collection = $this->collectionOf([]);
 		$this->assertSame([], $collection->zip(['a'])->toArray());
+	}
+
+	#[Test]
+	public function zip_pulls_the_other_iterable_lazily(): void
+	{
+		$pulled = [];
+		$other = (static function () use (&$pulled): Generator {
+			foreach (['a', 'b', 'c', 'd'] as $value) {
+				$pulled[] = $value;
+
+				yield $value;
+			}
+		})();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $collection->zip($other)->toArray());
+
+		// The other side is walked in lockstep, never buffered - and not pulled once past the
+		// shorter side either.
+		$this->assertSame(['a', 'b'], $pulled);
 	}
 
 	#[Test]

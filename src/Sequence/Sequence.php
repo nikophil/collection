@@ -56,6 +56,24 @@ interface Sequence extends IteratorAggregate
 	public function filter(Closure $predicate): Sequence;
 
 	/**
+	 * Filter non-null elements.
+	 *
+	 * @return Sequence<(E is null ? never : E)>
+	 */
+	#[NoDiscard]
+	public function filterNotNull(): Sequence;
+
+	/**
+	 * Filter elements that are instances of the given class or interface.
+	 *
+	 * @template T
+	 * @param class-string<T> $type
+	 * @return Sequence<T>
+	 */
+	#[NoDiscard]
+	public function filterInstanceOf(string $type): Sequence;
+
+	/**
 	 * Map elements to a new sequence.
 	 * The transform receives the element and optionally the index.
 	 *
@@ -65,6 +83,132 @@ interface Sequence extends IteratorAggregate
 	 */
 	#[NoDiscard]
 	public function map(Closure $transform): Sequence;
+
+	/**
+	 * Transforms each element using the given function and excludes null results.
+	 * Combines map and filterNotNull in a single operation.
+	 *
+	 * @template R
+	 * @param Closure(E, int):(R|null) $transform
+	 * @return Sequence<R>
+	 */
+	#[NoDiscard]
+	public function mapNotNull(Closure $transform): Sequence;
+
+	/**
+	 * Flat map elements to a new sequence.
+	 * Each iterable returned by the transform is consumed lazily, element by element.
+	 *
+	 * @template R
+	 * @param Closure(E, int):iterable<R> $transform
+	 * @return Sequence<R>
+	 */
+	#[NoDiscard]
+	public function flatMap(Closure $transform): Sequence;
+
+	/**
+	 * Flatten a sequence of iterables into a single sequence.
+	 * Iterable elements are flattened one level; non-iterable elements are kept as-is.
+	 * The array{} in value-of keeps the type resolvable when E is never (empty sequences).
+	 *
+	 * @return Sequence<(E is iterable<mixed> ? value-of<E|array{}> : E)>
+	 */
+	#[NoDiscard]
+	public function flatten(): Sequence;
+
+	/**
+	 * Take the first N elements.
+	 * The source is not pulled any further once N elements have been yielded.
+	 *
+	 * @param non-negative-int $n
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function takeFirst(int $n = 1): Sequence;
+
+	/**
+	 * Drops the first N elements.
+	 *
+	 * @param non-negative-int $n
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function dropFirst(int $n = 1): Sequence;
+
+	/**
+	 * Takes elements while the predicate is true.
+	 * The source is not pulled any further once the predicate has returned false.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function takeWhile(Closure $predicate): Sequence;
+
+	/**
+	 * Drops elements while the predicate is true, then returns the rest.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function dropWhile(Closure $predicate): Sequence;
+
+	/**
+	 * Distinct elements by identity.
+	 * Elements already seen during the current pass are skipped, so the memory held grows
+	 * with the number of distinct elements.
+	 *
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function distinct(): Sequence;
+
+	/**
+	 * Distinct elements by selector.
+	 *
+	 * @template K
+	 * @param Closure(E, int):K $selector
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function distinctBy(Closure $selector): Sequence;
+
+	/**
+	 * Combines this sequence with another iterable by pairing elements at the same position.
+	 * The resulting sequence has the length of the shorter input.
+	 *
+	 * @template U
+	 * @param iterable<U> $other
+	 * @return Sequence<array{E, U}>
+	 */
+	#[NoDiscard]
+	public function zip(iterable $other): Sequence;
+
+	/**
+	 * Returns a sequence of pairs of each two adjacent elements in this sequence.
+	 * If the sequence has fewer than two elements, yields nothing.
+	 *
+	 * @return Sequence<array{E, E}>
+	 */
+	#[NoDiscard]
+	public function zipWithNext(): Sequence;
+
+	// --- Iteration ---
+
+	/**
+	 * Returns a sequence applying the given action to each element as it goes through,
+	 * then yielding the element unchanged.
+	 *
+	 * The lazy, chainable counterpart of forEach: the action runs once per element and per
+	 * pass, while the element flows through the pipeline - nothing happens before a
+	 * terminal operation pulls.
+	 *
+	 * @param Closure(E, int):void $action
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function onEach(Closure $action): Sequence;
 
 	// --- Conversion ---
 

@@ -143,6 +143,85 @@ final class SequenceIterationTest extends TestCase
 	}
 
 	#[Test]
+	public function replayed_pass_starts_from_fresh_intermediate_state(): void
+	{
+		// distinct's seen-set, dropWhile's dropping flag, dropFirst's counter and
+		// zipWithNext's previous element are all built inside the factory closure, so the
+		// second pass rebuilds them instead of resuming where the first one stopped.
+		$sequence = sequenceOf([1, 1, 2, 3, 3, 4])
+			->distinct()
+			->dropWhile(static fn (int $v): bool => $v < 2)
+			->dropFirst()
+			->zipWithNext();
+
+		$this->assertSame([[3, 4]], $sequence->toArray());
+		$this->assertSame([[3, 4]], $sequence->toArray());
+	}
+
+	#[Test]
+	public function replayed_pass_restarts_the_positional_counters(): void
+	{
+		$taking = sequenceOf(['a', 'b', 'c'])->takeWhile(static fn (string $v, int $i): bool => $i < 2);
+		$dropping = sequenceOf(['a', 'b', 'c'])->dropWhile(static fn (string $v, int $i): bool => $i < 2);
+
+		$this->assertSame(['a', 'b'], $taking->toArray());
+		$this->assertSame(['a', 'b'], $taking->toArray());
+
+		$this->assertSame(['c'], $dropping->toArray());
+		$this->assertSame(['c'], $dropping->toArray());
+	}
+
+	#[Test]
+	public function zip_replays_when_both_sides_are_replayable(): void
+	{
+		$sequence = sequenceOf([1, 2, 3])->zip(['a', 'b']);
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
+		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
+	}
+
+	#[Test]
+	public function zip_against_a_raw_iterator_throws_on_second_pass(): void
+	{
+		$other = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+			yield 'c';
+		})();
+		$sequence = sequenceOf([1, 2])->zip($other);
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
+
+		// Without the guard the other side would resume where it stopped and the second pass
+		// would silently pair 1 with 'c' - the failure mode the contract exists to prevent.
+		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectExceptionMessageIsOrContains(
+			'This sequence is backed by a non-replayable source and has already been iterated. Create a new sequence from a fresh source to iterate again.',
+		);
+
+        // phpcs:ignore
+        $_ = $sequence->toArray();
+	}
+
+	#[Test]
+	public function zip_against_a_one_shot_sequence_throws_on_second_pass(): void
+	{
+		$generator = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+		})();
+		$sequence = sequenceOf([1, 2])->zip(sequenceOf($generator));
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
+
+		// The other side is a producer here, so its own guard is the one that fires.
+		$this->expectException(SequenceAlreadyIteratedException::class);
+
+        // phpcs:ignore
+        $_ = $sequence->toArray();
+	}
+
+	#[Test]
 	public function replay_sees_live_collection_mutations(): void
 	{
 		$list = mutableListOf([1, 2]);

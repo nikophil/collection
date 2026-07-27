@@ -9,8 +9,10 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Operation;
 
+use ArrayIterator;
 use Generator;
-use Traversable;
+use Iterator;
+use IteratorIterator;
 
 /**
  * @internal
@@ -26,17 +28,50 @@ final class ZipOperation extends AbstractOperation
 	 */
 	public function with(iterable $other): Generator
 	{
-		$otherArray = $other instanceof Traversable ? iterator_to_array($other, false) : array_values($other);
-		$otherCount = count($otherArray);
-		$i = 0;
+		$left = self::cursor($this->data);
+		$right = self::cursor($other);
 
-		foreach ($this->data as $v) {
-			if ($i >= $otherCount) {
+		while ($left->valid() && $right->valid()) {
+			yield [$left->current(), $right->current()];
+
+			// Advancing the other side only once this one still has an element spares it a
+			// pull that would be thrown away whenever this side is the shorter one.
+			$left->next();
+
+			if (!$left->valid()) {
 				break;
 			}
 
-			yield [$v, $otherArray[$i]];
-			$i++;
+			$right->next();
 		}
+	}
+
+	/**
+	 * Positioned cursor over any iterable, so both sides can be walked in lockstep without
+	 * either being buffered.
+	 *
+	 * An Iterator is used as is and never rewound: it may be a cursor that has already
+	 * started, and rewinding a running Generator throws.
+	 *
+	 * @template T
+	 * @param iterable<T> $iterable
+	 * @return Iterator<T>
+	 */
+	private static function cursor(iterable $iterable): Iterator
+	{
+		if (is_array($iterable)) {
+			return new ArrayIterator($iterable);
+		}
+
+		if ($iterable instanceof Iterator) {
+			return $iterable;
+		}
+
+		// An IteratorAggregate only hands out its iterator on rewind(): before that the
+		// wrapper has no position at all, and valid() answers false.
+		$cursor = new IteratorIterator($iterable);
+		$cursor->rewind();
+
+		return $cursor;
 	}
 }

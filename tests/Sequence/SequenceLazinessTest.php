@@ -77,6 +77,96 @@ final class SequenceLazinessTest extends TestCase
 	}
 
 	#[Test]
+	public function onEach_is_lazy_and_observes_the_values_of_its_own_stage(): void
+	{
+		$log = [];
+		$sequence = sequenceOf([1, 2, 3])
+			->onEach(static function (int $v) use (&$log): void {
+				$log[] = "a:$v";
+			})
+			->map(static fn (int $v): int => $v * 10)
+			->onEach(static function (int $v) use (&$log): void {
+				$log[] = "b:$v";
+			});
+
+		$this->assertSame([], $log);
+
+		$this->assertSame([10, 20, 30], $sequence->toArray());
+		$this->assertSame(['a:1', 'b:10', 'a:2', 'b:20', 'a:3', 'b:30'], $log);
+	}
+
+	#[Test]
+	public function takeFirst_pulls_exactly_n_elements_from_the_source(): void
+	{
+		$pulled = [];
+		$sequence = sequenceOf(static function () use (&$pulled): Generator {
+			foreach ([1, 2, 3, 4, 5] as $value) {
+				$pulled[] = $value;
+
+				yield $value;
+			}
+		});
+
+		$this->assertSame([1, 2], $sequence->takeFirst(2)->toArray());
+		$this->assertSame([1, 2], $pulled);
+	}
+
+	#[Test]
+	public function takeFirst_only_maps_what_it_takes(): void
+	{
+		$transformCalls = 0;
+
+		$result = sequenceOf([1, 2, 3, 4, 5])
+			->map(static function (int $v) use (&$transformCalls): int {
+				$transformCalls++;
+
+				return $v * 10;
+			})
+			->takeFirst(2)
+			->toArray();
+
+		$this->assertSame([10, 20], $result);
+		$this->assertSame(2, $transformCalls);
+	}
+
+	#[Test]
+	public function takeWhile_stops_pulling_at_the_first_failing_element(): void
+	{
+		$pulled = [];
+		$sequence = sequenceOf(static function () use (&$pulled): Generator {
+			foreach ([1, 2, 3, 4, 5] as $value) {
+				$pulled[] = $value;
+
+				yield $value;
+			}
+		});
+
+		$this->assertSame([1, 2], $sequence->takeWhile(static fn (int $v): bool => $v < 3)->toArray());
+
+		// 3 is pulled and tested, then nothing further: the predicate has to see the element
+		// that ends the run.
+		$this->assertSame([1, 2, 3], $pulled);
+	}
+
+	#[Test]
+	public function zip_pulls_the_other_side_lazily(): void
+	{
+		$pulled = [];
+		$other = (static function () use (&$pulled): Generator {
+			foreach (['a', 'b', 'c', 'd'] as $value) {
+				$pulled[] = $value;
+
+				yield $value;
+			}
+		})();
+
+		$this->assertSame([[1, 'a'], [2, 'b']], sequenceOf([1, 2])->zip($other)->toArray());
+
+		// Never buffered, and not pulled once past the shorter side either.
+		$this->assertSame(['a', 'b'], $pulled);
+	}
+
+	#[Test]
 	public function chained_pipeline_replays_through_replayable_root(): void
 	{
 		$sequence = sequenceOf([1, 2, 3])

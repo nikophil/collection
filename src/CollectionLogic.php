@@ -598,20 +598,14 @@ trait CollectionLogic
 	#[NoDiscard]
 	public function takeWhile(Closure $predicate): ImmutableCollection
 	{
-		$i = 0;
-		return $this->newCollectionOf(new TakeOperation($this->store)->byPredicate(function ($v) use ($predicate, &$i) {
-			return $predicate($v, $i++);
-		}));
+		return $this->newCollectionOf(new TakeOperation($this->store)->byPredicate($predicate));
 	}
 
 	/** {@inheritDoc} */
 	#[NoDiscard]
 	public function dropWhile(Closure $predicate): ImmutableCollection
 	{
-		$i = 0;
-		return $this->newCollectionOf(new DropOperation($this->store)->byPredicate(function ($v) use ($predicate, &$i) {
-			return $predicate($v, $i++);
-		}));
+		return $this->newCollectionOf(new DropOperation($this->store)->byPredicate($predicate));
 	}
 
 	/** {@inheritDoc} */

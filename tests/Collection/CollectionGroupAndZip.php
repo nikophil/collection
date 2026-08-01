@@ -14,6 +14,7 @@ use Generator;
 use LimitIterator;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\Map\ImmutableMap;
+use NoRewindIterator;
 use PHPUnit\Framework\Attributes\Test;
 use SplStack;
 
@@ -164,6 +165,50 @@ trait CollectionGroupAndZip
 		$collection = $this->collectionOf([1, 2]);
 
 		$this->assertSame([[1, 'a'], [2, 'b']], $collection->zip($other)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_a_started_generator(): void
+	{
+		$other = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+			yield 'c';
+		})();
+		$other->current();
+		$other->next();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		// A Generator is never rewound: it is always positioned, so it resumes from where it
+		// stands and the head of a stream can be consumed before zipping the rest.
+		$this->assertSame([[1, 'b'], [2, 'c']], $collection->zip($other)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_an_advanced_iterator(): void
+	{
+		$other = new ArrayIterator(['a', 'b', 'c']);
+		$other->next();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		// The flip side of rewinding everything that is not a Generator: an advanced cursor
+		// cannot be told apart from a fresh one, so it restarts rather than resuming.
+		$this->assertSame([[1, 'a'], [2, 'b']], $collection->zip($other)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_an_advanced_iterator_wrapped_in_a_no_rewind_iterator(): void
+	{
+		$other = new ArrayIterator(['a', 'b', 'c']);
+		$other->next();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		// NoRewindIterator::rewind() is a no-op, which is how a caller who does mean to resume
+		// a non-Generator cursor says so: only they can know that it is mid-stream.
+		$this->assertSame([[1, 'b'], [2, 'c']], $collection->zip(new NoRewindIterator($other))->toArray());
 	}
 
 	#[Test]

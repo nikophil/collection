@@ -537,9 +537,10 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * Combines this collection with another iterable by pairing elements at the same position.
 	 * The resulting collection has the length of the shorter input.
 	 *
-	 * The other side is pulled in lockstep rather than copied, and rewound first just as
-	 * foreach would rewind it: an already started Generator therefore throws. Wrap it in a
-	 * NoRewindIterator to deliberately resume a cursor that is already in flight.
+	 * The other side is pulled in lockstep rather than copied. A Generator resumes from its
+	 * current position, so the head of a stream can be consumed before zipping the rest; any
+	 * other iterator is rewound first, and an already advanced one therefore restarts from its
+	 * first element - wrap it in a NoRewindIterator to resume it instead.
 	 *
 	 * @template U
 	 * @param iterable<U> $other

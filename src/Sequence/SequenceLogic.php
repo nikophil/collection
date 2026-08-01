@@ -177,9 +177,16 @@ trait SequenceLogic
 				throw SequenceAlreadyIteratedException::nonReplayableSourceAlreadyIterated();
 			}
 
-			$otherConsumed = true;
+			// Marked per pair rather than per pass: a pass that pairs nothing never positions
+			// the other side, which stays where it was and replayable - so it must not be
+			// counted as consumed.
+			return (function () use ($other, &$otherConsumed): Generator {
+				foreach (new ZipOperation($this)->with($other) as $pair) {
+					$otherConsumed = true;
 
-			return new ZipOperation($this)->with($other);
+					yield $pair;
+				}
+			})();
 		});
 	}
 

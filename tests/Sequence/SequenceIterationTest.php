@@ -182,6 +182,37 @@ final class SequenceIterationTest extends TestCase
 	}
 
 	#[Test]
+	public function zip_replays_when_a_pass_paired_nothing(): void
+	{
+		$other = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+		})();
+		$sequence = sequenceOf([])->zip($other);
+
+		$this->assertSame([], $sequence->toArray());
+
+		// Pairing nothing left the other side where it was, so the one-shot guard has nothing
+		// to complain about: it counts a consumed cursor, not an attempted pass.
+		$this->assertSame([], $sequence->toArray());
+		$this->assertSame('a', $other->current());
+	}
+
+	#[Test]
+	public function zip_replays_when_this_side_was_emptied_by_a_previous_stage(): void
+	{
+		$other = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+		})();
+		$sequence = sequenceOf([1, 2])->takeFirst(0)->zip($other);
+
+		$this->assertSame([], $sequence->toArray());
+		$this->assertSame([], $sequence->toArray());
+		$this->assertSame('a', $other->current());
+	}
+
+	#[Test]
 	public function zip_against_a_raw_iterator_throws_on_second_pass(): void
 	{
 		$other = (static function (): Generator {

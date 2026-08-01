@@ -10,16 +10,21 @@ declare(strict_types=1);
 namespace Noctud\Collection\Exception;
 
 /**
- * Thrown when a sequence backed by a non-replayable source is iterated a second time,
- * or when a sequence source - a closure or an IteratorAggregate - hands back the same
- * iterator instance twice.
+ * Thrown when an iterable that can only be walked once is walked again.
  */
-final class SequenceAlreadyIteratedException extends UnsupportedOperationException
+final class NonReplayableSourceException extends UnsupportedOperationException
 {
-	public static function nonReplayableSourceAlreadyIterated(): self
+	public static function sequenceSourceAlreadyIterated(): self
 	{
 		return new self(
 			'This sequence is backed by a non-replayable source and has already been iterated. Create a new sequence from a fresh source to iterate again.',
+		);
+	}
+
+	public static function zippedIterableAlreadyIterated(): self
+	{
+		return new self(
+			'The iterable passed to zip() is a non-replayable cursor and has already been consumed. Zip an array or an IteratorAggregate - a collection or a sequence, for instance - to iterate the result more than once.',
 		);
 	}
 

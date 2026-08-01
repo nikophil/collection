@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Tests\Sequence;
 
 use Generator;
-use Noctud\Collection\Exception\SequenceAlreadyIteratedException;
+use Noctud\Collection\Exception\NonReplayableSourceException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use function Noctud\Collection\sequenceOf;
@@ -209,7 +209,7 @@ final class SequenceLazinessTest extends TestCase
 
 		$this->assertSame([10, 20], $sequence->toArray());
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();

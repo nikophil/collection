@@ -13,7 +13,7 @@ use Closure;
 use Generator;
 use IteratorAggregate;
 use Noctud\Collection\Exception\InvalidSequenceSourceException;
-use Noctud\Collection\Exception\SequenceAlreadyIteratedException;
+use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Operation\DistinctOperation;
 use Noctud\Collection\Operation\DropOperation;
@@ -174,7 +174,7 @@ trait SequenceLogic
 
 		return $this->newSequenceOf(function () use ($other, $otherIsOneShot, &$otherConsumed): iterable {
 			if ($otherIsOneShot && $otherConsumed) {
-				throw SequenceAlreadyIteratedException::nonReplayableSourceAlreadyIterated();
+				throw NonReplayableSourceException::zippedIterableAlreadyIterated();
 			}
 
 			// Marked per pair rather than per pass: a pass that pairs nothing never positions
@@ -282,7 +282,7 @@ trait SequenceLogic
 		}
 
 		if ($this->consumed) {
-			throw SequenceAlreadyIteratedException::nonReplayableSourceAlreadyIterated();
+			throw NonReplayableSourceException::sequenceSourceAlreadyIterated();
 		}
 
 		$this->consumed = true;
@@ -309,7 +309,7 @@ trait SequenceLogic
 		// a producer, re-invoked per pass by the foreach that unwraps it.
 		if ($produced instanceof Traversable && !$produced instanceof IteratorAggregate) {
 			if ($this->lastProduced?->get() === $produced) {
-				throw SequenceAlreadyIteratedException::sourceReturnedSameIterator();
+				throw NonReplayableSourceException::sourceReturnedSameIterator();
 			}
 
 			$this->lastProduced = WeakReference::create($produced);

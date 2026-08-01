@@ -28,9 +28,9 @@ use NoDiscard;
  *   time - if it fires a SQL query, that query is re-executed on every iteration of
  *   the sequence. It must hand back a fresh iterator on each call; handing back the
  *   iterator of the previous pass (a getIterator() returning a Generator it keeps
- *   around, for instance) throws SequenceAlreadyIteratedException;
+ *   around, for instance) throws NonReplayableSourceException;
  * - a raw Iterator/Generator: the sequence is single-pass and any further iteration
- *   throws SequenceAlreadyIteratedException (a partial pass counts as consumed).
+ *   throws NonReplayableSourceException (a partial pass counts as consumed).
  *
  * Keys are positional: every pass yields fresh 0..n keys, whatever the source yields.
  *

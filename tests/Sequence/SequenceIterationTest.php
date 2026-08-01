@@ -13,7 +13,7 @@ use ArrayIterator;
 use Exception;
 use Generator;
 use Noctud\Collection\Exception\InvalidSequenceSourceException;
-use Noctud\Collection\Exception\SequenceAlreadyIteratedException;
+use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Sequence\GeneratorSequence;
 use Noctud\Collection\Tests\Sequence\Fixture\GeneratorAggregate;
@@ -90,7 +90,7 @@ final class SequenceIterationTest extends TestCase
 
 		$this->assertSame([1], $sequence->toArray());
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 		$this->expectExceptionMessageIsOrContains(
 			'The sequence\'s source returned the same iterator instance again - a source closure or an IteratorAggregate must produce a fresh iterator on each pass.',
 		);
@@ -226,9 +226,10 @@ final class SequenceIterationTest extends TestCase
 
 		// Without the guard the other side would resume where it stopped and the second pass
 		// would silently pair 1 with 'c' - the failure mode the contract exists to prevent.
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		// The message names the zipped iterable, not this sequence, which is replayable here.
+		$this->expectException(NonReplayableSourceException::class);
 		$this->expectExceptionMessageIsOrContains(
-			'This sequence is backed by a non-replayable source and has already been iterated. Create a new sequence from a fresh source to iterate again.',
+			'The iterable passed to zip() is a non-replayable cursor and has already been consumed. Zip an array or an IteratorAggregate - a collection or a sequence, for instance - to iterate the result more than once.',
 		);
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
@@ -247,7 +248,7 @@ final class SequenceIterationTest extends TestCase
 		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
 
 		// The other side is a producer here, so its own guard is the one that fires.
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();
@@ -315,7 +316,7 @@ final class SequenceIterationTest extends TestCase
 
 		self::assertSame([1], $sequence->toArray());
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 		$this->expectExceptionMessageIsOrContains(
 			'This sequence is backed by a non-replayable source and has already been iterated. Create a new sequence from a fresh source to iterate again.',
 		);
@@ -331,7 +332,7 @@ final class SequenceIterationTest extends TestCase
 
 		$this->assertSame([1, 2], $sequence->toArray());
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();
@@ -351,7 +352,7 @@ final class SequenceIterationTest extends TestCase
 
 		$this->assertSame([1], $sequence->toArray());
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 		$this->expectExceptionMessageIsOrContains(
 			'The sequence\'s source returned the same iterator instance again - a source closure or an IteratorAggregate must produce a fresh iterator on each pass.',
 		);
@@ -371,7 +372,7 @@ final class SequenceIterationTest extends TestCase
 
 		$this->assertSame([1], $sequence->toArray());
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 		$this->expectExceptionMessageIsOrContains(
 			'The sequence\'s source returned the same iterator instance again - a source closure or an IteratorAggregate must produce a fresh iterator on each pass.',
 		);
@@ -429,7 +430,7 @@ final class SequenceIterationTest extends TestCase
 
 		$this->assertSame([1, 2], $sequence->toSet()->toArray());
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();
@@ -454,7 +455,7 @@ final class SequenceIterationTest extends TestCase
 
 		$this->assertSame(1, $first);
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();
@@ -470,7 +471,7 @@ final class SequenceIterationTest extends TestCase
 
 		$sequence->getIterator();
 
-		$this->expectException(SequenceAlreadyIteratedException::class);
+		$this->expectException(NonReplayableSourceException::class);
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();

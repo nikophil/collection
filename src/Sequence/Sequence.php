@@ -11,6 +11,8 @@ namespace Noctud\Collection\Sequence;
 
 use Closure;
 use IteratorAggregate;
+use Noctud\Collection\Exception\InvalidSequenceSourceException;
+use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Set\ImmutableSet;
 use NoDiscard;
@@ -28,7 +30,8 @@ use NoDiscard;
  *   time - if it fires a SQL query, that query is re-executed on every iteration of
  *   the sequence. It must hand back a fresh iterator on each call; handing back the
  *   iterator of the previous pass (a getIterator() returning a Generator it keeps
- *   around, for instance) throws NonReplayableSourceException;
+ *   around, for instance) throws NonReplayableSourceException, and a Closure handing
+ *   back something that is not an iterable throws InvalidSequenceSourceException;
  * - a raw Iterator/Generator: the sequence is single-pass and any further iteration
  *   throws NonReplayableSourceException (a partial pass counts as consumed).
  *
@@ -220,6 +223,8 @@ interface Sequence extends IteratorAggregate
 	 * Convert to an immutable list, consuming one pass of the sequence.
 	 *
 	 * @return ImmutableList<E>
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
 	#[NoDiscard]
 	public function toList(): ImmutableList;
@@ -228,6 +233,8 @@ interface Sequence extends IteratorAggregate
 	 * Convert to an immutable set (duplicates removed), consuming one pass of the sequence.
 	 *
 	 * @return ImmutableSet<E>
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
 	#[NoDiscard]
 	public function toSet(): ImmutableSet;
@@ -236,6 +243,8 @@ interface Sequence extends IteratorAggregate
 	 * Convert to a primitive PHP array, consuming one pass of the sequence.
 	 *
 	 * @return list<E>
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
 	#[NoDiscard]
 	public function toArray(): array;

@@ -167,6 +167,25 @@ final class SequenceLazinessTest extends TestCase
 	}
 
 	#[Test]
+	public function zip_does_not_pull_the_other_side_when_this_one_is_empty(): void
+	{
+		$pulled = [];
+		$other = (static function () use (&$pulled): Generator {
+			foreach (['a', 'b'] as $value) {
+				$pulled[] = $value;
+
+				yield $value;
+			}
+		})();
+
+		$this->assertSame([], sequenceOf([])->zip($other)->toArray());
+
+		// The other side is only positioned once this one is known to hold an element, so an
+		// empty side spares it even the single pull that positioning costs.
+		$this->assertSame([], $pulled);
+	}
+
+	#[Test]
 	public function chained_pipeline_replays_through_replayable_root(): void
 	{
 		$sequence = sequenceOf([1, 2, 3])
@@ -192,7 +211,7 @@ final class SequenceLazinessTest extends TestCase
 
 		$this->expectException(SequenceAlreadyIteratedException::class);
 
-        // phpcs:ignore
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();
 	}
 }

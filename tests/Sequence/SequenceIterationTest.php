@@ -18,6 +18,7 @@ use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Sequence\GeneratorSequence;
 use Noctud\Collection\Tests\Sequence\Fixture\GeneratorAggregate;
 use Noctud\Collection\Tests\Sequence\Fixture\SharedIteratorAggregate;
+use NoRewindIterator;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WeakReference;
@@ -94,8 +95,8 @@ final class SequenceIterationTest extends TestCase
 			'The sequence\'s source returned the same iterator instance again - a source closure or an IteratorAggregate must produce a fresh iterator on each pass.',
 		);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -199,8 +200,8 @@ final class SequenceIterationTest extends TestCase
 			'This sequence is backed by a non-replayable source and has already been iterated. Create a new sequence from a fresh source to iterate again.',
 		);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -217,8 +218,47 @@ final class SequenceIterationTest extends TestCase
 		// The other side is a producer here, so its own guard is the one that fires.
 		$this->expectException(SequenceAlreadyIteratedException::class);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
+	}
+
+	#[Test]
+	public function zip_against_an_already_started_generator_throws(): void
+	{
+		$other = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+			yield 'c';
+		})();
+		$other->current();
+		$other->next();
+
+		// The other side is positioned like foreach positions it, so a cursor already in
+		// flight is refused rather than silently resumed - the same answer sequenceOf() gives
+		// to a started generator.
+		$this->expectException(Exception::class);
+		$this->expectExceptionMessageIsOrContains('Cannot rewind a generator that was already run');
+
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = sequenceOf([1, 2])->zip($other)->toArray();
+	}
+
+	#[Test]
+	public function zip_resumes_a_started_cursor_wrapped_in_a_no_rewind_iterator(): void
+	{
+		$other = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+			yield 'c';
+		})();
+		$other->current();
+		$other->next();
+
+		// NoRewindIterator::rewind() is a no-op, which is how a caller who does mean to resume
+		// a cursor in flight says so: only they can know that it is mid-stream.
+		$sequence = sequenceOf([1, 2])->zip(new NoRewindIterator($other));
+
+		$this->assertSame([[1, 'b'], [2, 'c']], $sequence->toArray());
 	}
 
 	#[Test]
@@ -249,8 +289,8 @@ final class SequenceIterationTest extends TestCase
 			'This sequence is backed by a non-replayable source and has already been iterated. Create a new sequence from a fresh source to iterate again.',
 		);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -262,8 +302,8 @@ final class SequenceIterationTest extends TestCase
 
 		$this->expectException(SequenceAlreadyIteratedException::class);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -285,8 +325,8 @@ final class SequenceIterationTest extends TestCase
 			'The sequence\'s source returned the same iterator instance again - a source closure or an IteratorAggregate must produce a fresh iterator on each pass.',
 		);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -305,8 +345,8 @@ final class SequenceIterationTest extends TestCase
 			'The sequence\'s source returned the same iterator instance again - a source closure or an IteratorAggregate must produce a fresh iterator on each pass.',
 		);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -329,8 +369,8 @@ final class SequenceIterationTest extends TestCase
 		$this->expectException(Exception::class);
 		$this->expectExceptionMessageIsOrContains('Cannot traverse an already closed generator');
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -342,8 +382,8 @@ final class SequenceIterationTest extends TestCase
 		$this->expectException(InvalidSequenceSourceException::class);
 		$this->expectExceptionMessageIsOrContains('The sequence\'s source closure must return an iterable, got int.');
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -360,8 +400,8 @@ final class SequenceIterationTest extends TestCase
 
 		$this->expectException(SequenceAlreadyIteratedException::class);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -385,8 +425,8 @@ final class SequenceIterationTest extends TestCase
 
 		$this->expectException(SequenceAlreadyIteratedException::class);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 
 	#[Test]
@@ -401,7 +441,7 @@ final class SequenceIterationTest extends TestCase
 
 		$this->expectException(SequenceAlreadyIteratedException::class);
 
-        // phpcs:ignore
-        $_ = $sequence->toArray();
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $sequence->toArray();
 	}
 }

@@ -9,10 +9,13 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Tests\Collection;
 
+use ArrayIterator;
 use Generator;
+use LimitIterator;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\Map\ImmutableMap;
 use PHPUnit\Framework\Attributes\Test;
+use SplStack;
 
 trait CollectionGroupAndZip
 {
@@ -134,6 +137,33 @@ trait CollectionGroupAndZip
 		// The other side is walked in lockstep, never buffered - and not pulled once past the
 		// shorter side either.
 		$this->assertSame(['a', 'b'], $pulled);
+	}
+
+	#[Test]
+	public function zip_with_an_unpositioned_iterator(): void
+	{
+		$stack = new SplStack();
+		$stack->push('a');
+		$stack->push('b');
+
+		// An SplDoublyLinkedList holds no position until it is rewound, so valid() answers
+		// false on a stack that plainly has elements. Left unrewound, zip reads that as an
+		// empty side and pairs nothing at all.
+		$this->assertCount(2, $stack);
+		$this->assertSame(['b', 'a'], iterator_to_array($stack, false));
+
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->assertSame([[1, 'b'], [2, 'a']], $collection->zip($stack)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_an_iterator_decorator(): void
+	{
+		$other = new LimitIterator(new ArrayIterator(['a', 'b', 'c']), 0, 2);
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $collection->zip($other)->toArray());
 	}
 
 	#[Test]

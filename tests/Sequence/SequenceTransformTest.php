@@ -9,12 +9,15 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Tests\Sequence;
 
+use ArrayIterator;
 use Generator;
+use LimitIterator;
 use Noctud\Collection\Tests\Collection\Fixture\Cat;
 use Noctud\Collection\Tests\Collection\Fixture\Dog;
 use Noctud\Collection\Tests\Collection\Fixture\Walkable;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use SplStack;
 use function Noctud\Collection\listOf;
 use function Noctud\Collection\sequenceOf;
 
@@ -318,6 +321,28 @@ final class SequenceTransformTest extends TestCase
 
 		$this->assertSame([[1, 'a'], [2, 'b']], sequenceOf([1, 2, 3])->zip($other)->toArray());
 		$this->assertSame([[1, 'a']], sequenceOf([1, 2])->zip(sequenceOf(['a']))->toArray());
+	}
+
+	#[Test]
+	public function zip_positions_an_unrewound_iterator_on_the_other_side(): void
+	{
+		$stack = new SplStack();
+		$stack->push('a');
+		$stack->push('b');
+
+		// valid() answers false on a stack that has never been rewound, however many elements
+		// it holds: without positioning it, lockstep would read an empty side and pair nothing.
+		$this->assertCount(2, $stack);
+
+		$this->assertSame([[1, 'b'], [2, 'a']], sequenceOf([1, 2])->zip($stack)->toArray());
+	}
+
+	#[Test]
+	public function zip_positions_an_iterator_decorator_on_the_other_side(): void
+	{
+		$other = new LimitIterator(new ArrayIterator(['a', 'b', 'c']), 0, 2);
+
+		$this->assertSame([[1, 'a'], [2, 'b']], sequenceOf([1, 2])->zip($other)->toArray());
 	}
 
 	#[Test]

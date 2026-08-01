@@ -29,9 +29,17 @@ final class ZipOperation extends AbstractOperation
 	public function with(iterable $other): Generator
 	{
 		$left = self::cursor($this->data);
+
+		// Positioning the other side would pull an element no pair could ever use.
+		if (!$left->valid()) {
+			return;
+		}
+
 		$right = self::cursor($other);
 
-		while ($left->valid() && $right->valid()) {
+		// This side is known to hold an element on every entry: the check above covers the
+		// first one, the break below every later one.
+		while ($right->valid()) {
 			yield [$left->current(), $right->current()];
 
 			// Advancing the other side only once this one still has an element spares it a
@@ -50,8 +58,9 @@ final class ZipOperation extends AbstractOperation
 	 * Positioned cursor over any iterable, so both sides can be walked in lockstep without
 	 * either being buffered.
 	 *
-	 * An Iterator is used as is and never rewound: it may be a cursor that has already
-	 * started, and rewinding a running Generator throws.
+	 * The rewind is not optional: an SplDoublyLinkedList and every IteratorIterator decorator
+	 * answer valid() === false until rewound, which lockstep would read as an empty side. It
+	 * makes a started Generator throw, exactly as foreach does; NoRewindIterator opts out.
 	 *
 	 * @template T
 	 * @param iterable<T> $iterable
@@ -63,13 +72,7 @@ final class ZipOperation extends AbstractOperation
 			return new ArrayIterator($iterable);
 		}
 
-		if ($iterable instanceof Iterator) {
-			return $iterable;
-		}
-
-		// An IteratorAggregate only hands out its iterator on rewind(): before that the
-		// wrapper has no position at all, and valid() answers false.
-		$cursor = new IteratorIterator($iterable);
+		$cursor = $iterable instanceof Iterator ? $iterable : new IteratorIterator($iterable);
 		$cursor->rewind();
 
 		return $cursor;

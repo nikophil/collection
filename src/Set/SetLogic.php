@@ -178,10 +178,7 @@ trait SetLogic
 	#[NoDiscard]
 	public function takeWhile(Closure $predicate): ImmutableSet
 	{
-		$i = 0;
-		return $this->newCollectionOf(new TakeOperation($this->store)->byPredicate(function ($v) use ($predicate, &$i) {
-			return $predicate($v, $i++);
-		}));
+		return $this->newCollectionOf(new TakeOperation($this->store)->byPredicate($predicate));
 	}
 
 	/**
@@ -192,10 +189,7 @@ trait SetLogic
 	#[NoDiscard]
 	public function dropWhile(Closure $predicate): ImmutableSet
 	{
-		$i = 0;
-		return $this->newCollectionOf(new DropOperation($this->store)->byPredicate(function ($v) use ($predicate, &$i) {
-			return $predicate($v, $i++);
-		}));
+		return $this->newCollectionOf(new DropOperation($this->store)->byPredicate($predicate));
 	}
 
 	/**

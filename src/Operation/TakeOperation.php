@@ -30,10 +30,11 @@ final class TakeOperation extends AbstractOperation
 
 		$i = 0;
 		foreach ($this->data as $v) {
-			if ($i++ >= $n) {
+			yield $v;
+
+			if (++$i >= $n) {
 				break;
 			}
-			yield $v;
 		}
 	}
 
@@ -53,13 +54,13 @@ final class TakeOperation extends AbstractOperation
 	}
 
 	/**
-	 * @param callable(V):bool $predicate
+	 * @param callable(V, int):bool $predicate
 	 * @return Generator<V>
 	 */
 	public function byPredicate(callable $predicate): Generator
 	{
-		foreach ($this->data as $v) {
-			if (!$predicate($v)) {
+		foreach ($this->data as $i => $v) {
+			if (!$predicate($v, $i)) {
 				break;
 			}
 			yield $v;

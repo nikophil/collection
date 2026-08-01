@@ -13,10 +13,17 @@ use Closure;
 use Generator;
 use IteratorAggregate;
 use Noctud\Collection\Exception\InvalidSequenceSourceException;
-use Noctud\Collection\Exception\SequenceAlreadyIteratedException;
+use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\List\ImmutableList;
+use Noctud\Collection\Operation\DistinctOperation;
+use Noctud\Collection\Operation\DropOperation;
 use Noctud\Collection\Operation\FilterOperation;
+use Noctud\Collection\Operation\FlatMapKeyValueOperation;
+use Noctud\Collection\Operation\FlattenOperation;
 use Noctud\Collection\Operation\MapKeyValueOperation;
+use Noctud\Collection\Operation\TakeOperation;
+use Noctud\Collection\Operation\ZipOperation;
+use Noctud\Collection\Operation\ZipWithNextOperation;
 use Noctud\Collection\Set\ImmutableSet;
 use NoDiscard;
 use Traversable;
@@ -61,11 +68,31 @@ trait SequenceLogic
 		})();
 	}
 
+	// --- Transformation ---
+
 	/** {@inheritDoc} */
 	#[NoDiscard]
 	public function filter(Closure $predicate): Sequence
 	{
 		return $this->newSequenceOf(fn (): iterable => new FilterOperation($this)->byPredicate($predicate));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @return Sequence<(E is null ? never : E)>
+	 */
+	#[NoDiscard] // @phpstan-ignore conditionalType.subjectNotFound (in classes with a concrete E the conditional subject is already substituted)
+	public function filterNotNull(): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new FilterOperation($this)->notNullValues());
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function filterInstanceOf(string $type): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new FilterOperation($this)->byValue(fn ($v) => $v instanceof $type)); // @phpstan-ignore return.type
 	}
 
 	/** {@inheritDoc} */
@@ -74,6 +101,119 @@ trait SequenceLogic
 	{
 		return $this->newSequenceOf(fn (): iterable => new MapKeyValueOperation($this)->items($transform));
 	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function mapNotNull(Closure $transform): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new MapKeyValueOperation($this)->itemsNotNull($transform));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function flatMap(Closure $transform): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new FlatMapKeyValueOperation($this)->items($transform));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function flatten(): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new FlattenOperation($this)->items());
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function takeFirst(int $n = 1): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new TakeOperation($this)->first($n));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function dropFirst(int $n = 1): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new DropOperation($this)->first($n));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function takeWhile(Closure $predicate): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new TakeOperation($this)->byPredicate($predicate));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function dropWhile(Closure $predicate): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new DropOperation($this)->byPredicate($predicate));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function distinct(): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new DistinctOperation($this)->items());
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function distinctBy(Closure $selector): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new DistinctOperation($this)->bySelector($selector));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function zip(iterable $other): Sequence
+	{
+		// Deciding whether the other side can be walked again belongs next to the cursor() that
+		// rewinds it, or the two classifications drift apart; remembering that a pass already
+		// walked it is sequence-only state and stays here.
+		$otherIsReplayable = ZipOperation::isReplayable($other);
+		$otherConsumed = false;
+
+		return $this->newSequenceOf(function () use ($other, $otherIsReplayable, &$otherConsumed): iterable {
+			if (!$otherIsReplayable && $otherConsumed) {
+				throw NonReplayableSourceException::zippedIterableAlreadyIterated();
+			}
+
+			// Marked per pair rather than per pass: a pass that pairs nothing never positions
+			// the other side, which stays where it was and replayable - so it must not be
+			// counted as consumed.
+			return (function () use ($other, &$otherConsumed): Generator {
+				foreach (new ZipOperation($this)->with($other) as $pair) {
+					$otherConsumed = true;
+
+					yield $pair;
+				}
+			})();
+		});
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function zipWithNext(): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new ZipWithNextOperation($this)->pairs());
+	}
+
+	// --- Iteration ---
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function onEach(Closure $action): Sequence
+	{
+		return $this->newSequenceOf(fn (): iterable => new MapKeyValueOperation($this)->items(function ($v, $k) use ($action) {
+			$action($v, $k);
+
+			return $v;
+		}));
+	}
+
+	// --- Conversion ---
 
 	/** {@inheritDoc} */
 	#[NoDiscard]
@@ -145,7 +285,7 @@ trait SequenceLogic
 		}
 
 		if ($this->consumed) {
-			throw SequenceAlreadyIteratedException::nonReplayableSourceAlreadyIterated();
+			throw NonReplayableSourceException::sequenceSourceAlreadyIterated();
 		}
 
 		$this->consumed = true;
@@ -172,7 +312,7 @@ trait SequenceLogic
 		// a producer, re-invoked per pass by the foreach that unwraps it.
 		if ($produced instanceof Traversable && !$produced instanceof IteratorAggregate) {
 			if ($this->lastProduced?->get() === $produced) {
-				throw SequenceAlreadyIteratedException::sourceReturnedSameIterator();
+				throw NonReplayableSourceException::sourceReturnedSameIterator();
 			}
 
 			$this->lastProduced = WeakReference::create($produced);

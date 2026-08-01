@@ -312,6 +312,10 @@ zip(iterable $other): ListInterface<array{E, U}>
 ```
 Pair elements from two iterables at the same position. Result length equals the shorter input.
 
+::: tip Resuming an advanced iterator
+Only a `Generator` can be distinguished from a fresh cursor — every other advanced iterator is indistinguishable from an unstarted one and gets rewound. Wrap it in a `NoRewindIterator` to resume it where it stands instead.
+:::
+
 ```php
 zipWithNext(): ListInterface<array{E, E}>
 ```

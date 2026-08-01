@@ -9,9 +9,14 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Tests\Collection;
 
+use ArrayIterator;
+use Generator;
+use LimitIterator;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\Map\ImmutableMap;
+use NoRewindIterator;
 use PHPUnit\Framework\Attributes\Test;
+use SplStack;
 
 trait CollectionGroupAndZip
 {
@@ -112,6 +117,98 @@ trait CollectionGroupAndZip
 	{
 		$collection = $this->collectionOf([]);
 		$this->assertSame([], $collection->zip(['a'])->toArray());
+	}
+
+	#[Test]
+	public function zip_pulls_the_other_iterable_lazily(): void
+	{
+		$pulled = [];
+		$other = (static function () use (&$pulled): Generator {
+			foreach (['a', 'b', 'c', 'd'] as $value) {
+				$pulled[] = $value;
+
+				yield $value;
+			}
+		})();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $collection->zip($other)->toArray());
+
+		// The other side is walked in lockstep, never buffered - and not pulled once past the
+		// shorter side either.
+		$this->assertSame(['a', 'b'], $pulled);
+	}
+
+	#[Test]
+	public function zip_with_an_unpositioned_iterator(): void
+	{
+		$stack = new SplStack();
+		$stack->push('a');
+		$stack->push('b');
+
+		// An SplDoublyLinkedList holds no position until it is rewound, so valid() answers
+		// false on a stack that plainly has elements. Left unrewound, zip reads that as an
+		// empty side and pairs nothing at all.
+		$this->assertCount(2, $stack);
+		$this->assertSame(['b', 'a'], iterator_to_array($stack, false));
+
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->assertSame([[1, 'b'], [2, 'a']], $collection->zip($stack)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_an_iterator_decorator(): void
+	{
+		$other = new LimitIterator(new ArrayIterator(['a', 'b', 'c']), 0, 2);
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $collection->zip($other)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_a_started_generator(): void
+	{
+		$other = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+			yield 'c';
+		})();
+		$other->current();
+		$other->next();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		// A Generator is never rewound: it is always positioned, so it resumes from where it
+		// stands and the head of a stream can be consumed before zipping the rest.
+		$this->assertSame([[1, 'b'], [2, 'c']], $collection->zip($other)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_an_advanced_iterator(): void
+	{
+		$other = new ArrayIterator(['a', 'b', 'c']);
+		$other->next();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		// The flip side of rewinding everything that is not a Generator: an advanced cursor
+		// cannot be told apart from a fresh one, so it restarts rather than resuming.
+		$this->assertSame([[1, 'a'], [2, 'b']], $collection->zip($other)->toArray());
+	}
+
+	#[Test]
+	public function zip_with_an_advanced_iterator_wrapped_in_a_no_rewind_iterator(): void
+	{
+		$other = new ArrayIterator(['a', 'b', 'c']);
+		$other->next();
+
+		$collection = $this->collectionOf([1, 2]);
+
+		// NoRewindIterator::rewind() is a no-op, which is how a caller who does mean to resume
+		// a non-Generator cursor says so: only they can know that it is mid-stream.
+		$this->assertSame([[1, 'b'], [2, 'c']], $collection->zip(new NoRewindIterator($other))->toArray());
 	}
 
 	#[Test]

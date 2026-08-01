@@ -13,6 +13,9 @@ use ArrayIterator;
 use Generator;
 use Iterator;
 use IteratorIterator;
+use Noctud\Collection\Exception\NonReplayableSourceException;
+use NoRewindIterator;
+use Throwable;
 
 /**
  * @internal
@@ -25,6 +28,7 @@ final class ZipOperation extends AbstractOperation
 	 * @template U
 	 * @param iterable<U> $other
 	 * @return Generator<array{V, U}>
+	 * @throws NonReplayableSourceException If the other side cannot be positioned at its start
 	 */
 	public function with(iterable $other): Generator
 	{
@@ -55,17 +59,16 @@ final class ZipOperation extends AbstractOperation
 	}
 
 	/**
+	 * @param iterable<mixed> $iterable
+	 */
+	public static function isReplayable(iterable $iterable): bool
+	{
+		return !$iterable instanceof Generator && !$iterable instanceof NoRewindIterator;
+	}
+
+	/**
 	 * Positioned cursor over any iterable, so both sides can be walked in lockstep without
 	 * either being buffered.
-	 *
-	 * A Generator is always positioned - valid() primes it - so valid() === false means
-	 * exhausted, never "not started". Left alone, it resumes from wherever it stands, which is
-	 * what lets a caller consume the head of a stream and zip the rest.
-	 *
-	 * Every other Iterator holds no position until rewound: an SplDoublyLinkedList and every
-	 * IteratorIterator decorator answer valid() === false beforehand, which lockstep would read
-	 * as an empty side. They are rewound, so one already advanced restarts from its first
-	 * element - it cannot be told apart from a fresh one - and NoRewindIterator opts out.
 	 *
 	 * @template T
 	 * @param iterable<T> $iterable
@@ -77,12 +80,19 @@ final class ZipOperation extends AbstractOperation
 			return new ArrayIterator($iterable);
 		}
 
-		if ($iterable instanceof Generator) {
-			return $iterable;
+		$cursor = $iterable instanceof Iterator ? $iterable : new IteratorIterator($iterable);
+
+		// Asked rather than decided again, so that what counts as replayable and what actually
+		// gets repositioned cannot drift apart.
+		if (!self::isReplayable($iterable)) {
+			return $cursor;
 		}
 
-		$cursor = $iterable instanceof Iterator ? $iterable : new IteratorIterator($iterable);
-		$cursor->rewind();
+		try {
+			$cursor->rewind();
+		} catch (Throwable $e) {
+			throw NonReplayableSourceException::zippedIterableCannotRewind($e);
+		}
 
 		return $cursor;
 	}

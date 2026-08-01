@@ -169,11 +169,14 @@ trait SequenceLogic
 	#[NoDiscard]
 	public function zip(iterable $other): Sequence
 	{
-		$otherIsOneShot = $other instanceof Traversable && !$other instanceof IteratorAggregate;
+		// Deciding whether the other side can be walked again belongs next to the cursor() that
+		// rewinds it, or the two classifications drift apart; remembering that a pass already
+		// walked it is sequence-only state and stays here.
+		$otherIsReplayable = ZipOperation::isReplayable($other);
 		$otherConsumed = false;
 
-		return $this->newSequenceOf(function () use ($other, $otherIsOneShot, &$otherConsumed): iterable {
-			if ($otherIsOneShot && $otherConsumed) {
+		return $this->newSequenceOf(function () use ($other, $otherIsReplayable, &$otherConsumed): iterable {
+			if (!$otherIsReplayable && $otherConsumed) {
 				throw NonReplayableSourceException::zippedIterableAlreadyIterated();
 			}
 

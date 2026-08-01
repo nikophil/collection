@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Exception;
 
+use Throwable;
+
 /**
  * Thrown when an iterable that can only be walked once is walked again.
  */
@@ -24,7 +26,15 @@ final class NonReplayableSourceException extends UnsupportedOperationException
 	public static function zippedIterableAlreadyIterated(): self
 	{
 		return new self(
-			'The iterable passed to zip() is a non-replayable cursor and has already been consumed. Zip an array or an IteratorAggregate - a collection or a sequence, for instance - to iterate the result more than once.',
+			'The iterable passed to zip() is a non-replayable cursor and has already been consumed. Zip an array or an IteratorAggregate to iterate the result more than once.',
+		);
+	}
+
+	public static function zippedIterableCannotRewind(Throwable $cause): self
+	{
+		return new self(
+			'The iterable passed to zip() could not be rewound, so it cannot be walked from its start.',
+			previous: $cause,
 		);
 	}
 

@@ -21,6 +21,7 @@ use Noctud\Collection\Tests\Sequence\Fixture\SharedIteratorAggregate;
 use NoRewindIterator;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use SplStack;
 use WeakReference;
 use function Noctud\Collection\listOf;
 use function Noctud\Collection\mutableListOf;
@@ -181,6 +182,59 @@ final class SequenceIterationTest extends TestCase
 	}
 
 	#[Test]
+	public function zip_replays_over_an_iterator_the_lockstep_rewinds(): void
+	{
+		// Replayability is read off what cursor() does: these are rewound, so a second pass
+		// starts them over. Classifying every raw Iterator as one-shot used to refuse this.
+		$sequence = sequenceOf([1, 2])->zip(new ArrayIterator(['a', 'b']));
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
+		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
+
+		$stack = new SplStack();
+		$stack->push('a');
+		$stack->push('b');
+		$overStack = sequenceOf([1, 2])->zip($stack);
+
+		$this->assertSame([[1, 'b'], [2, 'a']], $overStack->toArray());
+		$this->assertSame([[1, 'b'], [2, 'a']], $overStack->toArray());
+	}
+
+	#[Test]
+	public function zip_against_a_no_rewind_iterator_throws_on_second_pass(): void
+	{
+		$sequence = sequenceOf([1, 2])->zip(new NoRewindIterator(new ArrayIterator(['a', 'b', 'c', 'd'])));
+
+		$this->assertSame([[1, 'a'], [2, 'b']], $sequence->toArray());
+
+		// It swallows the rewind, so a second pass would resume at 'c' rather than start over.
+		$this->expectException(NonReplayableSourceException::class);
+
+		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function zip_reports_an_other_side_that_cannot_be_rewound(): void
+	{
+		$started = (static function (): Generator {
+			yield 'a';
+			yield 'b';
+		})();
+		$started->current();
+		$started->next();
+
+		// An aggregate handing back a cursor already in flight: the rewind fails, and PHP's own
+		// "Cannot rewind a generator that was already run" is relabelled rather than leaked.
+		try {
+			$_ = sequenceOf([1, 2])->zip(new SharedIteratorAggregate($started))->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+			$this->fail('Expected the failed rewind to be reported.');
+		} catch (NonReplayableSourceException $e) {
+			$this->assertStringContainsString('could not be rewound', $e->getMessage());
+			$this->assertInstanceOf(Exception::class, $e->getPrevious());
+		}
+	}
+
+	#[Test]
 	public function zip_replays_when_a_pass_paired_nothing(): void
 	{
 		$other = (static function (): Generator {
@@ -228,7 +282,7 @@ final class SequenceIterationTest extends TestCase
 		// The message names the zipped iterable, not this sequence, which is replayable here.
 		$this->expectException(NonReplayableSourceException::class);
 		$this->expectExceptionMessageIsOrContains(
-			'The iterable passed to zip() is a non-replayable cursor and has already been consumed. Zip an array or an IteratorAggregate - a collection or a sequence, for instance - to iterate the result more than once.',
+			'The iterable passed to zip() is a non-replayable cursor and has already been consumed. Zip an array or an IteratorAggregate to iterate the result more than once.',
 		);
 
 		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable

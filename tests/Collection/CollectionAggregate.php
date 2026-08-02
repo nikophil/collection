@@ -68,6 +68,7 @@ trait CollectionAggregate
 		$collection = $this->collectionOf([]);
 
 		$this->expectException(UnsupportedOperationException::class);
+		$this->expectExceptionMessageIsOrContains('Cannot compute average of empty collection');
 		$collection->avg();
 	}
 
@@ -126,6 +127,7 @@ trait CollectionAggregate
 		$collection = $this->collectionOf([]);
 
 		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('Collection is empty');
 		$collection->max();
 	}
 
@@ -192,6 +194,7 @@ trait CollectionAggregate
 		$collection = $this->collectionOf([]);
 
 		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('Collection is empty');
 		$collection->min();
 	}
 
@@ -361,6 +364,7 @@ trait CollectionAggregate
 		$collection = $this->collectionOf([]);
 
 		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('Collection is empty');
 		$collection->minOf(fn ($element) => $element);
 	}
 
@@ -406,6 +410,7 @@ trait CollectionAggregate
 		$collection = $this->collectionOf([]);
 
 		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('Collection is empty');
 		$collection->maxOf(fn ($element) => $element);
 	}
 

@@ -295,7 +295,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param non-negative-int $index
 	 * @return E
-	 * @throws IndexOutOfBoundsException If the sequence holds fewer elements than that
+	 * @throws IndexOutOfBoundsException If the sequence holds fewer elements than that or if the index is a negative int
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
@@ -307,6 +307,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param non-negative-int $index
 	 * @return E|null
+	 * @throws IndexOutOfBoundsException If the index is a negative int
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */

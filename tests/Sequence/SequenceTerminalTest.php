@@ -128,10 +128,30 @@ final class SequenceTerminalTest extends TestCase
 	}
 
 	#[Test]
+	public function elementAt_throws_on_a_negative_index(): void
+	{
+		$this->expectException(IndexOutOfBoundsException::class);
+		$this->expectExceptionMessageIsOrContains('Cannot use a negative index');
+
+		// @phpstan-ignore argument.type
+		$_ = sequenceOf(['a', 'b', 'c'])->elementAt(-1); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
 	public function elementAtOrNull_returns_null_past_the_end(): void
 	{
 		$this->assertSame('b', sequenceOf(['a', 'b', 'c'])->elementAtOrNull(1));
 		$this->assertNull(sequenceOf(['a', 'b', 'c'])->elementAtOrNull(3));
+	}
+
+	#[Test]
+	public function elementAtOrNull_throws_on_a_negative_index(): void
+	{
+		$this->expectException(IndexOutOfBoundsException::class);
+		$this->expectExceptionMessageIsOrContains('Cannot use a negative index');
+
+		// @phpstan-ignore argument.type
+		$_ = sequenceOf(['a', 'b', 'c'])->elementAtOrNull(-1); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 	}
 
 	#[Test]

@@ -240,12 +240,18 @@ trait SequenceLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Kotlin's index accessor rather than a List's: there is no length to bounds-check against, so
-	 * the index is only known to be past the end once the source runs out.
+	 * Kotlin's index accessor rather than a List's: a negative index is rejected up front, but
+	 * there is no length to bounds-check against, so an index past the end is only known once
+	 * the source runs out.
 	 */
 	#[NoDiscard]
 	public function elementAt(int $index)
 	{
+		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
+		if ($index < 0) {
+			throw new IndexOutOfBoundsException('Cannot use a negative index.');
+		}
+
 		foreach ($this as $i => $v) {
 			if ($i === $index) {
 				return $v;
@@ -259,6 +265,11 @@ trait SequenceLogic
 	#[NoDiscard]
 	public function elementAtOrNull(int $index): mixed
 	{
+		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
+		if ($index < 0) {
+			throw new IndexOutOfBoundsException('Cannot use a negative index.');
+		}
+
 		foreach ($this as $i => $v) {
 			if ($i === $index) {
 				return $v;

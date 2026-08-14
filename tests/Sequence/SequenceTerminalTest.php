@@ -112,6 +112,20 @@ final class SequenceTerminalTest extends TestCase
 	}
 
 	#[Test]
+	public function singleOrNull_propagates_a_NoSuchElementException_thrown_by_a_stage(): void
+	{
+		// A mapper failing over some other subject is a real error, not "no single element" here.
+		$sequence = sequenceOf([1])->map(static function (): int {
+			throw new NoSuchElementException('Raised inside the pipeline');
+		});
+
+		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('Raised inside the pipeline');
+
+		$_ = $sequence->singleOrNull(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
 	public function elementAt_returns_the_element_at_that_position(): void
 	{
 		$this->assertSame('b', sequenceOf(['a', 'b', 'c'])->elementAt(1));

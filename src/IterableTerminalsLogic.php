@@ -49,14 +49,27 @@ trait IterableTerminalsLogic
 		return $result; // @phpstan-ignore return.type
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Not a try-catch around single(): iterating $this runs user closures on the lazy side, and a
+	 * NoSuchElementException raised inside one is a real error, not an answer to this question.
+	 */
 	public function singleOrNull(): mixed
 	{
-		try {
-			return $this->single();
-		} catch (NoSuchElementException) {
-			return null;
+		$found = false;
+		$result = null;
+
+		foreach ($this as $v) {
+			if ($found) {
+				return null;
+			}
+
+			$result = $v;
+			$found = true;
 		}
+
+		return $result;
 	}
 
 	/** {@inheritDoc} */

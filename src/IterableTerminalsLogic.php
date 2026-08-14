@@ -11,6 +11,7 @@ namespace Noctud\Collection;
 
 use Closure;
 use Noctud\Collection\Exception\NoSuchElementException;
+use Noctud\Collection\Sequence\Sequence;
 
 /**
  * Terminal operations implemented by walking $this and nothing else, shared by the eager
@@ -24,6 +25,10 @@ use Noctud\Collection\Exception\NoSuchElementException;
  * Collection<E> or Sequence<E> depending on who uses the trait.
  *
  * @template E
+ *
+ * @internal
+ *
+ * @phpstan-require-implements Collection|Sequence
  */
 trait IterableTerminalsLogic
 {

@@ -27,8 +27,6 @@ use Noctud\Collection\Sequence\Sequence;
  * @template E
  *
  * @internal
- *
- * @phpstan-require-implements Collection|Sequence
  */
 trait IterableTerminalsLogic
 {

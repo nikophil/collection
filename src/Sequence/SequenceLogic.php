@@ -321,6 +321,94 @@ trait SequenceLogic
 		return $result;
 	}
 
+	// --- Querying ---
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * The eager side reads its store; here a single element settles the question, so nothing
+	 * beyond the first is pulled.
+	 */
+	public function isEmpty(): bool
+	{
+		foreach ($this as $ignored) { // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * No hash index to ask, so this is the linear scan the eager side avoids - it does stop at
+	 * the first match.
+	 */
+	public function contains(mixed $element): bool
+	{
+		foreach ($this as $v) {
+			if ($v === $element) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Unlike its Collection counterpart this cannot look each value up in turn - that would cost
+	 * one pass per value, which a single-pass source cannot give. So the values still being looked
+	 * for are carried through a single walk, and dropped as they are met.
+	 */
+	public function containsAll(iterable $elements): bool
+	{
+		$missing = [];
+		foreach ($elements as $element) {
+			$missing[] = $element;
+		}
+
+		if ($missing === []) {
+			return true;
+		}
+
+		foreach ($this as $v) {
+			if (!in_array($v, $missing, true)) {
+				continue;
+			}
+
+			// Every equal entry drops, not just the first: containsAll([1, 1]) asks whether 1 is
+			// there, not whether it is there twice - the same answer the eager side gives.
+			$missing = array_filter($missing, static fn (mixed $wanted): bool => $wanted !== $v);
+
+			if ($missing === []) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * O(n) where the eager side is O(1), and draining: the count is only known once the source
+	 * runs out.
+	 *
+	 * @return int<0, max>
+	 */
+	public function count(): int
+	{
+		/** @var int<0, max> $count */
+		$count = 0;
+		foreach ($this as $_) { // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+			$count++;
+		}
+
+		return $count;
+	}
+
 	// --- Conversion ---
 
 	/** {@inheritDoc} */

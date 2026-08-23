@@ -39,10 +39,10 @@ use NoDiscard;
  *
  * Keys are positional: every pass yields fresh 0..n keys, whatever the source yields.
  *
- * Deliberately neither Countable (counting would silently consume a pass; native
- * count($seq) is a TypeError by design) nor JsonSerializable
- * (json_encode would be a hidden materialization) - materialize explicitly with
- * toList() or toArray() instead.
+ * Deliberately neither Countable (native count($seq) stays a TypeError by design;
+ * $seq->count() exists as an explicit O(n) terminal that drains a pass) nor
+ * JsonSerializable (json_encode would be a hidden materialization) - materialize
+ * explicitly with toList() or toArray() instead.
  *
  * @template E
  * @extends IteratorAggregate<int, E>
@@ -328,6 +328,95 @@ interface Sequence extends IteratorAggregate
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
 	public function expect(Closure $predicate);
+
+	// --- Querying ---
+
+	/**
+	 * Whether the sequence does not contain any elements. Pulls exactly one element.
+	 *
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function isEmpty(): bool;
+
+	/**
+	 * Whether the sequence contains at least one element. Pulls exactly one element.
+	 *
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function isNotEmpty(): bool;
+
+	/**
+	 * Whether the sequence contains a value (strict comparison).
+	 * Stops pulling at the first match.
+	 *
+	 * @param E $element
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function contains(mixed $element): bool;
+
+	/**
+	 * Whether the sequence contains all the provided values.
+	 * Walks the sequence once, stopping as soon as none is left to look for.
+	 *
+	 * @param iterable<E> $elements
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function containsAll(iterable $elements): bool;
+
+	/**
+	 * Returns true if all elements match the predicate.
+	 * Stops pulling at the first element that does not.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function all(Closure $predicate): bool;
+
+	/**
+	 * Returns true if any element matches the predicate.
+	 * Stops pulling at the first match.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function any(Closure $predicate): bool;
+
+	/**
+	 * Returns true if no element matches the predicate.
+	 * Stops pulling at the first match.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function none(Closure $predicate): bool;
+
+	/**
+	 * Returns the number of elements in the sequence, draining it.
+	 * The O(n) counterpart of a Collection's O(1) count: a sequence has no length to read, only
+	 * elements to pull, which is why the cost has to be asked for explicitly.
+	 *
+	 * @return int<0, max>
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function count(): int;
+
+	/**
+	 * Returns the number of elements matching the predicate, draining the sequence.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @return int<0, max>
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function countWhere(Closure $predicate): int;
 
 	// --- Conversion ---
 

@@ -402,6 +402,7 @@ interface Sequence extends IteratorAggregate
 	 * The O(n) counterpart of a Collection's O(1) count: a sequence has no length to read, only
 	 * elements to pull, which is why the cost has to be asked for explicitly.
 	 *
+	 * @return int<0, max>
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */

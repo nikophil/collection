@@ -380,7 +380,7 @@ trait SequenceLogic
 
 			// Every equal entry drops, not just the first: containsAll([1, 1]) asks whether 1 is
 			// there, not whether it is there twice - the same answer the eager side gives.
-			$missing = array_values(array_filter($missing, static fn (mixed $wanted): bool => $wanted !== $v));
+			$missing = array_filter($missing, static fn (mixed $wanted): bool => $wanted !== $v);
 
 			if ($missing === []) {
 				return true;

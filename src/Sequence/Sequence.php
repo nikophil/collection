@@ -230,7 +230,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function first();
 
 	/**
@@ -240,7 +239,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function firstOrNull(): mixed;
 
 	/**
@@ -253,7 +251,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function last();
 
 	/**
@@ -263,7 +260,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function lastOrNull(): mixed;
 
 	/**
@@ -275,7 +271,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function single();
 
 	/**
@@ -285,7 +280,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function singleOrNull(): mixed;
 
 	/**
@@ -299,7 +293,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function elementAt(int $index);
 
 	/**
@@ -311,7 +304,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function elementAtOrNull(int $index): mixed;
 
 	/**
@@ -323,7 +315,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function find(Closure $predicate): mixed;
 
 	/**
@@ -336,7 +327,6 @@ interface Sequence extends IteratorAggregate
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
 	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
 	 */
-	#[NoDiscard]
 	public function expect(Closure $predicate);
 
 	// --- Conversion ---

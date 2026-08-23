@@ -227,7 +227,6 @@ trait SequenceLogic
 	 * The eager side answers this from its store; a sequence has to pull, and returning inside
 	 * the foreach is what keeps it to a single element.
 	 */
-	#[NoDiscard]
 	public function first()
 	{
 		foreach ($this as $v) {
@@ -244,7 +243,6 @@ trait SequenceLogic
 	 * there is no length to bounds-check against, so an index past the end is only known once
 	 * the source runs out.
 	 */
-	#[NoDiscard]
 	public function elementAt(int $index)
 	{
 		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
@@ -262,7 +260,6 @@ trait SequenceLogic
 	}
 
 	/** {@inheritDoc} */
-	#[NoDiscard]
 	public function elementAtOrNull(int $index): mixed
 	{
 		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
@@ -280,7 +277,6 @@ trait SequenceLogic
 	}
 
 	/** {@inheritDoc} */
-	#[NoDiscard]
 	public function firstOrNull(): mixed
 	{
 		foreach ($this as $v) {
@@ -296,7 +292,6 @@ trait SequenceLogic
 	 * No array_key_last to lean on here: the last element is only knowable once the source is
 	 * exhausted, so this drains it.
 	 */
-	#[NoDiscard]
 	public function last()
 	{
 		$found = false;
@@ -315,7 +310,6 @@ trait SequenceLogic
 	}
 
 	/** {@inheritDoc} */
-	#[NoDiscard]
 	public function lastOrNull(): mixed
 	{
 		$result = null;

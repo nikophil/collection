@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 use function Noctud\Collection\listOf;
 use function Noctud\Collection\sequenceOf;
 
-final class SequenceTerminalTest extends TestCase
+final class SequenceAccessTest extends TestCase
 {
 	#[Test]
 	public function first_returns_the_first_element(): void

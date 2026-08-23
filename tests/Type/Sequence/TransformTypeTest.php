@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Noctud\Collection\Tests\Type;
+namespace Noctud\Collection\Tests\Type\Sequence;
 
 use Noctud\Collection\Sequence\Sequence;
 use stdClass;

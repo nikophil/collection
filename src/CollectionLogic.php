@@ -140,45 +140,9 @@ trait CollectionLogic
 	}
 
 	/** {@inheritDoc} */
-	public function all(Closure $predicate): bool
-	{
-		foreach ($this as $i => $v) {
-			if (!$predicate($v, $i)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/** {@inheritDoc} */
-	public function any(Closure $predicate): bool
-	{
-		foreach ($this as $i => $v) {
-			if ($predicate($v, $i)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/** {@inheritDoc} */
-	public function none(Closure $predicate): bool
-	{
-		return !$this->any($predicate);
-	}
-
-	/** {@inheritDoc} */
 	public function isEmpty(): bool
 	{
 		return $this->store->isEmpty();
-	}
-
-	/** {@inheritDoc} */
-	public function isNotEmpty(): bool
-	{
-		return !$this->isEmpty();
 	}
 
 	/**
@@ -191,20 +155,6 @@ trait CollectionLogic
 		$storeCount = $this->store->count();
 
 		return $storeCount;
-	}
-
-	/** {@inheritDoc} */
-	public function countWhere(Closure $predicate): int
-	{
-		/** @var int<0, max> $count */
-		$count = 0;
-		foreach ($this as $i => $v) {
-			if ($predicate($v, $i)) {
-				$count++;
-			}
-		}
-
-		return $count;
 	}
 
 	// --- Aggregation ---

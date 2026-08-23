@@ -44,6 +44,9 @@ use NoDiscard;
  */
 trait CollectionLogic
 {
+	/** @use IterableTerminalsLogic<E> */
+	use IterableTerminalsLogic;
+
 	// --- Element Access ---
 
 	/** {@inheritDoc} */
@@ -71,50 +74,6 @@ trait CollectionLogic
 	}
 
 	/** {@inheritDoc} */
-	public function single()
-	{
-		$found = false;
-		$result = null;
-
-		foreach ($this as $v) {
-			if ($found) {
-				throw new NoSuchElementException('Collection contains more than one element');
-			}
-
-			$result = $v;
-			$found = true;
-		}
-
-		if (!$found) {
-			throw new NoSuchElementException('Collection is empty');
-		}
-
-		return $result; // @phpstan-ignore return.type
-	}
-
-	/** {@inheritDoc} */
-	public function singleOrNull(): mixed
-	{
-		try {
-			return $this->single();
-		} catch (NoSuchElementException) {
-			return null;
-		}
-	}
-
-	/** {@inheritDoc} */
-	public function find(Closure $predicate): mixed
-	{
-		foreach ($this as $i => $v) {
-			if ($predicate($v, $i)) {
-				return $v;
-			}
-		}
-
-		return null;
-	}
-
-	/** {@inheritDoc} */
 	public function findLast(Closure $predicate): mixed
 	{
 		$result = null;
@@ -126,18 +85,6 @@ trait CollectionLogic
 		}
 
 		return $result;
-	}
-
-	/** {@inheritDoc} */
-	public function expect(Closure $predicate)
-	{
-		foreach ($this as $i => $v) {
-			if ($predicate($v, $i)) {
-				return $v;
-			}
-		}
-
-		throw new NoSuchElementException('No element matching the predicate was found');
 	}
 
 	/** {@inheritDoc} */

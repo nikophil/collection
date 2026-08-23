@@ -11,8 +11,10 @@ namespace Noctud\Collection\Sequence;
 
 use Closure;
 use IteratorAggregate;
+use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\InvalidSequenceSourceException;
 use Noctud\Collection\Exception\NonReplayableSourceException;
+use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Set\ImmutableSet;
 use NoDiscard;
@@ -217,6 +219,115 @@ interface Sequence extends IteratorAggregate
 	 */
 	#[NoDiscard]
 	public function onEach(Closure $action): Sequence;
+
+	// --- Element Access ---
+
+	/**
+	 * Returns the first element, consuming one pass. Pulls exactly one element.
+	 *
+	 * @return E
+	 * @throws NoSuchElementException If the sequence is empty
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function first();
+
+	/**
+	 * Returns the first element, or null if the sequence is empty. Pulls exactly one element.
+	 *
+	 * @return E|null
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function firstOrNull(): mixed;
+
+	/**
+	 * Returns the last element, consuming one pass.
+	 * Unlike its Collection counterpart this drains the whole sequence - the last element is
+	 * only knowable at the end.
+	 *
+	 * @return E
+	 * @throws NoSuchElementException If the sequence is empty
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function last();
+
+	/**
+	 * Returns the last element, or null if the sequence is empty. Drains the sequence.
+	 *
+	 * @return E|null
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function lastOrNull(): mixed;
+
+	/**
+	 * Returns the single element, consuming one pass. Pulls at most two elements: a second one
+	 * existing is already an error.
+	 *
+	 * @return E
+	 * @throws NoSuchElementException If the sequence is empty or holds more than one element
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function single();
+
+	/**
+	 * Returns the single element, or null if the sequence is empty or holds more than one.
+	 *
+	 * @return E|null
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function singleOrNull(): mixed;
+
+	/**
+	 * Returns the element at the given position, consuming one pass.
+	 * Pulls up to that position and no further; there is no length to check the index against
+	 * beforehand, so an index past the end is only known once the sequence runs out.
+	 *
+	 * @param non-negative-int $index
+	 * @return E
+	 * @throws IndexOutOfBoundsException If the sequence holds fewer elements than that or if the index is a negative int
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function elementAt(int $index);
+
+	/**
+	 * Returns the element at the given position, or null if the sequence is shorter than that.
+	 *
+	 * @param non-negative-int $index
+	 * @return E|null
+	 * @throws IndexOutOfBoundsException If the index is a negative int
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function elementAtOrNull(int $index): mixed;
+
+	/**
+	 * Returns the first element matching the predicate, or null if none does.
+	 * Stops pulling at the first match.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @return E|null
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function find(Closure $predicate): mixed;
+
+	/**
+	 * Returns the first element matching the predicate, throwing if none does.
+	 * Stops pulling at the first match.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @return E
+	 * @throws NoSuchElementException If no element matches the predicate
+	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed
+	 * @throws InvalidSequenceSourceException If a Closure source returns a non-iterable
+	 */
+	public function expect(Closure $predicate);
 
 	// --- Conversion ---
 

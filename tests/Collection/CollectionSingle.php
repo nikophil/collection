@@ -27,6 +27,7 @@ trait CollectionSingle
 		$collection = $this->collectionOf([]);
 
 		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('Collection is empty');
 		$collection->single();
 	}
 
@@ -36,6 +37,7 @@ trait CollectionSingle
 		$collection = $this->collectionOf([1, 2]);
 
 		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('Collection contains more than one element');
 		$collection->single();
 	}
 

@@ -12,8 +12,11 @@ namespace Noctud\Collection\Sequence;
 use Closure;
 use Generator;
 use IteratorAggregate;
+use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\InvalidSequenceSourceException;
 use Noctud\Collection\Exception\NonReplayableSourceException;
+use Noctud\Collection\Exception\NoSuchElementException;
+use Noctud\Collection\IterableTerminalsLogic;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Operation\DistinctOperation;
 use Noctud\Collection\Operation\DropOperation;
@@ -37,6 +40,9 @@ use function Noctud\Collection\setOf;
  */
 trait SequenceLogic
 {
+	/** @use IterableTerminalsLogic<E> */
+	use IterableTerminalsLogic;
+
 	/** @var iterable<E>|Closure():iterable<E> */
 	private iterable|Closure $source;
 
@@ -211,6 +217,108 @@ trait SequenceLogic
 
 			return $v;
 		}));
+	}
+
+	// --- Element Access ---
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * The eager side answers this from its store; a sequence has to pull, and returning inside
+	 * the foreach is what keeps it to a single element.
+	 */
+	public function first()
+	{
+		foreach ($this as $v) {
+			return $v;
+		}
+
+		throw NoSuchElementException::emptySubject($this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Kotlin's index accessor rather than a List's: a negative index is rejected up front, but
+	 * there is no length to bounds-check against, so an index past the end is only known once
+	 * the source runs out.
+	 */
+	public function elementAt(int $index)
+	{
+		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
+		if ($index < 0) {
+			throw new IndexOutOfBoundsException('Cannot use a negative index.');
+		}
+
+		foreach ($this as $i => $v) {
+			if ($i === $index) {
+				return $v;
+			}
+		}
+
+		throw new IndexOutOfBoundsException('Index out of bounds: ' . $index);
+	}
+
+	/** {@inheritDoc} */
+	public function elementAtOrNull(int $index): mixed
+	{
+		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
+		if ($index < 0) {
+			throw new IndexOutOfBoundsException('Cannot use a negative index.');
+		}
+
+		foreach ($this as $i => $v) {
+			if ($i === $index) {
+				return $v;
+			}
+		}
+
+		return null;
+	}
+
+	/** {@inheritDoc} */
+	public function firstOrNull(): mixed
+	{
+		foreach ($this as $v) {
+			return $v;
+		}
+
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * No array_key_last to lean on here: the last element is only knowable once the source is
+	 * exhausted, so this drains it.
+	 */
+	public function last()
+	{
+		$found = false;
+		$result = null;
+
+		foreach ($this as $v) {
+			$result = $v;
+			$found = true;
+		}
+
+		if (!$found) {
+			throw NoSuchElementException::emptySubject($this);
+		}
+
+		return $result; // @phpstan-ignore return.type
+	}
+
+	/** {@inheritDoc} */
+	public function lastOrNull(): mixed
+	{
+		$result = null;
+
+		foreach ($this as $v) {
+			$result = $v;
+		}
+
+		return $result;
 	}
 
 	// --- Conversion ---

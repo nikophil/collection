@@ -11,7 +11,6 @@ namespace Noctud\Collection;
 
 use Closure;
 use Noctud\Collection\Exception\NoSuchElementException;
-use Noctud\Collection\Sequence\Sequence;
 
 /**
  * Terminal operations implemented by walking $this and nothing else, shared by the eager

@@ -587,9 +587,9 @@ interface Sequence extends IteratorAggregate
 	 * Joins elements into a string with the given separator, prefix, postfix, and optional
 	 * transform.
 	 *
-	 * The one aggregation that can stop early: a non-negative $limit stops pulling once that many
-	 * elements have been joined, so joining the head of a long stream costs only that head.
-	 * Without a limit it drains.
+	 * The one aggregation that can stop early: a non-negative $limit stops pulling after
+	 * $limit + 1 elements - the extra one tells whether $truncated applies - so joining the head
+	 * of a long stream costs only that head. Without a limit it drains.
 	 *
 	 * When no transform is provided, elements are converted to strings using (string) cast.
 	 * Scalars, null, and Stringable objects are supported. Non-stringable objects and arrays

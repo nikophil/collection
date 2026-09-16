@@ -159,13 +159,18 @@ final class SequenceAggregateTest extends TestCase
 	{
 		// A selector reaching into an empty collection of its own raises this; swallowing it would
 		// report the sequence as empty when it is not.
-		$this->expectException(NoSuchElementException::class);
-		$this->expectExceptionMessageIsOrContains('from the selector');
-
-		// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
-		$_ = sequenceOf([1, 2])->minOrNull(static function (): int {
+		$selector = static function (): int {
 			throw new NoSuchElementException('from the selector');
-		});
+		};
+
+		foreach (['minOrNull', 'maxOrNull', 'minOfOrNull', 'maxOfOrNull'] as $method) {
+			try {
+				sequenceOf([1, 2])->{$method}($selector);
+				$this->fail("{$method}() should have propagated the exception");
+			} catch (NoSuchElementException $e) {
+				$this->assertStringContainsString('from the selector', $e->getMessage());
+			}
+		}
 	}
 
 	#[Test]
@@ -225,11 +230,30 @@ final class SequenceAggregateTest extends TestCase
 	#[Test]
 	public function the_other_aggregations_drain_the_source(): void
 	{
-		foreach (['sum', 'min', 'max'] as $method) {
-			$pulled = [];
-			$sequence = $this->loggingSequence($pulled);
+		$add = static fn (int $a, int $b): int => $a + $b;
+		$double = static fn (int $v): int => $v * 2;
 
-			$sequence->{$method}();
+		$aggregations = [
+			'fold' => [0, $add],
+			'reduce' => [$add],
+			'reduceOrNull' => [$add],
+			'sum' => [],
+			'avg' => [],
+			'avgOrNull' => [],
+			'min' => [],
+			'max' => [],
+			'minOrNull' => [],
+			'maxOrNull' => [],
+			'minOf' => [$double],
+			'maxOf' => [$double],
+			'minOfOrNull' => [$double],
+			'maxOfOrNull' => [$double],
+			'joinToString' => [],
+		];
+
+		foreach ($aggregations as $method => $arguments) {
+			$pulled = [];
+			$this->loggingSequence($pulled)->{$method}(...$arguments);
 
 			$this->assertSame([1, 2, 3, 4], $pulled, "{$method}() should drain");
 		}

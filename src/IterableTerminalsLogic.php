@@ -428,18 +428,22 @@ trait IterableTerminalsLogic
 	/** {@inheritDoc} */
 	public function joinToString(string $separator = ', ', string $prefix = '', string $postfix = '', int $limit = -1, string $truncated = '...', ?Closure $transform = null): string
 	{
-		$parts = [];
+		$result = $prefix;
 		$i = 0;
 		foreach ($this as $v) {
+			if ($i > 0) {
+				$result .= $separator;
+			}
+
 			if ($limit >= 0 && $i >= $limit) {
-				$parts[] = $truncated;
+				$result .= $truncated;
 				break;
 			}
 
 			if ($transform !== null) {
-				$parts[] = $transform($v, $i);
+				$result .= $transform($v, $i);
 			} elseif (is_scalar($v) || $v === null || $v instanceof Stringable) {
-				$parts[] = (string) $v;
+				$result .= (string) $v;
 			} else {
 				throw new ConversionException(sprintf(
 					'Value of type "%s" at index %d cannot be converted to string. Provide a $transform closure to resolve.',
@@ -451,6 +455,6 @@ trait IterableTerminalsLogic
 			$i++;
 		}
 
-		return $prefix . implode($separator, $parts) . $postfix;
+		return $result . $postfix;
 	}
 }

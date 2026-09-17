@@ -286,7 +286,7 @@ trait MapLogic
 	#[NoDiscard]
 	public function mapValues(Closure $transform): ImmutableMap
 	{
-		return $this->newTransformedMapOf(new MapKeyValueOperation($this->store)->values($transform));
+		return $this->newValueTransformedMapOf(new MapKeyValueOperation($this->store)->values($transform));
 	}
 
 	/**
@@ -299,7 +299,7 @@ trait MapLogic
 	#[NoDiscard]
 	public function mapValuesNotNull(Closure $transform): ImmutableMap
 	{
-		return $this->newTransformedMapOf(new MapKeyValueOperation($this->store)->valuesNotNull($transform));
+		return $this->newValueTransformedMapOf(new MapKeyValueOperation($this->store)->valuesNotNull($transform));
 	}
 
 	/**
@@ -721,7 +721,7 @@ trait MapLogic
 	}
 
 	/**
-	 * Creates the result of a key- or value-type-changing operation (mapKeys, mapValues, flip).
+	 * Creates the result of a key-type-changing operation (mapKeys, flip).
 	 *
 	 * Not routed through newMapOf: a self-preserving subtype rebuilds itself there,
 	 * and a transformed result no longer holds K/V entries — it must not go through
@@ -733,6 +733,21 @@ trait MapLogic
 	 * @return ImmutableMap<NK,NV>
 	 */
 	protected function newTransformedMapOf(iterable $data): ImmutableMap
+	{
+		return mapOf($data);
+	}
+
+	/**
+	 * Creates the result of a value-type-changing operation (mapValues, mapValuesNotNull).
+	 *
+	 * Same rationale as newTransformedMapOf, but kept apart because the keys are
+	 * untouched: a map bound to a key type (int, string) can keep its own store.
+	 *
+	 * @template NV
+	 * @param iterable<K,NV> $data
+	 * @return ImmutableMap<K,NV>
+	 */
+	protected function newValueTransformedMapOf(iterable $data): ImmutableMap
 	{
 		return mapOf($data);
 	}

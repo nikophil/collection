@@ -98,4 +98,10 @@ class TraitItemCollection implements ImmutableSet
 	{
 		return $this->flatMap(static fn (SwappableItem $i): array => [$i->id, -$i->id]);
 	}
+
+	/** @return ImmutableSet<SwappableItem> */
+	public function flattened(): ImmutableSet
+	{
+		return $this->flatten();
+	}
 }

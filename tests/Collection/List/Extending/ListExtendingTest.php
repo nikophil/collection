@@ -104,6 +104,9 @@ final class ListExtendingTest extends TestCase
 		$list = new LineItems([new SwappableItem(1, true), new SwappableItem(2, false)]);
 
 		$ids = $list->toIds();
+		$swappedIds = $list->swappedIds();
+		$withNegatives = $list->idsWithNegatives();
+		$flattened = $list->flattened();
 
 		// The shape changed, so the static type narrows to the base ImmutableList<int>
 		// (asserted by PHPStan via toIds()'s @return). At runtime the result is a plain
@@ -111,9 +114,13 @@ final class ListExtendingTest extends TestCase
 		// invariant) is never re-entered with transformed elements.
 		self::assertInstanceOf(ImmutableList::class, $ids);
 		self::assertNotInstanceOf(LineItems::class, $ids);
+		self::assertNotInstanceOf(LineItems::class, $swappedIds);
+		self::assertNotInstanceOf(LineItems::class, $withNegatives);
+		self::assertNotInstanceOf(LineItems::class, $flattened);
 		self::assertSame([1, 2], $ids->toArray());
-		self::assertSame([1], $list->swappedIds()->toArray());
-		self::assertSame([1, -1, 2, -2], $list->idsWithNegatives()->toArray());
+		self::assertSame([1], $swappedIds->toArray());
+		self::assertSame([1, -1, 2, -2], $withNegatives->toArray());
+		self::assertSame($list->toArray(), $flattened->toArray());
 	}
 
 	#[Test]

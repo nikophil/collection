@@ -120,6 +120,7 @@ final class SetExtendingTest extends TestCase
 		$ids = $collection->toIds();
 		$swappedIds = $collection->swappedIds();
 		$withNegatives = $collection->idsWithNegatives();
+		$flattened = $collection->flattened();
 
 		// The shape changed, so the static type narrows to the base ImmutableSet<int>
 		// (asserted by PHPStan via toIds()'s @return). At runtime the result is a plain
@@ -129,9 +130,11 @@ final class SetExtendingTest extends TestCase
 		self::assertNotInstanceOf(TraitItemCollection::class, $ids);
 		self::assertNotInstanceOf(TraitItemCollection::class, $swappedIds);
 		self::assertNotInstanceOf(TraitItemCollection::class, $withNegatives);
+		self::assertNotInstanceOf(TraitItemCollection::class, $flattened);
 		self::assertEqualsCanonicalizing([1, 2], $ids->toArray());
 		self::assertEqualsCanonicalizing([1], $swappedIds->toArray());
 		self::assertEqualsCanonicalizing([1, -1, 2, -2], $withNegatives->toArray());
+		self::assertEqualsCanonicalizing($collection->toArray(), $flattened->toArray());
 	}
 
 	#[Test]

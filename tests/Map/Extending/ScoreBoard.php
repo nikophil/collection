@@ -78,9 +78,10 @@ class ScoreBoard implements ImmutableMap
 		return $this->sortedByValueDesc()->takeFirst(1);
 	}
 
-	// mapKeys / mapValues / mapValuesNotNull change the key or value type, so they
-	// return the base ImmutableMap<NK,V> / ImmutableMap<K,NV> (not self). These assert
-	// the new key/value type is inferred from the closure rather than collapsed to mixed.
+	// mapKeys / mapValues / mapValuesNotNull / flip change the key or value type, so
+	// they return the base ImmutableMap<NK,V> / ImmutableMap<K,NV> (not self). These
+	// assert the new key/value type is inferred from the closure rather than collapsed
+	// to mixed.
 
 	/** @return ImmutableMap<int, int> */
 	public function rekeyByScore(): ImmutableMap
@@ -98,5 +99,11 @@ class ScoreBoard implements ImmutableMap
 	public function winnerLabels(): ImmutableMap
 	{
 		return $this->mapValuesNotNull(static fn (int $score): ?string => $score >= 100 ? 'win' : null);
+	}
+
+	/** @return ImmutableMap<int, string> */
+	public function flipped(): ImmutableMap
+	{
+		return $this->flip();
 	}
 }

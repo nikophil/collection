@@ -99,4 +99,10 @@ class LineItems implements ImmutableList
 	{
 		return $this->flatMap(static fn (SwappableItem $i): array => [$i->id, -$i->id]);
 	}
+
+	/** @return ImmutableList<SwappableItem> */
+	public function flattened(): ImmutableList
+	{
+		return $this->flatten();
+	}
 }

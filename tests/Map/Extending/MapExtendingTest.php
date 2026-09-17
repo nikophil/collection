@@ -95,6 +95,7 @@ final class MapExtendingTest extends TestCase
 		$rekeyed = $board->rekeyByScore();
 		$scaled = $board->scaled();
 		$labels = $board->winnerLabels();
+		$flipped = $board->flipped();
 
 		// The key/value type changed, so the static type narrows to the base
 		// ImmutableMap<NK,V> / ImmutableMap<K,NV> (asserted by PHPStan via these
@@ -105,10 +106,12 @@ final class MapExtendingTest extends TestCase
 		self::assertNotInstanceOf(ScoreBoard::class, $rekeyed);
 		self::assertNotInstanceOf(ScoreBoard::class, $scaled);
 		self::assertNotInstanceOf(ScoreBoard::class, $labels);
+		self::assertNotInstanceOf(ScoreBoard::class, $flipped);
 		self::assertSame([120, 80], $rekeyed->keys->toArray());
 		self::assertSame(180.0, $scaled['alice']);
 		self::assertSame(120.0, $scaled['bob']);
 		self::assertCount(1, $labels);
 		self::assertSame('win', $labels['alice']);
+		self::assertSame([120 => 'alice', 80 => 'bob'], $flipped->toArray());
 	}
 }

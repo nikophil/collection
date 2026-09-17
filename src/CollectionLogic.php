@@ -1024,7 +1024,9 @@ trait CollectionLogic
 	 *
 	 * Kept separate from newCollectionOf so that concrete Logic traits can bypass a
 	 * self-preserving newCollectionOf override: a transform result no longer holds
-	 * elements of E and must not go through the subtype's constructor.
+	 * elements of E and must not go through the subtype's constructor. A class built
+	 * on this trait directly that overrides newCollectionOf() to rebuild itself has
+	 * to override this one as well.
 	 *
 	 * @template NE
 	 * @param iterable<NE> $data

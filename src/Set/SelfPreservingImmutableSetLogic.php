@@ -50,7 +50,8 @@ use NoDiscard;
  *   transformed elements.
  *
  * Each override delegates to the base implementation; the per-method return-type
- * suppression is sound because `newCollectionOf()` returns `new static(...)` at runtime.
+ * suppression is sound for the narrowed methods because `newCollectionOf()` returns
+ * `new static(...)` at runtime.
  *
  * @template E
  * @implements ImmutableSet<E>

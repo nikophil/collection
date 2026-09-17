@@ -48,7 +48,8 @@ use NoDiscard;
  *   never sees transformed entries.
  *
  * Each override delegates to the base implementation; the per-method return-type
- * suppression is sound because `newMapOf()` returns `new static(...)` at runtime.
+ * suppression is sound for the narrowed methods because `newMapOf()` returns
+ * `new static(...)` at runtime.
  *
  * @template K of string|int|bool|float|object
  * @template V

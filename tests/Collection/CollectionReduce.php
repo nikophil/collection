@@ -84,4 +84,18 @@ trait CollectionReduce
 		$collection = $this->collectionOf([1, 2, 3]);
 		$this->assertSame(6, $collection->reduceOrNull(fn ($acc, $v) => $acc + $v));
 	}
+
+	#[Test]
+	public function reduceOrNull_propagates_an_UnsupportedOperationException_thrown_by_the_operation(): void
+	{
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->expectException(UnsupportedOperationException::class);
+		$this->expectExceptionMessageIsOrContains('from the operation');
+
+		// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $collection->reduceOrNull(static function (): int {
+			throw new UnsupportedOperationException('from the operation');
+		});
+	}
 }

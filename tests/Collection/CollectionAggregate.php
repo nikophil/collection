@@ -17,6 +17,22 @@ use stdClass;
 trait CollectionAggregate
 {
 	#[Test]
+	public function minOrNull_propagates_a_NoSuchElementException_thrown_by_the_selector(): void
+	{
+		// The selector is user code - one reaching into an empty collection of its own raises this.
+		// Catching it here would report the collection as empty when it is not.
+		$collection = $this->collectionOf([1, 2]);
+
+		$this->expectException(NoSuchElementException::class);
+		$this->expectExceptionMessageIsOrContains('from the selector');
+
+		// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = $collection->minOrNull(static function (): int {
+			throw new NoSuchElementException('from the selector');
+		});
+	}
+
+	#[Test]
 	public function sum_returns_zero_for_empty_collection(): void
 	{
 		$collection = $this->collectionOf([]);

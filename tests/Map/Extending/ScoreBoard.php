@@ -44,7 +44,7 @@ class ScoreBoard implements ImmutableMap
 	private static function assertEntry(mixed $name, mixed $score): void
 	{
 		if (!is_string($name) || !is_int($score)) {
-			throw new InvalidArgumentException('ScoreBoard only holds string => int entries');
+			throw new InvalidArgumentException('ScoreBoard must only hold string => int entries');
 		}
 	}
 

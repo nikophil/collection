@@ -35,7 +35,7 @@ class LineItems implements ImmutableList
 		$items = is_array($data) ? $data : iterator_to_array($data, false);
 		foreach ($items as $item) {
 			if (!$item instanceof SwappableItem) {
-				throw new InvalidArgumentException('LineItems only holds SwappableItem instances');
+				throw new InvalidArgumentException('LineItems must only hold SwappableItem instances');
 			}
 		}
 

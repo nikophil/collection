@@ -114,4 +114,15 @@ final class MapExtendingTest extends TestCase
 		self::assertSame('win', $labels['alice']);
 		self::assertSame([120 => 'alice', 80 => 'bob'], $flipped->toArray());
 	}
+
+	#[Test]
+	public function manual_transform_returns_base_type(): void
+	{
+		$board = new ManualScoreBoard(['alice' => 120, 'bob' => 80]);
+
+		$scaled = $board->scaled();
+
+		self::assertNotInstanceOf(ManualScoreBoard::class, $scaled);
+		self::assertSame(['alice' => 180.0, 'bob' => 120.0], $scaled->toArray());
+	}
 }

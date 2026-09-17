@@ -138,4 +138,15 @@ final class ListExtendingTest extends TestCase
 		self::assertSame([1], $ids['y']->toArray());
 		self::assertSame([2], $ids['n']->toArray());
 	}
+
+	#[Test]
+	public function manual_transform_returns_base_type(): void
+	{
+		$list = new ManualLineItems([new SwappableItem(1), new SwappableItem(2)]);
+
+		$ids = $list->toIds();
+
+		self::assertNotInstanceOf(ManualLineItems::class, $ids);
+		self::assertSame([1, 2], $ids->toArray());
+	}
 }

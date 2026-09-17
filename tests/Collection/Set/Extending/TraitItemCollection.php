@@ -36,7 +36,7 @@ class TraitItemCollection implements ImmutableSet
 		$items = is_array($data) ? $data : iterator_to_array($data, false);
 		foreach ($items as $item) {
 			if (!$item instanceof SwappableItem) {
-				throw new InvalidArgumentException('TraitItemCollection only holds SwappableItem instances');
+				throw new InvalidArgumentException('TraitItemCollection must only hold SwappableItem instances');
 			}
 		}
 

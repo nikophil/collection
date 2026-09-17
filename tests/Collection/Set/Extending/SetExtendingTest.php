@@ -149,4 +149,15 @@ final class SetExtendingTest extends TestCase
 		self::assertNotInstanceOf(TraitItemCollection::class, $ids['y']);
 		self::assertSame([1], $ids['y']->toArray());
 	}
+
+	#[Test]
+	public function manual_transform_returns_base_type(): void
+	{
+		$collection = new ManualItemCollection([new SwappableItem(1), new SwappableItem(2)]);
+
+		$ids = $collection->toIds();
+
+		self::assertNotInstanceOf(ManualItemCollection::class, $ids);
+		self::assertEqualsCanonicalizing([1, 2], $ids->toArray());
+	}
 }

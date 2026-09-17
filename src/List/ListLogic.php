@@ -487,7 +487,11 @@ trait ListLogic
 		}
 
 		foreach ($store as $k => $bucket) {
-			$store->put($k, $this->newCollectionOf($bucket)); // @phpstan-ignore argument.type
+			if ($valueTransform !== null) {
+				$store->put($k, $this->newListOf($bucket)); // @phpstan-ignore argument.type
+			} else {
+				$store->put($k, $this->newCollectionOf($bucket)); // @phpstan-ignore argument.type
+			}
 		}
 
 		return $this->newMapOf($store); // @phpstan-ignore return.type

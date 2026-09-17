@@ -133,4 +133,17 @@ final class SetExtendingTest extends TestCase
 		self::assertEqualsCanonicalizing([1], $swappedIds->toArray());
 		self::assertEqualsCanonicalizing([1, -1, 2, -2], $withNegatives->toArray());
 	}
+
+	#[Test]
+	public function trait_group_by_with_value_transform_returns_base_type(): void
+	{
+		$collection = new TraitItemCollection([new SwappableItem(1, true), new SwappableItem(2, false)]);
+
+		$groups = $collection->groupBy(static fn (SwappableItem $i): string => $i->swapped ? 'y' : 'n');
+		$ids = $collection->groupBy(static fn (SwappableItem $i): string => $i->swapped ? 'y' : 'n', static fn (SwappableItem $i): int => $i->id);
+
+		self::assertInstanceOf(TraitItemCollection::class, $groups['y']);
+		self::assertNotInstanceOf(TraitItemCollection::class, $ids['y']);
+		self::assertSame([1], $ids['y']->toArray());
+	}
 }

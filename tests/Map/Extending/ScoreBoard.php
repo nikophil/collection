@@ -31,12 +31,14 @@ class ScoreBoard implements ImmutableMap
 	/** @param iterable<string, int> $data */
 	public function __construct(iterable $data = [])
 	{
-		$entries = is_array($data) ? $data : iterator_to_array($data);
-		foreach ($entries as $name => $score) {
+		// Buffered into pairs: iterator_to_array() crashes on non-scalar keys before the guard runs
+		$pairs = [];
+		foreach ($data as $name => $score) {
 			self::assertEntry($name, $score);
+			$pairs[] = [$name, $score];
 		}
 
-		$this->store = HashKeyValueStore::fromAssoc($entries);
+		$this->store = HashKeyValueStore::fromPairs($pairs);
 	}
 
 	// mixed on purpose: the guard checks at runtime what the PHPDoc already promises,

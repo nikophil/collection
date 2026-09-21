@@ -371,6 +371,24 @@ trait CollectionMutateWrite
 		}
 	}
 
+	#[Test]
+	public function asSequence_reads_the_collection_on_each_pass(): void
+	{
+		$collection = $this->collectionOf([1, 2]);
+		$sequence = $collection->asSequence();
+
+		$this->assertSame([1, 2], $sequence->toArray());
+
+		if ($collection instanceof MutableCollection) {
+			$collection->add(3);
+			$this->assertSame([1, 2, 3], $sequence->toArray());
+		} else {
+			$result = $collection->add(3);
+			$this->assertSame([1, 2, 3], $result->toArray());
+			$this->assertSame([1, 2], $sequence->toArray());
+		}
+	}
+
 	public static function shouldReturnListProvider(): iterable
 	{
 		yield 'with list' => [['a', 'b', 'c']];

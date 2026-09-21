@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Tests\Collection;
 
 use Noctud\Collection\List\ImmutableList;
+use Noctud\Collection\Sequence\Sequence;
 use Noctud\Collection\Set\ImmutableSet;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -104,6 +105,67 @@ trait CollectionConvert
 	{
 		$collection = $this->collectionOf([]);
 		$this->assertSame([], $collection->toSet()->toArray());
+	}
+
+	#[Test]
+	public function asSequence_preserves_order(): void
+	{
+		$sequence = $this->collectionOf([3, 1, 2])->asSequence();
+
+		$this->assertInstanceOf(Sequence::class, $sequence);
+		$this->assertSame([3, 1, 2], $sequence->toArray());
+	}
+
+	#[Test]
+	public function asSequence_on_empty(): void
+	{
+		$this->assertSame([], $this->collectionOf([])->asSequence()->toArray());
+	}
+
+	#[Test]
+	public function asSequence_does_not_read_the_collection_before_a_terminal_operation(): void
+	{
+		$reads = 0;
+		$collection = $this->collectionOf(function () use (&$reads): array {
+			$reads++;
+
+			return [1, 2, 3];
+		});
+
+		// view collections read their source as soon as they are built, so what is under
+		// test is that asSequence() and the chained operation add no read of their own
+		$readsOnceBuilt = $reads;
+		$sequence = $collection->asSequence()->map(static fn (int $value): int => $value * 2);
+		$this->assertSame($readsOnceBuilt, $reads);
+
+		$this->assertSame([2, 4, 6], $sequence->toArray());
+		$this->assertSame(1, $reads);
+	}
+
+	#[Test]
+	public function asSequence_can_be_iterated_several_times(): void
+	{
+		$sequence = $this->collectionOf([1, 2, 3])->asSequence();
+
+		$this->assertSame([1, 2, 3], $sequence->toArray());
+		$this->assertSame([1, 2, 3], $sequence->toArray());
+	}
+
+	#[Test]
+	public function asSequence_stays_lazy_and_short_circuits(): void
+	{
+		$mapped = 0;
+		$first = $this->collectionOf([1, 2, 3])
+			->asSequence()
+			->map(function (int $value) use (&$mapped): int {
+				$mapped++;
+
+				return $value * 2;
+			})
+			->first();
+
+		$this->assertSame(2, $first);
+		$this->assertSame(1, $mapped);
 	}
 
 	#[Test]

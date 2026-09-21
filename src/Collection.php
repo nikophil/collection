@@ -19,6 +19,7 @@ use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\List\ListInterface;
 use Noctud\Collection\Map\ImmutableMap;
+use Noctud\Collection\Sequence\Sequence;
 use Noctud\Collection\Set\ImmutableSet;
 use Noctud\Collection\Set\Set;
 use NoDiscard;
@@ -699,6 +700,18 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	public function forEach(Closure $action): Collection;
 
 	// --- Conversion ---
+
+	/**
+	 * Returns a lazy view of this collection as a Sequence.
+	 * Nothing is copied and nothing is consumed: each pass re-reads the collection, so
+	 * the sequence always sees its current elements, and the whole chain of intermediate
+	 * operations runs element by element instead of materializing a new collection at
+	 * every step.
+	 *
+	 * @return Sequence<E>
+	 */
+	#[NoDiscard]
+	public function asSequence(): Sequence;
 
 	/**
 	 * Convert to Map using key and value selectors.

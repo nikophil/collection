@@ -393,9 +393,14 @@ Random order.
 ## Iteration
 
 ```php
-forEach(Closure $action): Collection
+onEach(Closure $action): Collection<E>
 ```
-Execute action `(E, int): void` for each element. Returns the collection for chaining.
+Execute action `(E, int): void` for each element and return the collection for chaining.
+
+```php
+forEach(Closure $action): void
+```
+Execute action `(E, int): void` for each element. Returns nothing — use `onEach()` when the collection is still needed.
 
 ## Conversion
 

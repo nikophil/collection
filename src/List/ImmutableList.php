@@ -189,7 +189,7 @@ interface ImmutableList extends ListInterface, ImmutableCollection
 	 * @param Closure(E, int):void $action
 	 * @return ImmutableList<E> The collection for chaining
 	 */
-	public function forEach(Closure $action): ImmutableList;
+	public function onEach(Closure $action): ImmutableList;
 
 	/**
 	 * Filter elements by predicate.

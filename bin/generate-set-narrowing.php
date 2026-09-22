@@ -60,7 +60,7 @@ if (!NarrowingGenerator::writeBetweenMarkers($immutableSetFile, $immutableSetNar
 // 1. Mutation narrowing (WritableCollection -> WritableSet)
 // 2. Transformation narrowing (Collection -> ImmutableSet)
 $writableSetMutationNarrowing = NarrowingGenerator::generateWritableSetNarrowing($writableCollectionContent, []);
-$writableSetTransformationNarrowing = NarrowingGenerator::generateWritableSetTransformationNarrowing($collectionContent, ['forEach']);
+$writableSetTransformationNarrowing = NarrowingGenerator::generateWritableSetTransformationNarrowing($collectionContent, ['onEach']);
 $writableSetNarrowing = $writableSetMutationNarrowing . "\n\n" . $writableSetTransformationNarrowing;
 if (!NarrowingGenerator::writeBetweenMarkers($writableSetFile, $writableSetNarrowing)) {
 	echo "Failed to update WritableSet.php\n";

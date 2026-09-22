@@ -697,7 +697,15 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * @param Closure(E, int):void $action
 	 * @return Collection<E>
 	 */
-	public function forEach(Closure $action): Collection;
+	public function onEach(Closure $action): Collection;
+
+	/**
+	 * Executes the given action for each element.
+	 * Returns nothing - chain with onEach() when the collection is still needed.
+	 *
+	 * @param Closure(E, int):void $action
+	 */
+	public function forEach(Closure $action): void;
 
 	// --- Conversion ---
 

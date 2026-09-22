@@ -127,7 +127,7 @@ interface ImmutableCollection extends Collection
 	 * @param Closure(E, int):void $action
 	 * @return ImmutableCollection<E> The collection for chaining
 	 */
-	public function forEach(Closure $action): ImmutableCollection;
+	public function onEach(Closure $action): ImmutableCollection;
 
 	// --- Narrowing Start (auto-generated) ---
 

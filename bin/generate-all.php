@@ -34,14 +34,14 @@ if ($collectionContent === false) {
 }
 
 // Generate ImmutableCollection narrowing (Collection -> ImmutableCollection)
-$immutableCollectionNarrowing = NarrowingGenerator::generateImmutableCollectionNarrowing($collectionContent, ['forEach']);
+$immutableCollectionNarrowing = NarrowingGenerator::generateImmutableCollectionNarrowing($collectionContent, ['onEach']);
 if (!NarrowingGenerator::writeBetweenMarkers($immutableCollectionFile, $immutableCollectionNarrowing)) {
 	echo "Failed to update ImmutableCollection.php\n";
 	exit(1);
 }
 
 // Generate WritableCollection narrowing (Collection -> ImmutableCollection)
-$writableCollectionNarrowing = NarrowingGenerator::generateWritableCollectionTransformationNarrowing($collectionContent, ['forEach']);
+$writableCollectionNarrowing = NarrowingGenerator::generateWritableCollectionTransformationNarrowing($collectionContent, ['onEach']);
 if (!NarrowingGenerator::writeBetweenMarkers($writableCollectionFile, $writableCollectionNarrowing)) {
 	echo "Failed to update WritableCollection.php\n";
 	exit(1);

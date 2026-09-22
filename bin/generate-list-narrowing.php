@@ -60,7 +60,7 @@ if (!NarrowingGenerator::writeBetweenMarkers($immutableListFile, $immutableListN
 // 1. Mutation narrowing (WritableCollection -> WritableList)
 // 2. Transformation narrowing (Collection -> ImmutableList)
 $writableListMutationNarrowing = NarrowingGenerator::generateWritableListNarrowing($writableCollectionContent, []);
-$writableListTransformationNarrowing = NarrowingGenerator::generateWritableListTransformationNarrowing($collectionContent, ['forEach']);
+$writableListTransformationNarrowing = NarrowingGenerator::generateWritableListTransformationNarrowing($collectionContent, ['onEach']);
 $writableListNarrowing = $writableListMutationNarrowing . "\n\n" . $writableListTransformationNarrowing;
 if (!NarrowingGenerator::writeBetweenMarkers($writableListFile, $writableListNarrowing)) {
 	echo "Failed to update WritableList.php\n";

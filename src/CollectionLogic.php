@@ -375,13 +375,19 @@ trait CollectionLogic
 	// --- Iteration ---
 
 	/** {@inheritDoc} */
-	public function forEach(Closure $action): static
+	public function onEach(Closure $action): static
+	{
+		$this->forEach($action);
+
+		return $this;
+	}
+
+	/** {@inheritDoc} */
+	public function forEach(Closure $action): void
 	{
 		foreach ($this as $i => $v) {
 			$action($v, $i);
 		}
-
-		return $this;
 	}
 
 	// --- Conversion ---

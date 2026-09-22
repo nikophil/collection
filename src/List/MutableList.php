@@ -201,7 +201,7 @@ interface MutableList extends WritableList, MutableCollection
 	 * @param Closure(E, int):void $action
 	 * @return MutableList<E> The collection itself for chaining
 	 */
-	public function forEach(Closure $action): MutableList;
+	public function onEach(Closure $action): MutableList;
 
 	/**
 	 * Sets the element at the specified index.

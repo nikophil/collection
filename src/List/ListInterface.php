@@ -353,7 +353,7 @@ interface ListInterface extends Collection, ArrayAccess
 	 * @param Closure(E, int):void $action
 	 * @return ListInterface<E>
 	 */
-	public function forEach(Closure $action): ListInterface;
+	public function onEach(Closure $action): ListInterface;
 
 	/**
 	 * Splits the collection into two collections based on a predicate.

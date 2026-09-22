@@ -139,7 +139,7 @@ interface ImmutableSet extends Set, ImmutableCollection
 	 * @param Closure(E, int):void $action
 	 * @return ImmutableSet<E> The collection for chaining
 	 */
-	public function forEach(Closure $action): ImmutableSet;
+	public function onEach(Closure $action): ImmutableSet;
 
 	/**
 	 * Filter elements by predicate.

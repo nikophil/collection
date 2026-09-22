@@ -120,7 +120,7 @@ interface WritableCollection extends Collection
 	 * @param Closure(E, int):void $action
 	 * @return WritableCollection<E> The collection itself for chaining
 	 */
-	public function forEach(Closure $action): WritableCollection;
+	public function onEach(Closure $action): WritableCollection;
 
 	// --- Narrowing Start (auto-generated) ---
 

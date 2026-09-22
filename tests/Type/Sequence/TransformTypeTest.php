@@ -67,3 +67,7 @@ assertType('Noctud\Collection\Sequence\Sequence<array{string, string}>', $s->zip
 
 // onEach() is a pass-through tap.
 assertType('Noctud\Collection\Sequence\Sequence<string>', $s->onEach(static fn (string $x): null => null));
+
+// chunked()/windowed() group elements into lists without leaving the lazy world.
+assertType('Noctud\Collection\Sequence\Sequence<Noctud\Collection\List\ImmutableList<string>>', $s->chunked(2));
+assertType('Noctud\Collection\Sequence\Sequence<Noctud\Collection\List\ImmutableList<string>>', $s->windowed(3, 1, true));

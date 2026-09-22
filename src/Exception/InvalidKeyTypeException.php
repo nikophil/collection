@@ -11,6 +11,6 @@ namespace Noctud\Collection\Exception;
 
 use LogicException;
 
-final class InvalidKeyTypeException extends LogicException
+final class InvalidKeyTypeException extends LogicException implements NoctudCollectionException
 {
 }

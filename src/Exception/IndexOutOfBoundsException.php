@@ -11,6 +11,6 @@ namespace Noctud\Collection\Exception;
 
 use LogicException;
 
-final class IndexOutOfBoundsException extends LogicException
+final class IndexOutOfBoundsException extends LogicException implements NoctudCollectionException
 {
 }

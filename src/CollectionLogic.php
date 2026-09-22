@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection;
 
 use Closure;
+use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\List\MutableList;
@@ -69,6 +70,35 @@ trait CollectionLogic
 	public function lastOrNull(): mixed
 	{
 		return $this->store->last();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * No negative-index guard: positions start at 0, so a negative index simply never
+	 * matches and falls through to the same out-of-bounds error as one past the end.
+	 */
+	public function elementAt(int $index)
+	{
+		foreach ($this as $i => $v) {
+			if ($i === $index) {
+				return $v;
+			}
+		}
+
+		throw new IndexOutOfBoundsException('Index out of bounds: ' . $index);
+	}
+
+	/** {@inheritDoc} */
+	public function elementAtOrNull(int $index): mixed
+	{
+		foreach ($this as $i => $v) {
+			if ($i === $index) {
+				return $v;
+			}
+		}
+
+		return null;
 	}
 
 	/** {@inheritDoc} */

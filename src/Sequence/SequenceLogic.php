@@ -275,11 +275,6 @@ trait SequenceLogic
 	/** {@inheritDoc} */
 	public function elementAtOrNull(int $index): mixed
 	{
-		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
-		if ($index < 0) {
-			throw new IndexOutOfBoundsException('Cannot use a negative index.');
-		}
-
 		foreach ($this as $i => $v) {
 			if ($i === $index) {
 				return $v;

@@ -312,11 +312,10 @@ interface Sequence extends IteratorAggregate
 	public function elementAt(int $index);
 
 	/**
-	 * Returns the element at the given position, or null if the sequence is shorter than that.
+	 * Returns the element at the given position, or null when there is no element there -
+	 * a negative index included, matching Collection::elementAtOrNull().
 	 *
-	 * @param non-negative-int $index
 	 * @return E|null
-	 * @throws IndexOutOfBoundsException If the index is a negative int
 	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function elementAtOrNull(int $index): mixed;

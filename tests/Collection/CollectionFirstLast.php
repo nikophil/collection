@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Tests\Collection;
 
+use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use PHPUnit\Framework\Attributes\Test;
 use stdClass;
@@ -173,5 +174,49 @@ trait CollectionFirstLast
 
 		$this->expectException(NoSuchElementException::class);
 		$collection->expectLast(fn ($v) => true);
+	}
+
+	#[Test]
+	public function elementAt_returns_the_element_at_that_position(): void
+	{
+		$collection = $this->collectionOf(['a', 'b', 'c']);
+
+		$this->assertSame('a', $collection->elementAt(0));
+		$this->assertSame('c', $collection->elementAt(2));
+	}
+
+	#[Test]
+	public function elementAt_throws_past_the_end(): void
+	{
+		$this->expectException(IndexOutOfBoundsException::class);
+
+		$this->collectionOf(['a', 'b', 'c'])->elementAt(3);
+	}
+
+	#[Test]
+	public function elementAt_throws_on_a_negative_index(): void
+	{
+		$this->expectException(IndexOutOfBoundsException::class);
+
+		$this->collectionOf(['a', 'b', 'c'])->elementAt(-1);
+	}
+
+	#[Test]
+	public function elementAt_throws_on_an_empty_collection(): void
+	{
+		$this->expectException(IndexOutOfBoundsException::class);
+
+		$this->collectionOf([])->elementAt(0);
+	}
+
+	#[Test]
+	public function elementAtOrNull_returns_null_outside_the_bounds(): void
+	{
+		$collection = $this->collectionOf(['a', 'b', 'c']);
+
+		$this->assertSame('b', $collection->elementAtOrNull(1));
+		$this->assertNull($collection->elementAtOrNull(3));
+		$this->assertNull($collection->elementAtOrNull(-1));
+		$this->assertNull($this->collectionOf([])->elementAtOrNull(0));
 	}
 }

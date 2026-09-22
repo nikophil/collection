@@ -159,13 +159,11 @@ final class SequenceAccessTest extends TestCase
 	}
 
 	#[Test]
-	public function elementAtOrNull_throws_on_a_negative_index(): void
+	public function elementAtOrNull_returns_null_on_a_negative_index(): void
 	{
-		$this->expectException(IndexOutOfBoundsException::class);
-		$this->expectExceptionMessageIsOrContains('Cannot use a negative index');
-
-		// @phpstan-ignore argument.type
-		$_ = sequenceOf(['a', 'b', 'c'])->elementAtOrNull(-1); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		// A negative index is not a position, so there is nothing there - the same answer
+		// ListInterface::getOrNull() already gives, and the one Kotlin gives.
+		$this->assertNull(sequenceOf(['a', 'b', 'c'])->elementAtOrNull(-1));
 	}
 
 	#[Test]

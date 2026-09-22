@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection;
 
 use Closure;
+use Generator;
 use Noctud\Collection\List\ArrayList\ImmutableArrayList;
 use Noctud\Collection\List\ArrayList\MutableArrayList;
 use Noctud\Collection\List\ImmutableList;
@@ -216,5 +217,33 @@ if (!function_exists('Noctud\Collection\listOf')) {
 	function sequenceOf(iterable|Closure $source = []): Sequence
 	{
 		return new GeneratorSequence($source);
+	}
+
+	/**
+	 * Creates a lazy sequence from a seed and a function computing the next element.
+	 *
+	 * The sequence yields the seed, then every value returned by $next,
+	 * and stops on the first null. A null seed yields an empty sequence.
+	 * When $next never returns null the sequence is infinite:
+	 * terminate it with takeFirst() or takeWhile().
+	 *
+	 * The sequence is replayable - every pass restarts from $seed.
+	 *
+	 * @template E
+	 * @param E|null $seed
+	 * @param Closure(E):(E|null) $next
+	 * @return Sequence<E>
+	 */
+	function generateSequence(mixed $seed, Closure $next): Sequence
+	{
+		return new GeneratorSequence(static function () use ($seed, $next): Generator {
+			$current = $seed;
+
+			while ($current !== null) {
+				yield $current;
+
+				$current = $next($current);
+			}
+		});
 	}
 }

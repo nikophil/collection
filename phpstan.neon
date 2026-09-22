@@ -20,9 +20,6 @@ parameters:
 			identifier: missingType.generics
 			path: src/CollectionLogic.php
 		-
-			identifier: deadCode.unreachable
-			path: src/CollectionLogic.php
-		-
 			identifier: return.type
 			path: src/Set/SetLogic.php
 		# Narrowing sections narrow Collection<E> → ImmutableList<E> / ImmutableSet<E> etc.

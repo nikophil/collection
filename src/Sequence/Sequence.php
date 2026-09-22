@@ -676,4 +676,56 @@ interface Sequence extends IteratorAggregate
 	 */
 	#[NoDiscard]
 	public function toMap(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap;
+
+	/**
+	 * Groups elements by the key returned by the selector, consuming one pass of the sequence.
+	 * When a value transform is provided, each element is transformed before being added
+	 * to its group.
+	 *
+	 * Unlike the lazy stages, this holds every element it has seen: a sequence is walked
+	 * once, so the last element may still belong to the first group.
+	 *
+	 * @template K of string|int|bool|float|object
+	 * @template V
+	 * @param Closure(E, int):K $keySelector
+	 * @param (Closure(E, int):V)|null $valueTransform
+	 * @return ($valueTransform is null ? ImmutableMap<K, ImmutableList<E>> : ImmutableMap<K, ImmutableList<V>>)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
+	 */
+	#[NoDiscard]
+	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap;
+
+	/**
+	 * Counts elements per key, consuming one pass of the sequence.
+	 * Only one counter per key is held, never the elements themselves.
+	 *
+	 * @template NK of string|int|bool|float|object
+	 * @param Closure(E, int):NK $keySelector
+	 * @return ImmutableMap<NK, int>
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
+	 */
+	#[NoDiscard]
+	public function countBy(Closure $keySelector): ImmutableMap;
+
+	/**
+	 * Splits the sequence into two lists - the elements matching the predicate,
+	 * then the rest - consuming one pass of the sequence.
+	 *
+	 * @param Closure(E, int):bool $predicate
+	 * @return array{ImmutableList<E>, ImmutableList<E>}
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
+	 */
+	#[NoDiscard]
+	public function partition(Closure $predicate): array;
+
+	/**
+	 * Splits a sequence of pairs into two lists - one from the first component, one from
+	 * the second - consuming one pass of the sequence. This is the inverse of zip().
+	 *
+	 * @return array{ImmutableList<mixed>, ImmutableList<mixed>}
+	 * @throws UnsupportedOperationException If an element is not a pair
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
+	 */
+	#[NoDiscard]
+	public function unzip(): array;
 }

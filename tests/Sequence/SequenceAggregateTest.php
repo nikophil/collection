@@ -395,6 +395,26 @@ final class SequenceAggregateTest extends TestCase
 		$_ = sequenceOf([[1, 'a'], 'nope'])->unzip();
 	}
 
+	#[Test]
+	public function unzip_throws_on_an_array_missing_one_side_of_the_pair(): void
+	{
+		$this->expectException(UnsupportedOperationException::class);
+
+		// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = sequenceOf([[1, 'a'], [2]])->unzip();
+	}
+
+	#[Test]
+	public function unzip_keeps_a_pair_whose_components_are_null(): void
+	{
+		// A present null is a value, which is why the guard pairs ?? null with
+		// array_key_exists() instead of just testing for null.
+		[$first, $second] = sequenceOf([[null, null]])->unzip();
+
+		$this->assertSame([null], $first->toArray());
+		$this->assertSame([null], $second->toArray());
+	}
+
 	/**
 	 * @param array<int, Collection<string>> $groups
 	 * @return array<int, list<string>>

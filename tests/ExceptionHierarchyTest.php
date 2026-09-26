@@ -9,11 +9,17 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Tests;
 
+use FilesystemIterator;
 use Generator;
 use Noctud\Collection\Exception\NoctudCollectionException;
 use Noctud\Collection\Exception\SourceException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+use Throwable;
 use function Noctud\Collection\listOf;
 use function Noctud\Collection\sequenceOf;
 
@@ -62,5 +68,40 @@ final class ExceptionHierarchyTest extends TestCase
 		$this->expectException(NoctudCollectionException::class);
 
 		$_ = listOf([])->first(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	#[DataProvider('libraryExceptions')]
+	public function every_library_exception_implements_the_root_marker(string $class): void
+	{
+		$this->assertTrue(
+			is_subclass_of($class, NoctudCollectionException::class),
+			sprintf('%s must implement %s', $class, NoctudCollectionException::class),
+		);
+	}
+
+	/**
+	 * @return Generator<string, array{class-string<Throwable>}>
+	 */
+	public static function libraryExceptions(): Generator
+	{
+		$src = dirname(__DIR__) . '/src';
+		/** @var iterable<SplFileInfo> $files */
+		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($src, FilesystemIterator::SKIP_DOTS));
+
+		foreach ($files as $file) {
+			if ($file->getExtension() !== 'php') {
+				continue;
+			}
+
+			// PSR-4 in reverse: src/Exception/Foo.php -> Noctud\Collection\Exception\Foo
+			$relative = substr($file->getPathname(), strlen($src) + 1, -4);
+			$class = 'Noctud\\Collection\\' . str_replace(DIRECTORY_SEPARATOR, '\\', $relative);
+
+			// class_exists() autoloads; interfaces, traits and functions.php fall out here
+			if (class_exists($class) && is_subclass_of($class, Throwable::class)) {
+				yield $class => [$class];
+			}
+		}
 	}
 }

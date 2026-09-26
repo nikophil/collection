@@ -36,3 +36,9 @@ parameters:
 		-
 			identifier: missingType.generics
 			path: tests/Map/*
+		# since PHPStan 2.2.15, a repeated assertSame() on the same call is reported as
+		# always true (phpstan/phpstan#15317); Sequence tests deliberately re-run terminal
+		# operations to verify replay and laziness
+		-
+			identifier: method.alreadyNarrowedType
+			path: tests/Sequence/*

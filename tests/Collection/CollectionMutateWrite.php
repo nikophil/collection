@@ -380,7 +380,7 @@ trait CollectionMutateWrite
 		$this->assertSame([1, 2], $sequence->toArray());
 
 		if ($collection instanceof MutableCollection) {
-			$collection->add(3);
+			$this->assertSame($collection, $collection->add(3));
 			$this->assertSame([1, 2, 3], $sequence->toArray());
 		} else {
 			$result = $collection->add(3);

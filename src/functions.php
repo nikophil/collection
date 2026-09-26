@@ -209,12 +209,17 @@ if (!function_exists('Noctud\Collection\listOf')) {
 	 *   iterable on every pass; it must hand back a fresh iterator each time;
 	 * - a raw Iterator/Generator: single-pass, yields its remaining elements.
 	 *
+	 * Pass constrainOnce to force a single pass whatever the source is: the second pass
+	 * throws instead of replaying an array or re-invoking a producer, which is what you
+	 * want when replaying would repeat a side effect.
+	 *
 	 * @template E
 	 * @param iterable<E>|Closure():iterable<E> $source
+	 * @param bool $constrainOnce Limits the sequence to a single pass, whatever the source kind.
 	 * @return Sequence<E>
 	 */
-	function sequenceOf(iterable|Closure $source = []): Sequence
+	function sequenceOf(iterable|Closure $source = [], bool $constrainOnce = false): Sequence
 	{
-		return new GeneratorSequence($source);
+		return new GeneratorSequence($source, $constrainOnce);
 	}
 }

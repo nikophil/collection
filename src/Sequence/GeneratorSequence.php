@@ -30,9 +30,11 @@ final class GeneratorSequence implements Sequence
 
 	/**
 	 * @param iterable<E>|Closure():iterable<E> $source
+	 * @param bool $constrainOnce Limits the sequence to a single pass, whatever the source kind.
 	 */
-	public function __construct(iterable|Closure $source = [])
+	public function __construct(iterable|Closure $source = [], bool $constrainOnce = false)
 	{
 		$this->source = $source;
+		$this->constrainOnce = $constrainOnce;
 	}
 }

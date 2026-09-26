@@ -14,6 +14,7 @@ use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\List\MutableList;
 use Noctud\Collection\Map\ImmutableMap;
+use Noctud\Collection\Sequence\Sequence;
 use Noctud\Collection\Set\ImmutableSet;
 use Noctud\Collection\Operation\ChunkOperation;
 use Noctud\Collection\Operation\DistinctOperation;
@@ -384,6 +385,13 @@ trait CollectionLogic
 	}
 
 	// --- Conversion ---
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function asSequence(): Sequence
+	{
+		return sequenceOf($this);
+	}
 
 	/** {@inheritDoc} */
 	#[NoDiscard]

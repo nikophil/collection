@@ -51,6 +51,9 @@ trait SequenceLogic
 	/** Whether a single-pass source has already been handed out. */
 	private bool $consumed = false;
 
+	/** Whether this sequence is limited to a single pass, whatever its source kind. */
+	private bool $constrainOnce = false;
+
 	/**
 	 * Iterator the source produced on the previous pass, compared by identity in
 	 * resolveProducedIterable(). Held weakly so a consumed iterator - and the file handle or
@@ -482,15 +485,20 @@ trait SequenceLogic
 	{
 		$source = $this->source;
 
-		if ($source instanceof Closure) {
-			$produced = $source();
-
-			// @phpstan-ignore function.alreadyNarrowedType (the closure's return type is a PHPDoc promise PHP cannot enforce)
-			if (!is_iterable($produced)) {
-				throw InvalidSequenceSourceException::closureReturnedNonIterable($produced);
+		if ($this->constrainOnce) {
+			if ($this->consumed) {
+				throw NonReplayableSourceException::constrainedOnceSequenceAlreadyIterated();
 			}
 
-			return $this->resolveProducedIterable($produced);
+			$this->consumed = true;
+
+			// this sequence has exactly one pass, so the per-kind guards below have nothing
+			// left to protect: the source is handed over as it is
+			return $source instanceof Closure ? $this->produceFromClosure($source) : $source;
+		}
+
+		if ($source instanceof Closure) {
+			return $this->resolveProducedIterable($this->produceFromClosure($source));
 		}
 
 		if (is_array($source)) {
@@ -508,6 +516,25 @@ trait SequenceLogic
 		$this->consumed = true;
 
 		return $source;
+	}
+
+	/**
+	 * Invokes a source Closure for one pass, rejecting a producer that does not hand back
+	 * an iterable - its return type is a PHPDoc promise PHP cannot enforce.
+	 *
+	 * @param Closure():iterable<E> $source
+	 * @return iterable<E>
+	 */
+	private function produceFromClosure(Closure $source): iterable
+	{
+		$produced = $source();
+
+		// @phpstan-ignore function.alreadyNarrowedType (the closure's return type is a PHPDoc promise PHP cannot enforce)
+		if (!is_iterable($produced)) {
+			throw InvalidSequenceSourceException::closureReturnedNonIterable($produced);
+		}
+
+		return $produced;
 	}
 
 	/**

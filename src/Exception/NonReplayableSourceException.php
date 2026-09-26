@@ -23,6 +23,13 @@ final class NonReplayableSourceException extends UnsupportedOperationException
 		);
 	}
 
+	public static function constrainedOnceSequenceAlreadyIterated(): self
+	{
+		return new self(
+			'This sequence was constrained to a single pass and has already been iterated. Create a new sequence to iterate again.',
+		);
+	}
+
 	public static function zippedIterableAlreadyIterated(): self
 	{
 		return new self(

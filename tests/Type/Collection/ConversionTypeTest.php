@@ -29,6 +29,7 @@ assertType(
 assertType('Noctud\Collection\List\ImmutableList<string>', $c->toList());
 assertType('Noctud\Collection\Set\ImmutableSet<string>', $c->toSet());
 assertType('list<string>', $c->toArray());
+assertType('Noctud\Collection\Sequence\Sequence<string>', $c->asSequence());
 assertType('Noctud\Collection\MutableCollection<string>', $c->toMutable());
 assertType('Noctud\Collection\ImmutableCollection<string>', $c->toImmutable());
 assertType('Noctud\Collection\Collection<string>', $c->forEach(fn (string $x): null => null));

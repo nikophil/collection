@@ -507,6 +507,81 @@ final class SequenceIterationTest extends TestCase
 	}
 
 	#[Test]
+	public function constrained_once_array_source_throws_on_second_pass(): void
+	{
+		$sequence = sequenceOf([1, 2, 3], constrainOnce: true);
+
+		$this->assertSame([1, 2, 3], $sequence->toArray());
+
+		$this->expectException(NonReplayableSourceException::class);
+		$this->expectExceptionMessageIsOrContains(
+			'This sequence was constrained to a single pass and has already been iterated. Create a new sequence to iterate again.',
+		);
+
+		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function constrained_once_collection_source_throws_on_second_pass(): void
+	{
+		$sequence = sequenceOf(listOf([1, 2, 3]), constrainOnce: true);
+
+		$this->assertSame([1, 2, 3], $sequence->toArray());
+
+		$this->expectException(NonReplayableSourceException::class);
+
+		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function constrained_once_closure_source_is_never_reinvoked(): void
+	{
+		$invocations = 0;
+		$sequence = sequenceOf(
+			static function () use (&$invocations): array {
+				$invocations++;
+
+				return [1, 2];
+			},
+			constrainOnce: true,
+		);
+
+		$this->assertSame([1, 2], $sequence->toArray());
+		$this->assertSame(1, $invocations);
+
+		try {
+			$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+			$this->fail('The second pass should have thrown.');
+		} catch (NonReplayableSourceException) {
+			$this->assertSame(1, $invocations);
+		}
+	}
+
+	#[Test]
+	public function constrained_once_throws_through_a_chained_operation(): void
+	{
+		$sequence = sequenceOf([1, 2, 3], constrainOnce: true)->map(static fn (int $value): int => $value * 2);
+
+		$this->assertSame([2, 4, 6], $sequence->toArray());
+
+		$this->expectException(NonReplayableSourceException::class);
+
+		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function constrained_once_throws_at_getIterator_not_at_first_advance(): void
+	{
+		$sequence = sequenceOf([1, 2, 3], constrainOnce: true);
+
+		$sequence->getIterator();
+
+		$this->expectException(NonReplayableSourceException::class);
+
+		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
 	public function second_pass_throws_at_getIterator_not_at_first_advance(): void
 	{
 		$generator = (static function (): Generator {

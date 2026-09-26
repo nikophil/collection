@@ -40,6 +40,10 @@ use NoDiscard;
  * - a raw Iterator/Generator: the sequence is single-pass and any further iteration
  *   throws NonReplayableSourceException (a partial pass counts as consumed).
  *
+ * Any source can be narrowed to a single pass with sequenceOf($source, constrainOnce: true):
+ * the second pass then throws NonReplayableSourceException instead of replaying an array
+ * or re-invoking a producer, which is what you want when replaying would repeat a side effect.
+ *
  * Keys are positional: every pass yields fresh 0..n keys, whatever the source yields.
  *
  * Deliberately neither Countable (native count($seq) stays a TypeError by design;

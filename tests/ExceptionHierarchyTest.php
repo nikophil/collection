@@ -11,7 +11,7 @@ namespace Noctud\Collection\Tests;
 
 use Generator;
 use Noctud\Collection\Exception\NoctudCollectionException;
-use Noctud\Collection\Exception\SequenceLogicException;
+use Noctud\Collection\Exception\SourceException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use function Noctud\Collection\listOf;
@@ -29,7 +29,7 @@ final class ExceptionHierarchyTest extends TestCase
 
 		$this->assertSame([1], $sequence->toArray());
 
-		$this->expectException(SequenceLogicException::class);
+		$this->expectException(SourceException::class);
 
 		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 	}
@@ -40,7 +40,7 @@ final class ExceptionHierarchyTest extends TestCase
 		/** @phpstan-ignore argument.type, argument.templateType */
 		$sequence = sequenceOf(static fn (): int => 42);
 
-		$this->expectException(SequenceLogicException::class);
+		$this->expectException(SourceException::class);
 
 		$_ = $sequence->toArray(); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 	}

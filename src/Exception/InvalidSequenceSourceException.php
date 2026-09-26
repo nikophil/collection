@@ -14,7 +14,7 @@ use LogicException;
 /**
  * Thrown when a sequence source closure returns a non-iterable value.
  */
-final class InvalidSequenceSourceException extends LogicException implements SequenceLogicException
+final class InvalidSequenceSourceException extends LogicException implements SourceException
 {
 	public static function closureReturnedNonIterable(mixed $produced): self
 	{

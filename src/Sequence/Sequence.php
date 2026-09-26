@@ -14,7 +14,7 @@ use IteratorAggregate;
 use Noctud\Collection\Exception\ConversionException;
 use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\NoSuchElementException;
-use Noctud\Collection\Exception\SequenceLogicException;
+use Noctud\Collection\Exception\SourceException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Map\ImmutableMap;
@@ -44,7 +44,7 @@ use NoDiscard;
  * or re-invoking a producer, which is what you want when replaying would repeat a side effect.
  *
  * NonReplayableSourceException and InvalidSequenceSourceException both implement
- * SequenceLogicException, the single type every method below declares - which concrete
+ * SourceException, the single type every method below declares - which concrete
  * one surfaces depends on the source, not on the method called.
  *
  * Keys are positional: every pass yields fresh 0..n keys, whatever the source yields.
@@ -239,7 +239,7 @@ interface Sequence extends IteratorAggregate
 	 * still hands the collection back.
 	 *
 	 * @param Closure(E, int):void $action
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function forEach(Closure $action): void;
 
@@ -250,7 +250,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @return E
 	 * @throws NoSuchElementException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function first();
 
@@ -258,7 +258,7 @@ interface Sequence extends IteratorAggregate
 	 * Returns the first element, or null if the sequence is empty. Pulls exactly one element.
 	 *
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function firstOrNull(): mixed;
 
@@ -269,7 +269,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @return E
 	 * @throws NoSuchElementException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function last();
 
@@ -277,7 +277,7 @@ interface Sequence extends IteratorAggregate
 	 * Returns the last element, or null if the sequence is empty. Drains the sequence.
 	 *
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function lastOrNull(): mixed;
 
@@ -287,7 +287,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @return E
 	 * @throws NoSuchElementException If the sequence is empty or holds more than one element
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function single();
 
@@ -295,7 +295,7 @@ interface Sequence extends IteratorAggregate
 	 * Returns the single element, or null if the sequence is empty or holds more than one.
 	 *
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function singleOrNull(): mixed;
 
@@ -307,7 +307,7 @@ interface Sequence extends IteratorAggregate
 	 * @param non-negative-int $index
 	 * @return E
 	 * @throws IndexOutOfBoundsException If the sequence holds fewer elements than that or if the index is a negative int
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function elementAt(int $index);
 
@@ -317,7 +317,7 @@ interface Sequence extends IteratorAggregate
 	 * @param non-negative-int $index
 	 * @return E|null
 	 * @throws IndexOutOfBoundsException If the index is a negative int
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function elementAtOrNull(int $index): mixed;
 
@@ -327,7 +327,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, int):bool $predicate
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function find(Closure $predicate): mixed;
 
@@ -338,7 +338,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):bool $predicate
 	 * @return E
 	 * @throws NoSuchElementException If no element matches the predicate
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function expect(Closure $predicate);
 
@@ -348,7 +348,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, int):bool $predicate
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function findLast(Closure $predicate): mixed;
 
@@ -359,7 +359,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):bool $predicate
 	 * @return E
 	 * @throws NoSuchElementException If no element matches the predicate
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function expectLast(Closure $predicate);
 
@@ -368,14 +368,14 @@ interface Sequence extends IteratorAggregate
 	/**
 	 * Whether the sequence does not contain any elements. Pulls exactly one element.
 	 *
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function isEmpty(): bool;
 
 	/**
 	 * Whether the sequence contains at least one element. Pulls exactly one element.
 	 *
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function isNotEmpty(): bool;
 
@@ -384,7 +384,7 @@ interface Sequence extends IteratorAggregate
 	 * Stops pulling at the first match.
 	 *
 	 * @param E $element
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function contains(mixed $element): bool;
 
@@ -393,7 +393,7 @@ interface Sequence extends IteratorAggregate
 	 * Walks the sequence once, stopping as soon as none is left to look for.
 	 *
 	 * @param iterable<E> $elements
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function containsAll(iterable $elements): bool;
 
@@ -402,7 +402,7 @@ interface Sequence extends IteratorAggregate
 	 * Stops pulling at the first element that does not.
 	 *
 	 * @param Closure(E, int):bool $predicate
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function all(Closure $predicate): bool;
 
@@ -411,7 +411,7 @@ interface Sequence extends IteratorAggregate
 	 * Stops pulling at the first match.
 	 *
 	 * @param Closure(E, int):bool $predicate
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function any(Closure $predicate): bool;
 
@@ -420,7 +420,7 @@ interface Sequence extends IteratorAggregate
 	 * Stops pulling at the first match.
 	 *
 	 * @param Closure(E, int):bool $predicate
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function none(Closure $predicate): bool;
 
@@ -430,7 +430,7 @@ interface Sequence extends IteratorAggregate
 	 * elements to pull, which is why the cost has to be asked for explicitly.
 	 *
 	 * @return int<0, max>
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function count(): int;
 
@@ -439,7 +439,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, int):bool $predicate
 	 * @return int<0, max>
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function countWhere(Closure $predicate): int;
 
@@ -453,7 +453,7 @@ interface Sequence extends IteratorAggregate
 	 * @param R $initial
 	 * @param Closure(R, E):R $operation
 	 * @return R
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function fold(mixed $initial, Closure $operation): mixed;
 
@@ -463,7 +463,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, E):E $operation
 	 * @return E
 	 * @throws UnsupportedOperationException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function reduce(Closure $operation);
 
@@ -473,7 +473,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, E):E $operation
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function reduceOrNull(Closure $operation): mixed;
 
@@ -483,7 +483,7 @@ interface Sequence extends IteratorAggregate
 	 * @template TSum
 	 * @param (Closure(E, int):TSum)|null $selector
 	 * @return ($selector is null ? (E is int ? int : int|float) : (TSum is int ? int : int|float))
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function sum(?Closure $selector = null): int|float;
 
@@ -493,7 +493,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, int):(int|float)|null $selector
 	 * @throws UnsupportedOperationException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function avg(?Closure $selector = null): float;
 
@@ -502,7 +502,7 @@ interface Sequence extends IteratorAggregate
 	 * sequence is empty. Drains the sequence.
 	 *
 	 * @param Closure(E, int):(int|float)|null $selector
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function avgOrNull(?Closure $selector = null): float|null;
 
@@ -513,7 +513,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):mixed|null $selector
 	 * @return E
 	 * @throws NoSuchElementException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function min(?Closure $selector = null): mixed;
 
@@ -523,7 +523,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, int):mixed|null $selector
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function minOrNull(?Closure $selector = null): mixed;
 
@@ -534,7 +534,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):mixed|null $selector
 	 * @return E
 	 * @throws NoSuchElementException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function max(?Closure $selector = null): mixed;
 
@@ -544,7 +544,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, int):mixed|null $selector
 	 * @return E|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function maxOrNull(?Closure $selector = null): mixed;
 
@@ -555,7 +555,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):R $selector
 	 * @return R
 	 * @throws NoSuchElementException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function minOf(Closure $selector): mixed;
 
@@ -566,7 +566,7 @@ interface Sequence extends IteratorAggregate
 	 * @template R of mixed
 	 * @param Closure(E, int):R $selector
 	 * @return R|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function minOfOrNull(Closure $selector): mixed;
 
@@ -577,7 +577,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):R $selector
 	 * @return R
 	 * @throws NoSuchElementException If the sequence is empty
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function maxOf(Closure $selector): mixed;
 
@@ -588,7 +588,7 @@ interface Sequence extends IteratorAggregate
 	 * @template R of mixed
 	 * @param Closure(E, int):R $selector
 	 * @return R|null
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function maxOfOrNull(Closure $selector): mixed;
 
@@ -606,7 +606,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * @param Closure(E, int):string|null $transform Optional transform to apply to each element
 	 * @throws ConversionException When an element cannot be converted to string and no transform is provided
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	public function joinToString(string $separator = ', ', string $prefix = '', string $postfix = '', int $limit = -1, string $truncated = '...', ?Closure $transform = null): string;
 
@@ -616,7 +616,7 @@ interface Sequence extends IteratorAggregate
 	 * Convert to an immutable list, consuming one pass of the sequence.
 	 *
 	 * @return ImmutableList<E>
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	#[NoDiscard]
 	public function toList(): ImmutableList;
@@ -625,7 +625,7 @@ interface Sequence extends IteratorAggregate
 	 * Convert to an immutable set (duplicates removed), consuming one pass of the sequence.
 	 *
 	 * @return ImmutableSet<E>
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	#[NoDiscard]
 	public function toSet(): ImmutableSet;
@@ -634,7 +634,7 @@ interface Sequence extends IteratorAggregate
 	 * Convert to a primitive PHP array, consuming one pass of the sequence.
 	 *
 	 * @return list<E>
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	#[NoDiscard]
 	public function toArray(): array;
@@ -647,7 +647,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):K $keySelector
 	 * @param ?Closure(E, int):V $valueTransform
 	 * @return ImmutableMap<K,V>
-	 * @throws SequenceLogicException If the source cannot produce a pass (already consumed, or not an iterable)
+	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	#[NoDiscard]
 	public function toMap(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap;

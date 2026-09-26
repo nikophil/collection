@@ -16,6 +16,6 @@ namespace Noctud\Collection\Exception;
  * Every terminal operation declares this single type rather than the concrete exceptions
  * behind it - which one surfaces depends on the source, not on the method called.
  */
-interface SequenceLogicException extends NoctudCollectionException
+interface SourceException extends NoctudCollectionException
 {
 }

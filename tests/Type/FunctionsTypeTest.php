@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Tests\Type;
 
+use function Noctud\Collection\generateSequence;
 use function Noctud\Collection\intMapOf;
 use function Noctud\Collection\listOf;
 use function Noctud\Collection\mapOf;
@@ -44,3 +45,11 @@ assertType('Noctud\Collection\Map\MutableMap<string, int>', mutableStringMapOf([
 // Int maps
 assertType('Noctud\Collection\Map\ImmutableMap<int, string>', intMapOf([1 => 'a']));
 assertType('Noctud\Collection\Map\MutableMap<int, string>', mutableIntMapOf([1 => 'a']));
+
+// Sequences - the element type comes from the seed, the next function walks it forward.
+/** @var string $seed */
+$seed = 'a';
+assertType(
+	'Noctud\Collection\Sequence\Sequence<string>',
+	generateSequence($seed, static fn (string $v): ?string => strlen($v) < 3 ? $v . 'a' : null),
+);

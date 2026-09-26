@@ -17,6 +17,7 @@ use Noctud\Collection\Map\ImmutableMap;
 use Noctud\Collection\Set\ImmutableSet;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use function Noctud\Collection\generateSequence;
 use function Noctud\Collection\listOf;
 use function Noctud\Collection\sequenceOf;
 
@@ -154,5 +155,42 @@ final class SequenceFactoryTest extends TestCase
 
 		$this->assertSame([0, 1], $firstPassKeys);
 		$this->assertSame([0, 1], $secondPassKeys);
+	}
+
+	#[Test]
+	public function generateSequence_yields_the_seed_then_applies_next_until_null(): void
+	{
+		$sequence = generateSequence(1, static fn (int $v): ?int => $v < 4 ? $v + 1 : null);
+
+		$this->assertSame([1, 2, 3, 4], $sequence->toArray());
+	}
+
+	#[Test]
+	public function generateSequence_with_a_null_seed_is_empty(): void
+	{
+		$this->assertSame([], generateSequence(null, static fn (int $v): int => $v + 1)->toArray());
+	}
+
+	#[Test]
+	public function generateSequence_replays_from_the_seed(): void
+	{
+		$sequence = generateSequence(1, static fn (int $v): ?int => $v < 3 ? $v + 1 : null);
+
+		$this->assertSame([1, 2, 3], $sequence->toArray());
+		$this->assertSame([1, 2, 3], $sequence->toArray());
+	}
+
+	#[Test]
+	public function generateSequence_source_can_be_infinite(): void
+	{
+		$nextCalls = 0;
+		$sequence = generateSequence(1, static function (int $v) use (&$nextCalls): int {
+			$nextCalls++;
+
+			return $v + 1;
+		});
+
+		$this->assertSame([1, 2, 3], $sequence->takeFirst(3)->toArray());
+		$this->assertSame(2, $nextCalls);
 	}
 }

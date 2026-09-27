@@ -491,4 +491,14 @@ trait IterableTerminalsLogic
 
 		return $result . $postfix;
 	}
+
+	// --- Iteration ---
+
+	/** {@inheritDoc} */
+	public function forEach(Closure $action): void
+	{
+		foreach ($this as $i => $v) {
+			$action($v, $i);
+		}
+	}
 }

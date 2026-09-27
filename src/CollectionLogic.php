@@ -382,14 +382,6 @@ trait CollectionLogic
 		return $this;
 	}
 
-	/** {@inheritDoc} */
-	public function forEach(Closure $action): void
-	{
-		foreach ($this as $i => $v) {
-			$action($v, $i);
-		}
-	}
-
 	// --- Conversion ---
 
 	/** {@inheritDoc} */

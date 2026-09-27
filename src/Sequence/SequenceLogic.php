@@ -224,14 +224,6 @@ trait SequenceLogic
 		}));
 	}
 
-	/** {@inheritDoc} */
-	public function forEach(Closure $action): void
-	{
-		foreach ($this as $i => $v) {
-			$action($v, $i);
-		}
-	}
-
 	// --- Element Access ---
 
 	/**

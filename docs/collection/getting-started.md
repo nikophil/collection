@@ -140,7 +140,7 @@ foreach ($map as $key => $value) {
     echo "$key = $value\n";
 }
 
-// returns itself for chaining
+// returns nothing - use onEach() to keep chaining
 $set->forEach(fn($el) => process($el));
 ```
 

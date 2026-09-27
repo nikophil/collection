@@ -232,8 +232,7 @@ interface Sequence extends IteratorAggregate
 	 *
 	 * The terminal counterpart of onEach: onEach taps a pipeline still being built, forEach
 	 * is what makes it run. It returns no sequence, so it ends the chain instead of looking
-	 * like it could continue - a deliberate divergence from Collection::forEach(), which
-	 * still hands the collection back.
+	 * like it could continue.
 	 *
 	 * @param Closure(E, int):void $action
 	 * @throws NonReplayableSourceException If a non-replayable source has already been consumed

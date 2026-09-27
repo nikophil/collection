@@ -15,6 +15,7 @@ use IteratorAggregate;
 use JsonSerializable;
 use Noctud\Collection\Exception\ConversionException;
 use Noctud\Collection\Exception\NoSuchElementException;
+use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\List\ListInterface;
@@ -546,6 +547,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * @template U
 	 * @param iterable<U> $other
 	 * @return ListInterface<array{E, U}>
+	 * @throws NonReplayableSourceException If the other iterator cannot be rewound
 	 */
 	#[NoDiscard]
 	public function zip(iterable $other): ListInterface;

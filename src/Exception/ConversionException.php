@@ -11,6 +11,6 @@ namespace Noctud\Collection\Exception;
 
 use LogicException;
 
-final class ConversionException extends LogicException
+final class ConversionException extends LogicException implements NoctudCollectionException
 {
 }

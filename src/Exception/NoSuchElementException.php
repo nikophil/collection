@@ -13,7 +13,7 @@ use LogicException;
 use Noctud\Collection\Collection;
 use Noctud\Collection\Sequence\Sequence;
 
-final class NoSuchElementException extends LogicException
+final class NoSuchElementException extends LogicException implements NoctudCollectionException
 {
 	use NamesItsSubject;
 

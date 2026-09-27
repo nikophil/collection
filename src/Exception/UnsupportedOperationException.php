@@ -17,7 +17,7 @@ use Noctud\Collection\Sequence\Sequence;
  * Thrown when a mutating method is called on an immutable collection/map or when a
  * requested operation is not valid in the current state (e.g., removing from an empty list).
  */
-class UnsupportedOperationException extends LogicException
+class UnsupportedOperationException extends LogicException implements NoctudCollectionException
 {
 	use NamesItsSubject;
 

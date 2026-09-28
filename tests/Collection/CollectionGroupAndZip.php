@@ -12,6 +12,7 @@ namespace Noctud\Collection\Tests\Collection;
 use ArrayIterator;
 use Generator;
 use LimitIterator;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\Map\ImmutableMap;
 use NoRewindIterator;
@@ -76,6 +77,24 @@ trait CollectionGroupAndZip
 
 		$this->assertSame([5, 7], $grouped->get('a')->toArray());
 		$this->assertSame([6], $grouped->get('b')->toArray());
+	}
+
+	#[Test]
+	public function groupBy_with_null_key_throws(): void
+	{
+		$this->expectException(InvalidKeyTypeException::class);
+
+		// @phpstan-ignore argument.templateType
+		$_ = $this->collectionOf(['a', 'b'])->groupBy(fn ($v) => null); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function groupBy_with_array_key_throws(): void
+	{
+		$this->expectException(InvalidKeyTypeException::class);
+
+		// @phpstan-ignore argument.templateType
+		$_ = $this->collectionOf(['a', 'b'])->groupBy(fn ($v) => [$v]); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 	}
 
 	#[Test]
@@ -357,6 +376,15 @@ trait CollectionGroupAndZip
 		$this->assertSame(2, $result->get('b'));
 		$this->assertSame(1, $result->get('c'));
 		$this->assertSame(3, $result->count());
+	}
+
+	#[Test]
+	public function countBy_with_null_key_throws(): void
+	{
+		$this->expectException(InvalidKeyTypeException::class);
+
+		// @phpstan-ignore argument.templateType
+		$_ = $this->collectionOf(['a', 'b'])->countBy(fn ($v) => null); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 	}
 
 	#[Test]

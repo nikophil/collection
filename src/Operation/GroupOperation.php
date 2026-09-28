@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Operation;
 
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\KeyHasher;
 use Noctud\Collection\Map\HashMap\HashKeyValueStore;
 
@@ -32,6 +33,7 @@ final class GroupOperation extends AbstractOperation
 	 * @param callable(V, int):K $keySelector
 	 * @param (callable(V, int):T)|null $valueTransform
 	 * @return HashKeyValueStore<K, non-empty-list<V|T>>
+	 * @throws InvalidKeyTypeException If the key selector returns an unsupported map key
 	 */
 	public function byKey(callable $keySelector, ?callable $valueTransform = null): HashKeyValueStore
 	{
@@ -55,6 +57,7 @@ final class GroupOperation extends AbstractOperation
 	 * @template K of string|int|bool|float|object
 	 * @param callable(V, int):K $keySelector
 	 * @return HashKeyValueStore<K, positive-int>
+	 * @throws InvalidKeyTypeException If the key selector returns an unsupported map key
 	 */
 	public function countByKey(callable $keySelector): HashKeyValueStore
 	{

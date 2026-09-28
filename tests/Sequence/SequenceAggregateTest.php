@@ -11,6 +11,7 @@ namespace Noctud\Collection\Tests\Sequence;
 
 use Generator;
 use Noctud\Collection\Exception\ConversionException;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
@@ -335,6 +336,24 @@ final class SequenceAggregateTest extends TestCase
 		$counts = sequenceOf(['a', 'bb', 'cc', 'd'])->countBy(static fn (string $v): int => strlen($v));
 
 		$this->assertSame([1 => 2, 2 => 2], $counts->toArray());
+	}
+
+	#[Test]
+	public function groupBy_with_null_key_throws(): void
+	{
+		$this->expectException(InvalidKeyTypeException::class);
+
+		// @phpstan-ignore argument.type, argument.templateType
+		$_ = sequenceOf(['a', 'b'])->groupBy(static fn (string $v) => null); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function countBy_with_null_key_throws(): void
+	{
+		$this->expectException(InvalidKeyTypeException::class);
+
+		// @phpstan-ignore argument.type, argument.templateType
+		$_ = sequenceOf(['a', 'b'])->countBy(static fn (string $v) => null); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 	}
 
 	#[Test]

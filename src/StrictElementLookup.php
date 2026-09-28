@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Noctud\Collection;
 
+use Closure;
 use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Traversable;
 
@@ -72,6 +73,26 @@ final class StrictElementLookup
 		}
 
 		return false;
+	}
+
+	/**
+	 * The same test as contains(), or its negation, as a closure to hand to a filter: in the
+	 * scanning mode it calls in_array() directly, sparing a method call per tested element.
+	 *
+	 * @return Closure(mixed): bool
+	 */
+	public function predicate(bool $negate = false): Closure
+	{
+		if ($this->buckets === null) {
+			$elements = $this->elements;
+			return $negate
+				? static fn (mixed $v): bool => !in_array($v, $elements, true)
+				: static fn (mixed $v): bool => in_array($v, $elements, true);
+		}
+
+		return $negate
+			? fn (mixed $v): bool => !$this->contains($v)
+			: $this->contains(...);
 	}
 
 	/**

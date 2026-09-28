@@ -130,8 +130,7 @@ trait MutableTrackedSetLogic
 	public function removeAll(iterable $elements): MutableTrackedSet&TrackedResult
 	{
 		$prevCount = $this->store->count();
-		$lookup = new StrictElementLookup($elements, $this->store->count());
-		$this->store->removeIf(fn ($v) => $lookup->contains($v));
+		$this->store->removeIf(new StrictElementLookup($elements, $this->store->count())->predicate());
 		$this->_changed = $this->store->count() !== $prevCount;
 		return $this;
 	}
@@ -140,8 +139,7 @@ trait MutableTrackedSetLogic
 	public function retainAll(iterable $elements): MutableTrackedSet&TrackedResult
 	{
 		$prevCount = $this->store->count();
-		$lookup = new StrictElementLookup($elements, $this->store->count());
-		$this->store->removeIf(fn ($v) => !$lookup->contains($v));
+		$this->store->removeIf(new StrictElementLookup($elements, $this->store->count())->predicate(negate: true));
 		$this->_changed = $this->store->count() !== $prevCount;
 		return $this;
 	}

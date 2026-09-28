@@ -11,8 +11,8 @@ namespace Noctud\Collection\List;
 
 use Closure;
 use Noctud\Collection\Store\ReadWriteIndexedStore;
+use Noctud\Collection\StrictElementLookup;
 use Noctud\Collection\TrackedResult;
-use Traversable;
 
 /**
  * Tracking trait for mutable lists.
@@ -151,8 +151,8 @@ trait MutableTrackedListLogic
 	public function removeAll(iterable $elements): MutableTrackedList&TrackedResult
 	{
 		$prevCount = $this->store->count();
-		$itemsArray = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-		$this->store->removeIf(fn ($v) => in_array($v, $itemsArray, true));
+		$lookup = new StrictElementLookup($elements, $this->store->count());
+		$this->store->removeIf(fn ($v) => $lookup->contains($v));
 		$this->_changed = $this->store->count() !== $prevCount;
 		return $this;
 	}
@@ -161,8 +161,8 @@ trait MutableTrackedListLogic
 	public function retainAll(iterable $elements): MutableTrackedList&TrackedResult
 	{
 		$prevCount = $this->store->count();
-		$itemsArray = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-		$this->store->removeIf(fn ($v) => !in_array($v, $itemsArray, true));
+		$lookup = new StrictElementLookup($elements, $this->store->count());
+		$this->store->removeIf(fn ($v) => !$lookup->contains($v));
 		$this->_changed = $this->store->count() !== $prevCount;
 		return $this;
 	}

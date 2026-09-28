@@ -493,7 +493,7 @@ trait CollectionLogic
 	public function windowed(int $size, int $step = 1, bool $partialWindows = false): ImmutableList
 	{
 		return $this->newListOf((function () use ($size, $step, $partialWindows) {
-			$windows = new WindowOperation($this->store)->ofSize($size, $step, $partialWindows);
+			$windows = new WindowOperation($this->store->toArray())->ofSize($size, $step, $partialWindows);
 			foreach ($windows as $window) {
 				yield $this->newListOf($window);
 			}

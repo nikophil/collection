@@ -24,11 +24,18 @@ final class WindowOperation extends AbstractOperation
 	 * ones are appended as they arrive. When $step is larger than $size, the buffer
 	 * empties and the surplus elements are skipped without ever being held.
 	 *
+	 * An array source takes the random-access path instead (see sliced()).
+	 *
 	 * @return Generator<int, list<V>>
 	 */
 	public function ofSize(int $size, int $step = 1, bool $partialWindows = false): Generator
 	{
 		if ($size <= 0 || $step <= 0) {
+			return;
+		}
+
+		if (is_array($this->data)) {
+			yield from $this->sliced($this->data, $size, $step, $partialWindows);
 			return;
 		}
 
@@ -63,6 +70,26 @@ final class WindowOperation extends AbstractOperation
 			yield $buffer;
 
 			$buffer = array_slice($buffer, min($step, count($buffer)));
+		}
+	}
+
+	/**
+	 * Random-access path for eager collections: jumps straight to each window
+	 * start, so skipped elements and an oversized window cost nothing.
+	 *
+	 * @param array<int, V> $arr
+	 * @return Generator<int, list<V>>
+	 */
+	private function sliced(array $arr, int $size, int $step, bool $partialWindows): Generator
+	{
+		$count = count($arr);
+		for ($i = 0; $i < $count; $i += $step) {
+			$windowSize = min($size, $count - $i);
+			if (!$partialWindows && $windowSize < $size) {
+				break;
+			}
+
+			yield array_slice($arr, $i, $windowSize);
 		}
 	}
 }

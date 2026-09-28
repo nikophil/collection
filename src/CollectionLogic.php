@@ -16,6 +16,7 @@ use Noctud\Collection\List\MutableList;
 use Noctud\Collection\Map\ImmutableMap;
 use Noctud\Collection\Sequence\Sequence;
 use Noctud\Collection\Set\ImmutableSet;
+use Noctud\Collection\Set\Set;
 use Noctud\Collection\Operation\ChunkOperation;
 use Noctud\Collection\Operation\DistinctOperation;
 use Noctud\Collection\Operation\DropOperation;
@@ -94,8 +95,21 @@ trait CollectionLogic
 	/** {@inheritDoc} */
 	public function containsAll(iterable $elements): bool
 	{
-		foreach ($elements as $x) {
-			if (!$this->contains($x)) {
+		if ($this instanceof Set) {
+			foreach ($elements as $x) {
+				if (!$this->contains($x)) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		// contains() scans the whole store here: look the elements up in it once instead.
+		$wanted = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
+		$lookup = new StrictElementLookup($this->store->toArray(), count($wanted));
+		foreach ($wanted as $x) {
+			if (!$lookup->contains($x)) {
 				return false;
 			}
 		}

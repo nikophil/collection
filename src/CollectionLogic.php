@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection;
 
 use Closure;
+use LogicException;
 use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
@@ -94,7 +95,8 @@ trait CollectionLogic
 			}
 		}
 
-		throw new IndexOutOfBoundsException('Index out of bounds: ' . $index);
+		// Unreachable: the bounds check above guarantees a match.
+		throw new LogicException('Unreachable'); // @codeCoverageIgnore
 	}
 
 	/**
@@ -114,7 +116,8 @@ trait CollectionLogic
 			}
 		}
 
-		return null;
+		// Unreachable: the bounds check above guarantees a match.
+		throw new LogicException('Unreachable'); // @codeCoverageIgnore
 	}
 
 	/** {@inheritDoc} */

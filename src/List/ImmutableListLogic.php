@@ -75,7 +75,7 @@ trait ImmutableListLogic
 	public function removeAll(iterable $elements): ImmutableList
 	{
 		$lookup = new StrictElementLookup($elements, $this->store->count());
-		return $this->newCollectionOf(new FilterOperation($this->store->toArray())->byValue(fn ($v) => !$lookup->contains($v)));
+		return $this->newCollectionOf(new FilterOperation($this->store->toArray())->byValue($lookup->predicate(negate: true)));
 	}
 
 	/** {@inheritDoc} */
@@ -106,7 +106,7 @@ trait ImmutableListLogic
 	public function retainAll(iterable $elements): ImmutableList
 	{
 		$lookup = new StrictElementLookup($elements, $this->store->count());
-		return $this->newCollectionOf(new FilterOperation($this->store->toArray())->byValue(fn ($v) => $lookup->contains($v)));
+		return $this->newCollectionOf(new FilterOperation($this->store->toArray())->byValue($lookup->predicate()));
 	}
 
 	// --- Mutation: List (returns new) ---

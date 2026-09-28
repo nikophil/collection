@@ -75,11 +75,19 @@ trait CollectionLogic
 	/**
 	 * {@inheritDoc}
 	 *
-	 * No negative-index guard: positions start at 0, so a negative index simply never
-	 * matches and falls through to the same out-of-bounds error as one past the end.
+	 * The size is known, so an index outside the bounds is rejected without walking.
 	 */
 	public function elementAt(int $index)
 	{
+		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
+		if ($index < 0) {
+			throw new IndexOutOfBoundsException('Cannot use a negative index.');
+		}
+
+		if ($index >= $this->count()) {
+			throw new IndexOutOfBoundsException('Index out of bounds: ' . $index);
+		}
+
 		foreach ($this as $i => $v) {
 			if ($i === $index) {
 				return $v;
@@ -89,9 +97,17 @@ trait CollectionLogic
 		throw new IndexOutOfBoundsException('Index out of bounds: ' . $index);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 *
+	 * The size is known, so an index outside the bounds is answered without walking.
+	 */
 	public function elementAtOrNull(int $index): mixed
 	{
+		if ($index < 0 || $index >= $this->count()) {
+			return null;
+		}
+
 		foreach ($this as $i => $v) {
 			if ($i === $index) {
 				return $v;

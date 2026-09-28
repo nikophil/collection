@@ -275,6 +275,12 @@ trait SequenceLogic
 	/** {@inheritDoc} */
 	public function elementAtOrNull(int $index): mixed
 	{
+		// Early return: a negative index can never match, and walking for it would drain
+		// the source, or never end on an infinite one.
+		if ($index < 0) {
+			return null;
+		}
+
 		foreach ($this as $i => $v) {
 			if ($i === $index) {
 				return $v;

@@ -11,8 +11,8 @@ namespace Noctud\Collection\Set;
 
 use Closure;
 use Noctud\Collection\Store\ReadWriteElementStore;
+use Noctud\Collection\StrictElementLookup;
 use Noctud\Collection\TrackedResult;
-use Traversable;
 
 /**
  * Tracking trait for mutable sets.
@@ -130,8 +130,8 @@ trait MutableTrackedSetLogic
 	public function removeAll(iterable $elements): MutableTrackedSet&TrackedResult
 	{
 		$prevCount = $this->store->count();
-		$itemsArray = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-		$this->store->removeIf(fn ($v) => in_array($v, $itemsArray, true));
+		$lookup = new StrictElementLookup($elements, $this->store->count());
+		$this->store->removeIf(fn ($v) => $lookup->contains($v));
 		$this->_changed = $this->store->count() !== $prevCount;
 		return $this;
 	}
@@ -140,8 +140,8 @@ trait MutableTrackedSetLogic
 	public function retainAll(iterable $elements): MutableTrackedSet&TrackedResult
 	{
 		$prevCount = $this->store->count();
-		$itemsArray = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-		$this->store->removeIf(fn ($v) => !in_array($v, $itemsArray, true));
+		$lookup = new StrictElementLookup($elements, $this->store->count());
+		$this->store->removeIf(fn ($v) => !$lookup->contains($v));
 		$this->_changed = $this->store->count() !== $prevCount;
 		return $this;
 	}

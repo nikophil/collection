@@ -42,6 +42,7 @@ final class ListBench extends AbstractCollectionBenchCase
 	use CollectionSetOperations;
 	use CollectionSort;
 	use CollectionConvert;
+	use ListAccess;
 
 	protected function collectionOf(array $elements): ImmutableList
 	{

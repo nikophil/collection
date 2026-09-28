@@ -411,12 +411,12 @@ foreach ($map as $key => $value) {
 }
 ```
 
-All three methods return the map, so you can chain them mid-pipeline:
+All three return nothing. Their `onEach()`, `onEachKey()` and `onEachValue()` counterparts return the map, so you can chain them mid-pipeline:
 
 ```php
 $result = $map
     ->filter(fn($v) => $v > 0)
-    ->forEach(fn($v, $k) => logger()->info("$k: $v"))
+    ->onEach(fn($v, $k) => logger()->info("$k: $v"))
     ->mapValues(fn($v) => $v * 2);
 ```
 

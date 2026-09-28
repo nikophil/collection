@@ -32,7 +32,7 @@ assertType('list<array{string, int}>', $map->toPairs());
 assertType('Noctud\Collection\Map\MutableMap<string, int>', $map->toMutable());
 assertType('Noctud\Collection\Map\ImmutableMap<string, int>', $map->toImmutable());
 
-// forEach variants return the map unchanged.
-assertType('Noctud\Collection\Map\ImmutableMap<string, int>', $map->forEach(fn (int $v, string $k): null => null));
-assertType('Noctud\Collection\Map\ImmutableMap<string, int>', $map->forEachKey(fn (string $k): null => null));
-assertType('Noctud\Collection\Map\ImmutableMap<string, int>', $map->forEachValue(fn (int $v): null => null));
+// onEach variants are pass-through taps; forEach variants are a native `: void`, so they have nothing to pin here.
+assertType('Noctud\Collection\Map\ImmutableMap<string, int>', $map->onEach(fn (int $v, string $k): null => null));
+assertType('Noctud\Collection\Map\ImmutableMap<string, int>', $map->onEachKey(fn (string $k): null => null));
+assertType('Noctud\Collection\Map\ImmutableMap<string, int>', $map->onEachValue(fn (int $v): null => null));

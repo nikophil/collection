@@ -167,7 +167,7 @@ interface WritableMap extends Map
 	 * @param Closure(V, K):void $action
 	 * @return WritableMap<K,V> The current map.
 	 */
-	public function forEach(Closure $action): WritableMap;
+	public function onEach(Closure $action): WritableMap;
 
 	/**
 	 * Executes the given action for each key and returns the map for chaining.
@@ -175,7 +175,7 @@ interface WritableMap extends Map
 	 * @param Closure(K):void $action
 	 * @return WritableMap<K,V> The current map.
 	 */
-	public function forEachKey(Closure $action): WritableMap;
+	public function onEachKey(Closure $action): WritableMap;
 
 	/**
 	 * Executes the given action for each value and returns the map for chaining.
@@ -183,7 +183,7 @@ interface WritableMap extends Map
 	 * @param Closure(V):void $action
 	 * @return WritableMap<K,V> The current map.
 	 */
-	public function forEachValue(Closure $action): WritableMap;
+	public function onEachValue(Closure $action): WritableMap;
 
 	// --- Internal ---
 

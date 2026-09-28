@@ -482,7 +482,7 @@ interface ImmutableMap extends Map
 	 * @param Closure(V, K):void $action
 	 * @return ImmutableMap<K,V>
 	 */
-	public function forEach(Closure $action): ImmutableMap;
+	public function onEach(Closure $action): ImmutableMap;
 
 	/**
 	 * Executes the given action for each key and returns the map for chaining.
@@ -490,7 +490,7 @@ interface ImmutableMap extends Map
 	 * @param Closure(K):void $action
 	 * @return ImmutableMap<K,V>
 	 */
-	public function forEachKey(Closure $action): ImmutableMap;
+	public function onEachKey(Closure $action): ImmutableMap;
 
 	/**
 	 * Executes the given action for each value and returns the map for chaining.
@@ -498,7 +498,7 @@ interface ImmutableMap extends Map
 	 * @param Closure(V):void $action
 	 * @return ImmutableMap<K,V>
 	 */
-	public function forEachValue(Closure $action): ImmutableMap;
+	public function onEachValue(Closure $action): ImmutableMap;
 
 	// --- Narrowing End (auto-generated) ---
 }

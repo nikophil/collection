@@ -465,7 +465,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	 * @param Closure(V, K):void $action
 	 * @return Map<K,V>
 	 */
-	public function forEach(Closure $action): Map;
+	public function onEach(Closure $action): Map;
 
 	/**
 	 * Executes the given action for each key and returns the map for chaining.
@@ -473,7 +473,7 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	 * @param Closure(K):void $action
 	 * @return Map<K,V>
 	 */
-	public function forEachKey(Closure $action): Map;
+	public function onEachKey(Closure $action): Map;
 
 	/**
 	 * Executes the given action for each value and returns the map for chaining.
@@ -481,7 +481,31 @@ interface Map extends IteratorAggregate, Countable, ArrayAccess, JsonSerializabl
 	 * @param Closure(V):void $action
 	 * @return Map<K,V>
 	 */
-	public function forEachValue(Closure $action): Map;
+	public function onEachValue(Closure $action): Map;
+
+	/**
+	 * Executes the given action for each entry.
+	 * Returns nothing - chain with onEach() when the map is still needed.
+	 *
+	 * @param Closure(V, K):void $action
+	 */
+	public function forEach(Closure $action): void;
+
+	/**
+	 * Executes the given action for each key.
+	 * Returns nothing - chain with onEachKey() when the map is still needed.
+	 *
+	 * @param Closure(K):void $action
+	 */
+	public function forEachKey(Closure $action): void;
+
+	/**
+	 * Executes the given action for each value.
+	 * Returns nothing - chain with onEachValue() when the map is still needed.
+	 *
+	 * @param Closure(V):void $action
+	 */
+	public function forEachValue(Closure $action): void;
 
 	// --- Conversion ---
 

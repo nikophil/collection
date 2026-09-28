@@ -75,9 +75,9 @@ $mapBlacklist = [
 	'mapValuesNotNull',
 	'flip',
 	'sortedWith',
-	'forEach',
-	'forEachKey',
-	'forEachValue',
+	'onEach',
+	'onEachKey',
+	'onEachValue',
 ];
 $map = NarrowingGenerator::generateSelfPreserving(
 	$immutableMap,

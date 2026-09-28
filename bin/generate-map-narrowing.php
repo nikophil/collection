@@ -43,7 +43,7 @@ if (!NarrowingGenerator::writeBetweenMarkers($immutableMapFile, $immutableMapNar
 }
 
 // Generate WritableMap transformation narrowing (Map -> ImmutableMap)
-$writableMapNarrowing = NarrowingGenerator::generateWritableMapTransformationNarrowing($mapContent, ['forEach', 'forEachKey', 'forEachValue']);
+$writableMapNarrowing = NarrowingGenerator::generateWritableMapTransformationNarrowing($mapContent, ['onEach', 'onEachKey', 'onEachValue']);
 if (!NarrowingGenerator::writeBetweenMarkers($writableMapFile, $writableMapNarrowing)) {
 	echo "Failed to update WritableMap.php\n";
 	exit(1);

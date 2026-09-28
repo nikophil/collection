@@ -251,7 +251,7 @@ interface MutableTrackedMap extends MutableMap, WritableTrackedMap
 	 * @param Closure(V, K):void $action
 	 * @return MutableTrackedMap<K,V>&TrackedResult The current map.
 	 */
-	public function forEach(Closure $action): MutableTrackedMap&TrackedResult;
+	public function onEach(Closure $action): MutableTrackedMap&TrackedResult;
 
 	/**
 	 * Executes the given action for each key and returns the map for chaining.
@@ -259,7 +259,7 @@ interface MutableTrackedMap extends MutableMap, WritableTrackedMap
 	 * @param Closure(K):void $action
 	 * @return MutableTrackedMap<K,V>&TrackedResult The current map.
 	 */
-	public function forEachKey(Closure $action): MutableTrackedMap&TrackedResult;
+	public function onEachKey(Closure $action): MutableTrackedMap&TrackedResult;
 
 	/**
 	 * Executes the given action for each value and returns the map for chaining.
@@ -267,7 +267,7 @@ interface MutableTrackedMap extends MutableMap, WritableTrackedMap
 	 * @param Closure(V):void $action
 	 * @return MutableTrackedMap<K,V>&TrackedResult The current map.
 	 */
-	public function forEachValue(Closure $action): MutableTrackedMap&TrackedResult;
+	public function onEachValue(Closure $action): MutableTrackedMap&TrackedResult;
 
 	// --- Narrowing End (auto-generated) ---
 }

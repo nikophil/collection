@@ -69,6 +69,25 @@ jobs:
       - name: Run PHPCS
         run: vendor/bin/phpcs
 
+  phpbench:
+    name: PHPBench (benchmarks run)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # Shared runners are too noisy to compare timings: this only checks that every
+      # benchmark still runs, with a single revolution of a single iteration.
+      - name: Run benchmarks once
+        run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error --progress=none
+
   codegen:
     name: Codegen (generated code in sync)
     runs-on: ubuntu-latest

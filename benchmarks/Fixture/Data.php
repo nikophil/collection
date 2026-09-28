@@ -22,7 +22,7 @@ final class Data
 	/**
 	 * Unique integers from $offset to $offset + $size - 1, in a deterministic shuffled order.
 	 *
-	 * @return list<int>
+	 * @return ($size is positive-int ? non-empty-list<int> : list<int>)
 	 */
 	public static function ints(int $size, int $offset = 0): array
 	{

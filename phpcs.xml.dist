@@ -8,6 +8,7 @@
 
     <file>src/</file>
     <file>tests/</file>
+    <file>benchmarks/</file>
     <arg name="extensions" value="php"/>
     <arg name="encoding" value="utf-8"/>
     <arg value="p"/>  <!-- Show progress -->

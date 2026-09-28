@@ -46,6 +46,12 @@ abstract class AbstractMapBenchCase
 	/** @var array<K, int> Half of its keys overlap $entries, the other half do not. */
 	protected array $other;
 
+	/** @var list<array{K, int}> The entries of $other, as pairs. */
+	protected array $otherPairs;
+
+	/** @var list<K> Keys absent from the map, one per call of a batch. */
+	protected array $newKeys;
+
 	/** @var K A key located in the middle of the map. */
 	protected int|string $probeKey;
 
@@ -76,6 +82,12 @@ abstract class AbstractMapBenchCase
 		$this->keys = $this->keysOf($size);
 		$this->entries = array_combine($this->keys, Data::ints($size));
 		$this->other = array_combine($this->keysOf($size, $this->half), Data::ints($size, $size));
+		$this->otherPairs = [];
+		foreach ($this->other as $key => $value) {
+			$this->otherPairs[] = [$key, $value];
+		}
+
+		$this->newKeys = $this->keysOf(self::Batch, 2 * $size);
 		$this->probeKey = $this->keys[$this->half];
 		$this->probeValue = $this->entries[$this->probeKey];
 		$this->map = $this->mapOf($this->entries);

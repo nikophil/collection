@@ -14,21 +14,14 @@ use PhpBench\Attributes\Groups;
 use function Noctud\Collection\mapOf;
 
 /**
- * Read-only operations of the default HashMap, with string keys.
+ * Writes on an immutable HashMap, with string keys, each returning a modified copy.
  *
  * @extends AbstractMapBenchCase<string, ImmutableMap<string, int>>
  */
-#[Groups(['map'])]
-final class HashMapBench extends AbstractMapBenchCase
+#[Groups(['map', 'mutation'])]
+final class ImmutableHashMapBench extends AbstractMapBenchCase
 {
-	use MapAccess;
-	use MapQuery;
-	use MapFilter;
-	use MapTransform;
-	use MapSlice;
-	use MapSort;
-	use MapConvert;
-	use MapViews;
+	use MapImmutableWrite;
 	use StringKeys;
 
 	protected function mapOf(array $entries): ImmutableMap

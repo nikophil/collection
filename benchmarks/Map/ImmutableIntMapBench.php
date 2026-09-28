@@ -14,21 +14,14 @@ use PhpBench\Attributes\Groups;
 use function Noctud\Collection\intMapOf;
 
 /**
- * Read-only operations of an IntMap.
+ * Writes on an immutable IntMap, each returning a modified copy.
  *
  * @extends AbstractMapBenchCase<int, ImmutableMap<int, int>>
  */
-#[Groups(['map'])]
-final class IntMapBench extends AbstractMapBenchCase
+#[Groups(['map', 'mutation'])]
+final class ImmutableIntMapBench extends AbstractMapBenchCase
 {
-	use MapAccess;
-	use MapQuery;
-	use MapFilter;
-	use MapTransform;
-	use MapSlice;
-	use MapSort;
-	use MapConvert;
-	use MapViews;
+	use MapImmutableWrite;
 	use IntKeys;
 
 	protected function mapOf(array $entries): ImmutableMap

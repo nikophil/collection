@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Noctud\Collection\Benchmarks\List;
+namespace Noctud\Collection\Benchmarks\Set;
 
 use Noctud\Collection\Benchmarks\Collection\AbstractCollectionBenchCase;
 use Noctud\Collection\Benchmarks\Collection\CollectionAccess;
@@ -20,17 +20,17 @@ use Noctud\Collection\Benchmarks\Collection\CollectionSetOperations;
 use Noctud\Collection\Benchmarks\Collection\CollectionSlice;
 use Noctud\Collection\Benchmarks\Collection\CollectionSort;
 use Noctud\Collection\Benchmarks\Collection\CollectionTransform;
-use Noctud\Collection\List\ImmutableList;
+use Noctud\Collection\Set\ImmutableSet;
 use PhpBench\Attributes\Groups;
-use function Noctud\Collection\listOf;
+use function Noctud\Collection\setOf;
 
 /**
- * Read-only operations of an immutable List.
+ * Read-only operations of an immutable Set.
  *
- * @extends AbstractCollectionBenchCase<ImmutableList<int>>
+ * @extends AbstractCollectionBenchCase<ImmutableSet<int>>
  */
-#[Groups(['list'])]
-final class ListBench extends AbstractCollectionBenchCase
+#[Groups(['set'])]
+final class SetBench extends AbstractCollectionBenchCase
 {
 	use CollectionAccess;
 	use CollectionQuery;
@@ -43,8 +43,8 @@ final class ListBench extends AbstractCollectionBenchCase
 	use CollectionSort;
 	use CollectionConvert;
 
-	protected function collectionOf(array $elements): ImmutableList
+	protected function collectionOf(array $elements): ImmutableSet
 	{
-		return listOf($elements);
+		return setOf($elements);
 	}
 }

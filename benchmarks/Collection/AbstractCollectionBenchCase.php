@@ -45,6 +45,9 @@ abstract class AbstractCollectionBenchCase
 	/** An element located in the middle of the collection. */
 	protected int $probe;
 
+	/** @var int<0, max> Half of the collection size. */
+	protected int $half;
+
 	/**
 	 * @param list<int> $elements
 	 * @return C
@@ -52,14 +55,15 @@ abstract class AbstractCollectionBenchCase
 	abstract protected function collectionOf(array $elements): Collection;
 
 	/**
-	 * @param array{size: int} $params
+	 * @param array{size: positive-int} $params
 	 */
 	public function setUp(array $params): void
 	{
 		$size = $params['size'];
+		$this->half = $size >> 1;
 		$this->elements = Data::ints($size);
-		$this->other = Data::ints($size, intdiv($size, 2));
-		$this->probe = $this->elements[intdiv($size, 2)];
+		$this->other = Data::ints($size, $this->half);
+		$this->probe = $this->elements[$this->half];
 		$this->collection = $this->collectionOf($this->elements);
 	}
 }

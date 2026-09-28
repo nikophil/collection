@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Operation;
 
+use Noctud\Collection\KeyHasher;
 use Noctud\Collection\Map\HashMap\HashKeyValueStore;
 
 /**
@@ -23,26 +24,28 @@ final class GroupOperation extends AbstractOperation
 	 * arrays: wrapping them into collections is the caller's job, the way
 	 * PartitionOperation returns plain lists.
 	 *
+	 * Buckets are appended in place in local arrays keyed by the key hash: going through
+	 * the store would copy the whole bucket on every element and hash each key twice.
+	 *
 	 * @template K of string|int|bool|float|object
 	 * @template T
 	 * @param callable(V, int):K $keySelector
 	 * @param (callable(V, int):T)|null $valueTransform
-	 * @return HashKeyValueStore<K, list<V|T>>
+	 * @return HashKeyValueStore<K, non-empty-list<V|T>>
 	 */
 	public function byKey(callable $keySelector, ?callable $valueTransform = null): HashKeyValueStore
 	{
-		/** @var HashKeyValueStore<K, list<V|T>> $store */
-		$store = HashKeyValueStore::empty();
+		$keys = [];
+		$buckets = [];
 
 		foreach ($this->data as $i => $v) {
 			$key = $keySelector($v, $i);
-			/** @var list<V|T> $bucket */
-			$bucket = $store->get($key) ?? [];
-			$bucket[] = $valueTransform !== null ? $valueTransform($v, $i) : $v;
-			$store->put($key, $bucket);
+			$hash = KeyHasher::hashMapKey($key);
+			$keys[$hash] ??= $key;
+			$buckets[$hash][] = $valueTransform !== null ? $valueTransform($v, $i) : $v;
 		}
 
-		return $store;
+		return HashKeyValueStore::fromHashed($keys, $buckets);
 	}
 
 	/**
@@ -51,20 +54,20 @@ final class GroupOperation extends AbstractOperation
 	 *
 	 * @template K of string|int|bool|float|object
 	 * @param callable(V, int):K $keySelector
-	 * @return HashKeyValueStore<K, int>
+	 * @return HashKeyValueStore<K, positive-int>
 	 */
 	public function countByKey(callable $keySelector): HashKeyValueStore
 	{
-		/** @var HashKeyValueStore<K, int> $store */
-		$store = HashKeyValueStore::empty();
+		$keys = [];
+		$counts = [];
 
 		foreach ($this->data as $i => $v) {
 			$key = $keySelector($v, $i);
-			/** @var int $count */
-			$count = $store->get($key) ?? 0;
-			$store->put($key, $count + 1);
+			$hash = KeyHasher::hashMapKey($key);
+			$keys[$hash] ??= $key;
+			$counts[$hash] = ($counts[$hash] ?? 0) + 1;
 		}
 
-		return $store;
+		return HashKeyValueStore::fromHashed($keys, $counts);
 	}
 }

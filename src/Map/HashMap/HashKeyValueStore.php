@@ -75,6 +75,26 @@ final class HashKeyValueStore implements KeyValueStore
 	}
 
 	/**
+	 * Builds the store from arrays already keyed by KeyHasher::hashMapKey(), for callers
+	 * that hashed each key themselves while accumulating.
+	 *
+	 * @template NK of string|int|bool|float|object
+	 * @template NV
+	 * @param array<int|string,NK> $keys
+	 * @param array<int|string,NV> $values same hashes, same order as $keys
+	 * @return self<NK,NV>
+	 */
+	public static function fromHashed(array $keys, array $values): self
+	{
+		/** @var self<NK,NV> $store */
+		$store = new self();
+		$store->keys = $keys;
+		$store->values = $values;
+
+		return $store;
+	}
+
+	/**
 	 * @template NK of string|int|bool|float|object
 	 * @template NV
 	 * @return self<NK,NV>

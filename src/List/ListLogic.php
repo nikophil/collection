@@ -12,7 +12,7 @@ namespace Noctud\Collection\List;
 use Closure;
 use Noctud\Collection\CollectionLogic;
 use Noctud\Collection\Exception\IndexOutOfBoundsException;
-use Noctud\Collection\Map\HashMap\HashKeyValueStore;
+use Noctud\Collection\Operation\GroupOperation;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\Operation\DistinctOperation;
 use Noctud\Collection\Operation\DropOperation;
@@ -485,16 +485,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap
 	{
-		/** @var HashKeyValueStore<GK, array<int, E|GV>> $store */
-		$store = HashKeyValueStore::empty();
-
-		foreach ($this as $i => $v) {
-			$k = $keySelector($v, $i);
-			/** @var array<int, E|GV> $bucket */
-			$bucket = $store->get($k) ?? [];
-			$bucket[] = $valueTransform !== null ? $valueTransform($v, $i) : $v;
-			$store->put($k, $bucket);
-		}
+		$store = new GroupOperation($this)->byKey($keySelector, $valueTransform);
 
 		foreach ($store as $k => $bucket) {
 			if ($valueTransform !== null) {

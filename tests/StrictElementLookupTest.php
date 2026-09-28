@@ -95,6 +95,19 @@ final class StrictElementLookupTest extends TestCase
 
 	#[Test]
 	#[DataProvider('modeProvider')]
+	public function predicate_answers_like_contains(int $padding, int $expectedLookups): void
+	{
+		$lookup = self::lookupOf([1, [0.0]], $padding, $expectedLookups);
+
+		$this->assertTrue($lookup->predicate()(1));
+		$this->assertTrue($lookup->predicate()([-0.0]));
+		$this->assertFalse($lookup->predicate()('1'));
+		$this->assertFalse($lookup->predicate(negate: true)(1));
+		$this->assertTrue($lookup->predicate(negate: true)('1'));
+	}
+
+	#[Test]
+	#[DataProvider('modeProvider')]
 	public function unhashable_elements_are_looked_up_without_error(int $padding, int $expectedLookups): void
 	{
 		$closed = fopen('php://memory', 'r');

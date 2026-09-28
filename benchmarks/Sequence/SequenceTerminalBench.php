@@ -140,11 +140,6 @@ final class SequenceTerminalBench extends AbstractSequenceBenchCase
 		return $this->sequence->contains($this->probe);
 	}
 
-	/**
-	 * A single revolution: containsAll() filters the remaining elements on every match,
-	 * which takes seconds on the large size.
-	 */
-	#[Revs(1)]
 	public function benchContainsAll(): bool
 	{
 		return $this->sequence->containsAll($this->elements);

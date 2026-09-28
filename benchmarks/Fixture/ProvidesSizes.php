@@ -17,7 +17,7 @@ trait ProvidesSizes
 	 * A small size exposes the fixed overhead (object creation, closures, store setup),
 	 * a large one the per-element cost.
 	 *
-	 * @return Generator<string, array{size: int}>
+	 * @return Generator<string, array{size: positive-int}>
 	 */
 	public function provideSizes(): Generator
 	{

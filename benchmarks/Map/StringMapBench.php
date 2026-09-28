@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Benchmarks\Map;
 
-use Noctud\Collection\Benchmarks\Fixture\Data;
 use Noctud\Collection\Map\ImmutableMap;
 use PhpBench\Attributes\Groups;
 use function Noctud\Collection\stringMapOf;
@@ -30,11 +29,7 @@ final class StringMapBench extends AbstractMapBenchCase
 	use MapSort;
 	use MapConvert;
 	use MapViews;
-
-	protected function keysOf(int $size, int $offset = 0): array
-	{
-		return Data::strings($size, $offset);
-	}
+	use StringKeys;
 
 	protected function mapOf(array $entries): ImmutableMap
 	{

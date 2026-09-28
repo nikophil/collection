@@ -11,7 +11,8 @@
         "phpstan/phpstan": "2.2.15",
         "phpunit/phpunit": "^13.0",
         "squizlabs/php_codesniffer": "^4.0",
-        "slevomat/coding-standard": "^8.16"
+        "slevomat/coding-standard": "^8.16",
+        "phpbench/phpbench": "^1.7"
     },
     "autoload": {
         "psr-4": {
@@ -23,7 +24,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Noctud\\Collection\\Tests\\": "tests/"
+            "Noctud\\Collection\\Tests\\": "tests/",
+            "Noctud\\Collection\\Benchmarks\\": "benchmarks/"
         }
     },
     "config": {
@@ -40,6 +42,18 @@
         "phpstan": "phpstan analyse",
         "phpcs": "phpcs",
         "csf": "phpcbf",
-        "phpunit": "phpunit"
+        "phpunit": "phpunit",
+        "bench": [
+            "Composer\\Config::disableProcessTimeout",
+            "phpbench run --report=aggregate"
+        ],
+        "bench:baseline": [
+            "Composer\\Config::disableProcessTimeout",
+            "phpbench run --tag=baseline --retry-threshold=5 --iterations=10 --report=aggregate"
+        ],
+        "bench:compare": [
+            "Composer\\Config::disableProcessTimeout",
+            "phpbench run --ref=baseline --retry-threshold=5 --iterations=10 --report=aggregate"
+        ]
     }
 }

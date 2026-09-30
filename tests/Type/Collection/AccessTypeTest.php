@@ -22,6 +22,10 @@ assertType('int', $c->last());
 assertType('int|null', $c->lastOrNull());
 assertType('int', $c->single());
 assertType('int|null', $c->singleOrNull());
+assertType('int', $c->elementAt(1));
+assertType('int|null', $c->elementAtOrNull(1));
+// The OrNull variant takes any int: a negative index is an absence, not a misuse.
+assertType('int|null', $c->elementAtOrNull(-1));
 assertType('int|null', $c->find(fn (int $x): bool => $x > 0));
 assertType('int|null', $c->findLast(fn (int $x): bool => $x > 0));
 assertType('int', $c->expect(fn (int $x): bool => $x > 0));

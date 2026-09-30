@@ -14,6 +14,7 @@ use Countable;
 use IteratorAggregate;
 use JsonSerializable;
 use Noctud\Collection\Exception\ConversionException;
+use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
@@ -84,6 +85,27 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * @return E|null
 	 */
 	public function singleOrNull(): mixed;
+
+	/**
+	 * Returns the element at the given position in iteration order.
+	 *
+	 * A List resolves this by random access; any other collection walks its elements
+	 * until it reaches the position.
+	 *
+	 * @param non-negative-int $index
+	 * @return E
+	 * @throws IndexOutOfBoundsException If the collection holds fewer elements than that,
+	 *                                   or if the index is a negative int
+	 */
+	public function elementAt(int $index);
+
+	/**
+	 * Returns the element at the given position in iteration order,
+	 * or null when there is no element there - a negative index included.
+	 *
+	 * @return E|null
+	 */
+	public function elementAtOrNull(int $index): mixed;
 
 	/**
 	 * Returns the first element matching the predicate, or null if no element matches.

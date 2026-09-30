@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Noctud\Collection;
 
 use Closure;
+use LogicException;
+use Noctud\Collection\Exception\IndexOutOfBoundsException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\List\MutableList;
@@ -69,6 +71,53 @@ trait CollectionLogic
 	public function lastOrNull(): mixed
 	{
 		return $this->store->last();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * The size is known, so an index outside the bounds is rejected without walking.
+	 */
+	public function elementAt(int $index)
+	{
+		// @phpstan-ignore smaller.alwaysFalse (defensive guard: the phpdoc type does not bind untyped callers)
+		if ($index < 0) {
+			throw new IndexOutOfBoundsException('Cannot use a negative index.');
+		}
+
+		if ($index >= $this->count()) {
+			throw new IndexOutOfBoundsException('Index out of bounds: ' . $index);
+		}
+
+		foreach ($this as $i => $v) {
+			if ($i === $index) {
+				return $v;
+			}
+		}
+
+		// Unreachable: the bounds check above guarantees a match.
+		throw new LogicException('Unreachable'); // @codeCoverageIgnore
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * The size is known, so an index outside the bounds is answered without walking.
+	 */
+	public function elementAtOrNull(int $index): mixed
+	{
+		if ($index < 0 || $index >= $this->count()) {
+			return null;
+		}
+
+		foreach ($this as $i => $v) {
+			if ($i === $index) {
+				return $v;
+			}
+		}
+
+		// Unreachable: the bounds check above guarantees a match.
+		throw new LogicException('Unreachable'); // @codeCoverageIgnore
 	}
 
 	/** {@inheritDoc} */

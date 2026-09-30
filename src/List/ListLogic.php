@@ -57,6 +57,22 @@ trait ListLogic
 		return $this->store->get($index);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * A list is indexed, so the position is resolved directly instead of walked to.
+	 */
+	public function elementAt(int $index)
+	{
+		return $this->store->get($index, true);
+	}
+
+	/** {@inheritDoc} */
+	public function elementAtOrNull(int $index): mixed
+	{
+		return $this->store->get($index);
+	}
+
 	/** {@inheritDoc} */
 	public function getOrDefault(int $index, mixed $default): mixed
 	{

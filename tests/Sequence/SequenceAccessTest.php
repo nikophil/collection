@@ -15,6 +15,7 @@ use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use function Noctud\Collection\generateSequence;
 use function Noctud\Collection\listOf;
 use function Noctud\Collection\sequenceOf;
 
@@ -159,13 +160,17 @@ final class SequenceAccessTest extends TestCase
 	}
 
 	#[Test]
-	public function elementAtOrNull_throws_on_a_negative_index(): void
+	public function elementAtOrNull_returns_null_on_a_negative_index(): void
 	{
-		$this->expectException(IndexOutOfBoundsException::class);
-		$this->expectExceptionMessageIsOrContains('Cannot use a negative index');
+		// A negative index is not a position, so there is nothing there - the same answer
+		// ListInterface::getOrNull() already gives, and the one Kotlin gives.
+		$this->assertNull(sequenceOf(['a', 'b', 'c'])->elementAtOrNull(-1));
+	}
 
-		// @phpstan-ignore argument.type
-		$_ = sequenceOf(['a', 'b', 'c'])->elementAtOrNull(-1); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	#[Test]
+	public function elementAtOrNull_returns_null_on_a_negative_index_without_walking_an_infinite_sequence(): void
+	{
+		$this->assertNull(generateSequence(0, static fn (int $i) => $i + 1)->elementAtOrNull(-1));
 	}
 
 	#[Test]

@@ -32,4 +32,5 @@ assertType('list<string>', $c->toArray());
 assertType('Noctud\Collection\Sequence\Sequence<string>', $c->asSequence());
 assertType('Noctud\Collection\MutableCollection<string>', $c->toMutable());
 assertType('Noctud\Collection\ImmutableCollection<string>', $c->toImmutable());
-assertType('Noctud\Collection\Collection<string>', $c->forEach(fn (string $x): null => null));
+// onEach() is a pass-through tap; forEach() is a native `: void`, so it has nothing to pin here.
+assertType('Noctud\Collection\Collection<string>', $c->onEach(fn (string $x): null => null));

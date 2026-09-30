@@ -104,7 +104,7 @@ interface WritableTrackedCollection extends WritableCollection
 	 * @param Closure(E, int):void $action
 	 * @return WritableTrackedCollection<E>&TrackedResult The collection itself for chaining
 	 */
-	public function forEach(Closure $action): WritableTrackedCollection&TrackedResult;
+	public function onEach(Closure $action): WritableTrackedCollection&TrackedResult;
 
 	// --- Narrowing End (auto-generated) ---
 }

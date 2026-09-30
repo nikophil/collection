@@ -187,7 +187,7 @@ interface MutableSet extends WritableSet, MutableCollection
 	 * @param Closure(E, int):void $action
 	 * @return MutableSet<E> The collection itself for chaining
 	 */
-	public function forEach(Closure $action): MutableSet;
+	public function onEach(Closure $action): MutableSet;
 
 	// --- Narrowing End (auto-generated) ---
 }

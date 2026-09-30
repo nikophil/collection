@@ -123,7 +123,7 @@ interface WritableSet extends Set, WritableCollection
 	 * @param Closure(E, int):void $action
 	 * @return WritableSet<E> The collection itself for chaining
 	 */
-	public function forEach(Closure $action): WritableSet;
+	public function onEach(Closure $action): WritableSet;
 
 	/**
 	 * Filter elements by predicate.

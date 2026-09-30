@@ -136,7 +136,7 @@ interface WritableTrackedMap extends WritableMap
 	 * @param Closure(V, K):void $action
 	 * @return WritableTrackedMap<K,V>&TrackedResult The current map.
 	 */
-	public function forEach(Closure $action): WritableTrackedMap&TrackedResult;
+	public function onEach(Closure $action): WritableTrackedMap&TrackedResult;
 
 	/**
 	 * Executes the given action for each key and returns the map for chaining.
@@ -144,7 +144,7 @@ interface WritableTrackedMap extends WritableMap
 	 * @param Closure(K):void $action
 	 * @return WritableTrackedMap<K,V>&TrackedResult The current map.
 	 */
-	public function forEachKey(Closure $action): WritableTrackedMap&TrackedResult;
+	public function onEachKey(Closure $action): WritableTrackedMap&TrackedResult;
 
 	/**
 	 * Executes the given action for each value and returns the map for chaining.
@@ -152,7 +152,7 @@ interface WritableTrackedMap extends WritableMap
 	 * @param Closure(V):void $action
 	 * @return WritableTrackedMap<K,V>&TrackedResult The current map.
 	 */
-	public function forEachValue(Closure $action): WritableTrackedMap&TrackedResult;
+	public function onEachValue(Closure $action): WritableTrackedMap&TrackedResult;
 
 	// --- Narrowing End (auto-generated) ---
 }

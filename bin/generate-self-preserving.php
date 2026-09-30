@@ -36,7 +36,7 @@ $start = NarrowingGenerator::SelfPreservingStartMarker;
 $end = NarrowingGenerator::SelfPreservingEndMarker;
 
 // Type-changing methods (different element type, conversions, or chainable $this) are not narrowed.
-$elementBlacklist = ['toImmutable', 'forEach', 'filterInstanceOf', 'map', 'mapNotNull', 'flatMap', 'flatten'];
+$elementBlacklist = ['toImmutable', 'onEach', 'filterInstanceOf', 'map', 'mapNotNull', 'flatMap', 'flatten'];
 
 // Set: + intersect/union/subtract (return Set, declared on Collection) and partition (array shape).
 $set = NarrowingGenerator::generateSelfPreserving(
@@ -75,9 +75,9 @@ $mapBlacklist = [
 	'mapValuesNotNull',
 	'flip',
 	'sortedWith',
-	'forEach',
-	'forEachKey',
-	'forEachValue',
+	'onEach',
+	'onEachKey',
+	'onEachValue',
 ];
 $map = NarrowingGenerator::generateSelfPreserving(
 	$immutableMap,

@@ -165,7 +165,7 @@ interface WritableList extends ListInterface, WritableCollection
 	 * @param Closure(E, int):void $action
 	 * @return WritableList<E> The collection itself for chaining
 	 */
-	public function forEach(Closure $action): WritableList;
+	public function onEach(Closure $action): WritableList;
 
 	/**
 	 * Filter elements by predicate.

@@ -193,7 +193,7 @@ interface MutableCollection extends WritableCollection
 	 * @param Closure(E, int):void $action
 	 * @return MutableCollection<E> The collection itself for chaining
 	 */
-	public function forEach(Closure $action): MutableCollection;
+	public function onEach(Closure $action): MutableCollection;
 
 	// --- Narrowing End (auto-generated) ---
 }

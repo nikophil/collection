@@ -266,7 +266,7 @@ interface MutableMap extends WritableMap
 	 * @param Closure(V, K):void $action
 	 * @return MutableMap<K,V> The current map.
 	 */
-	public function forEach(Closure $action): MutableMap;
+	public function onEach(Closure $action): MutableMap;
 
 	/**
 	 * Executes the given action for each key and returns the map for chaining.
@@ -274,7 +274,7 @@ interface MutableMap extends WritableMap
 	 * @param Closure(K):void $action
 	 * @return MutableMap<K,V> The current map.
 	 */
-	public function forEachKey(Closure $action): MutableMap;
+	public function onEachKey(Closure $action): MutableMap;
 
 	/**
 	 * Executes the given action for each value and returns the map for chaining.
@@ -282,7 +282,7 @@ interface MutableMap extends WritableMap
 	 * @param Closure(V):void $action
 	 * @return MutableMap<K,V> The current map.
 	 */
-	public function forEachValue(Closure $action): MutableMap;
+	public function onEachValue(Closure $action): MutableMap;
 
 	// --- Narrowing End (auto-generated) ---
 }

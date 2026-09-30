@@ -257,7 +257,7 @@ interface Set extends Collection
 	 * @param Closure(E, int):void $action
 	 * @return Set<E>
 	 */
-	public function forEach(Closure $action): Set;
+	public function onEach(Closure $action): Set;
 
 	/**
 	 * Splits the collection into two collections based on a predicate.

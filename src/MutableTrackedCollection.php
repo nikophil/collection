@@ -176,7 +176,7 @@ interface MutableTrackedCollection extends MutableCollection, WritableTrackedCol
 	 * @param Closure(E, int):void $action
 	 * @return MutableTrackedCollection<E>&TrackedResult The collection itself for chaining
 	 */
-	public function forEach(Closure $action): MutableTrackedCollection&TrackedResult;
+	public function onEach(Closure $action): MutableTrackedCollection&TrackedResult;
 
 	// --- Narrowing End (auto-generated) ---
 }

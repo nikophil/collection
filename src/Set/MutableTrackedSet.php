@@ -179,7 +179,7 @@ interface MutableTrackedSet extends MutableSet, WritableTrackedSet, MutableTrack
 	 * @param Closure(E, int):void $action
 	 * @return MutableTrackedSet<E>&TrackedResult The collection itself for chaining
 	 */
-	public function forEach(Closure $action): MutableTrackedSet&TrackedResult;
+	public function onEach(Closure $action): MutableTrackedSet&TrackedResult;
 
 	// --- Narrowing End (auto-generated) ---
 }

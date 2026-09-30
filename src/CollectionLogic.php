@@ -415,11 +415,9 @@ trait CollectionLogic
 	// --- Iteration ---
 
 	/** {@inheritDoc} */
-	public function forEach(Closure $action): static
+	public function onEach(Closure $action): static
 	{
-		foreach ($this as $i => $v) {
-			$action($v, $i);
-		}
+		$this->forEach($action);
 
 		return $this;
 	}

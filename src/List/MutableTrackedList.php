@@ -181,7 +181,7 @@ interface MutableTrackedList extends MutableList, WritableTrackedList, MutableTr
 	 * @param Closure(E, int):void $action
 	 * @return MutableTrackedList<E>&TrackedResult The collection itself for chaining
 	 */
-	public function forEach(Closure $action): MutableTrackedList&TrackedResult;
+	public function onEach(Closure $action): MutableTrackedList&TrackedResult;
 
 	/**
 	 * Sets the element at the specified index.

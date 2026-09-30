@@ -646,33 +646,51 @@ trait MapLogic
 	// --- Iteration ---
 
 	/** {@inheritDoc} */
-	public function forEach(Closure $action): static
+	public function onEach(Closure $action): static
+	{
+		$this->forEach($action);
+
+		return $this;
+	}
+
+	/** {@inheritDoc} */
+	public function onEachKey(Closure $action): static
+	{
+		$this->forEachKey($action);
+
+		return $this;
+	}
+
+	/** {@inheritDoc} */
+	public function onEachValue(Closure $action): static
+	{
+		$this->forEachValue($action);
+
+		return $this;
+	}
+
+	/** {@inheritDoc} */
+	public function forEach(Closure $action): void
 	{
 		foreach ($this->store as $k => $v) {
 			$action($v, $k);
 		}
-
-		return $this;
 	}
 
 	/** {@inheritDoc} */
-	public function forEachKey(Closure $action): static
+	public function forEachKey(Closure $action): void
 	{
 		foreach ($this->store as $k => $_) {
 			$action($k);
 		}
-
-		return $this;
 	}
 
 	/** {@inheritDoc} */
-	public function forEachValue(Closure $action): static
+	public function forEachValue(Closure $action): void
 	{
 		foreach ($this->store as $v) {
 			$action($v);
 		}
-
-		return $this;
 	}
 
 	// --- Conversion ---

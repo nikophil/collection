@@ -11,6 +11,8 @@ namespace Noctud\Collection\Tests\Sequence;
 
 use Generator;
 use Noctud\Collection\Exception\NonReplayableSourceException;
+use Noctud\Collection\List\ImmutableList;
+use Noctud\Collection\Sequence\Sequence;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use function Noctud\Collection\sequenceOf;
@@ -260,5 +262,53 @@ final class SequenceLazinessTest extends TestCase
 
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$_ = $sequence->toArray();
+	}
+
+	#[Test]
+	public function chunked_pulls_only_what_the_consumed_chunks_need(): void
+	{
+		$pulled = 0;
+		$chunks = self::naturals($pulled)->chunked(2)->takeFirst(2)->toList();
+
+		$this->assertSame([[1, 2], [3, 4]], $chunks->map(self::toArray(...))->toArray());
+		$this->assertSame(4, $pulled);
+	}
+
+	#[Test]
+	public function windowed_pulls_only_what_the_consumed_windows_need(): void
+	{
+		$pulled = 0;
+		$windows = self::naturals($pulled)->windowed(3)->takeFirst(2)->toList();
+
+		$this->assertSame([[1, 2, 3], [2, 3, 4]], $windows->map(self::toArray(...))->toArray());
+		$this->assertSame(4, $pulled);
+	}
+
+	/**
+	 * An endless source: only a bounded operation can be run against it,
+	 * and $pulled counts how far the pipeline actually walked.
+	 *
+	 * @return Sequence<int>
+	 */
+	private static function naturals(int &$pulled): Sequence
+	{
+		return sequenceOf(static function () use (&$pulled): Generator {
+			$i = 0;
+
+			while (true) {
+				$pulled++;
+
+				yield ++$i;
+			}
+		});
+	}
+
+	/**
+	 * @param ImmutableList<int> $list
+	 * @return list<int>
+	 */
+	private static function toArray(ImmutableList $list): array
+	{
+		return $list->toArray();
 	}
 }

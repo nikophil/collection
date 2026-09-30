@@ -12,9 +12,11 @@ namespace Noctud\Collection\Tests\Sequence;
 use ArrayIterator;
 use Generator;
 use LimitIterator;
+use Noctud\Collection\List\ListInterface;
 use Noctud\Collection\Tests\Collection\Fixture\Cat;
 use Noctud\Collection\Tests\Collection\Fixture\Dog;
 use Noctud\Collection\Tests\Collection\Fixture\Walkable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use SplStack;
@@ -483,5 +485,85 @@ final class SequenceTransformTest extends TestCase
 
 		$this->assertSame(['b', 'c'], $result);
 		$this->assertSame(['0:b', '1:c'], $seen);
+	}
+
+	#[Test]
+	public function chunked_splits_the_source_into_lists_of_the_given_size(): void
+	{
+		$chunks = sequenceOf([1, 2, 3, 4, 5])->chunked(2);
+
+		$this->assertSame([[1, 2], [3, 4], [5]], $chunks->map(self::toArray(...))->toArray());
+	}
+
+	#[Test]
+	public function chunked_with_a_non_positive_size_yields_nothing(): void
+	{
+		// The signature says positive-int, so these calls only exist to pin the
+		// runtime guard behind it - the same safety net Collection::chunked() keeps.
+		$this->assertSame([], sequenceOf([1, 2, 3])->chunked(0)->toArray()); // @phpstan-ignore argument.type
+		$this->assertSame([], sequenceOf([1, 2, 3])->chunked(-1)->toArray()); // @phpstan-ignore argument.type
+	}
+
+	#[Test]
+	public function chunked_matches_its_collection_counterpart(): void
+	{
+		$data = [1, 2, 3, 4, 5];
+
+		$this->assertSame(
+			listOf($data)->chunked(2)->map(self::toArray(...))->toArray(),
+			sequenceOf($data)->chunked(2)->map(self::toArray(...))->toArray(),
+		);
+	}
+
+	#[Test]
+	public function windowed_slides_a_window_of_the_given_size(): void
+	{
+		$windows = sequenceOf([1, 2, 3, 4, 5])->windowed(3);
+
+		$this->assertSame([[1, 2, 3], [2, 3, 4], [3, 4, 5]], $windows->map(self::toArray(...))->toArray());
+	}
+
+	#[Test]
+	public function windowed_with_partial_windows_yields_the_shorter_tail(): void
+	{
+		$windows = sequenceOf([1, 2, 3, 4, 5])->windowed(3, 2, true);
+
+		$this->assertSame([[1, 2, 3], [3, 4, 5], [5]], $windows->map(self::toArray(...))->toArray());
+	}
+
+	/**
+	 * @param list<int> $data
+	 * @param positive-int $size
+	 * @param positive-int $step
+	 */
+	#[Test]
+	#[DataProvider('windowedProvider')]
+	public function windowed_matches_its_collection_counterpart(array $data, int $size, int $step, bool $partialWindows): void
+	{
+		$this->assertSame(
+			listOf($data)->windowed($size, $step, $partialWindows)->map(self::toArray(...))->toArray(),
+			sequenceOf($data)->windowed($size, $step, $partialWindows)->map(self::toArray(...))->toArray(),
+		);
+	}
+
+	public static function windowedProvider(): iterable
+	{
+		yield 'sliding by one' => [[1, 2, 3, 4, 5], 3, 1, false];
+		yield 'step smaller than size' => [[1, 2, 3, 4, 5], 3, 2, false];
+		yield 'step smaller than size, partial' => [[1, 2, 3, 4, 5], 3, 2, true];
+		yield 'step equal to size' => [[1, 2, 3, 4, 5], 2, 2, true];
+		yield 'step larger than size' => [[1, 2, 3, 4, 5, 6, 7], 2, 3, true];
+		yield 'window larger than the source' => [[1, 2], 5, 1, false];
+		yield 'window larger than the source, partial' => [[1, 2], 5, 1, true];
+		yield 'empty source' => [[], 3, 1, true];
+	}
+
+	/**
+	 * @param ListInterface<int> $list
+	 * @return list<int>
+	 */
+	private static function toArray(ListInterface $list): array
+	{
+		return $list->toArray();
 	}
 }

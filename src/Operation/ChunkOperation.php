@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Operation;
 
+use Generator;
+
 /**
  * @internal
  * @template V
@@ -17,25 +19,26 @@ namespace Noctud\Collection\Operation;
 final class ChunkOperation extends AbstractOperation
 {
 	/**
-	 * @return list<list<V>>
+	 * Yields chunks as they fill up, so a lazy caller never holds more than one
+	 * chunk at a time; an eager one collects them exactly as before.
+	 *
+	 * @return Generator<int, list<V>>
 	 */
-	public function ofSize(int $size): array
+	public function ofSize(int $size): Generator
 	{
 		if ($size <= 0) {
-			return [];
+			return;
 		}
-		$chunks = [];
 		$buffer = [];
 		foreach ($this->data as $v) {
 			$buffer[] = $v;
 			if (count($buffer) >= $size) {
-				$chunks[] = $buffer;
+				yield $buffer;
 				$buffer = [];
 			}
 		}
 		if ($buffer) {
-			$chunks[] = $buffer;
+			yield $buffer;
 		}
-		return $chunks;
 	}
 }

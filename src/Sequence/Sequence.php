@@ -190,6 +190,32 @@ interface Sequence extends IteratorAggregate
 	public function distinctBy(Closure $selector): Sequence;
 
 	/**
+	 * Splits the sequence into chunks of the given size, yielded as they fill up.
+	 * The last chunk may be smaller. A non-positive size yields nothing.
+	 *
+	 * Stateful but bounded: only the chunk being filled is held, never the whole source.
+	 *
+	 * @param positive-int $size
+	 * @return Sequence<ImmutableList<E>>
+	 */
+	#[NoDiscard]
+	public function chunked(int $size): Sequence;
+
+	/**
+	 * Yields a window of the given size sliding along this sequence with the given step.
+	 * When $partialWindows is true, the shorter windows at the end are yielded too.
+	 * A non-positive size or step yields nothing.
+	 *
+	 * Stateful but bounded: at most $size elements are held at a time.
+	 *
+	 * @param positive-int $size
+	 * @param positive-int $step
+	 * @return Sequence<ImmutableList<E>>
+	 */
+	#[NoDiscard]
+	public function windowed(int $size, int $step = 1, bool $partialWindows = false): Sequence;
+
+	/**
 	 * Combines this sequence with another iterable by pairing elements at the same position.
 	 * The resulting sequence has the length of the shorter input.
 	 *

@@ -30,6 +30,7 @@ use Noctud\Collection\Map\HashMap\HashKeyValueStore;
 use Noctud\Collection\Operation\SetOperation;
 use Noctud\Collection\Operation\TakeOperation;
 use Noctud\Collection\Store\ReadWriteElementStore;
+use Noctud\Collection\Operation\WindowOperation;
 use Noctud\Collection\Operation\ZipOperation;
 use Noctud\Collection\Operation\ZipWithNextOperation;
 use Noctud\Collection\Store\ReadOnlyElementStore;
@@ -532,7 +533,7 @@ trait CollectionLogic
 	 * {@inheritDoc}
 	 *
 	 * The params are typed `int` (not the interface's `positive-int`) so the
-	 * defensive non-positive guard below stays a live runtime safety net.
+	 * defensive non-positive guard in WindowOperation stays a live runtime safety net.
 	 *
 	 * @param int $size
 	 * @param int $step
@@ -540,21 +541,10 @@ trait CollectionLogic
 	#[NoDiscard]
 	public function windowed(int $size, int $step = 1, bool $partialWindows = false): ImmutableList
 	{
-		if ($size <= 0 || $step <= 0) {
-			return $this->newListOf();
-		}
-
-		$arr = $this->store->toArray();
-		$count = count($arr);
-
-		return $this->newListOf((function () use ($arr, $count, $size, $step, $partialWindows) {
-			for ($i = 0; $i < $count; $i += $step) {
-				$windowSize = min($size, $count - $i);
-				if (!$partialWindows && $windowSize < $size) {
-					break;
-				}
-
-				yield $this->newListOf(array_slice($arr, $i, $windowSize));
+		return $this->newListOf((function () use ($size, $step, $partialWindows) {
+			$windows = new WindowOperation($this->store->toArray())->ofSize($size, $step, $partialWindows);
+			foreach ($windows as $window) {
+				yield $this->newListOf($window);
 			}
 		})());
 	}

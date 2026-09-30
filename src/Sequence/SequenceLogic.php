@@ -19,6 +19,7 @@ use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\IterableTerminalsLogic;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Map\ImmutableMap;
+use Noctud\Collection\Operation\ChunkOperation;
 use Noctud\Collection\Operation\DistinctOperation;
 use Noctud\Collection\Operation\DropOperation;
 use Noctud\Collection\Operation\FilterOperation;
@@ -26,6 +27,7 @@ use Noctud\Collection\Operation\FlatMapKeyValueOperation;
 use Noctud\Collection\Operation\FlattenOperation;
 use Noctud\Collection\Operation\MapKeyValueOperation;
 use Noctud\Collection\Operation\TakeOperation;
+use Noctud\Collection\Operation\WindowOperation;
 use Noctud\Collection\Operation\ZipOperation;
 use Noctud\Collection\Operation\ZipWithNextOperation;
 use Noctud\Collection\Set\ImmutableSet;
@@ -174,6 +176,28 @@ trait SequenceLogic
 	public function distinctBy(Closure $selector): Sequence
 	{
 		return $this->newSequenceOf(fn (): iterable => new DistinctOperation($this)->bySelector($selector));
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function chunked(int $size): Sequence
+	{
+		return $this->newSequenceOf(function () use ($size): iterable {
+			foreach (new ChunkOperation($this)->ofSize($size) as $chunk) {
+				yield listOf($chunk);
+			}
+		});
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function windowed(int $size, int $step = 1, bool $partialWindows = false): Sequence
+	{
+		return $this->newSequenceOf(function () use ($size, $step, $partialWindows): iterable {
+			foreach (new WindowOperation($this)->ofSize($size, $step, $partialWindows) as $window) {
+				yield listOf($window);
+			}
+		});
 	}
 
 	/** {@inheritDoc} */

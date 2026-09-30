@@ -12,7 +12,6 @@ namespace Noctud\Collection;
 use Closure;
 use LogicException;
 use Noctud\Collection\Exception\IndexOutOfBoundsException;
-use Noctud\Collection\Exception\UnsupportedOperationException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\List\MutableList;
 use Noctud\Collection\Map\ImmutableMap;
@@ -24,11 +23,12 @@ use Noctud\Collection\Operation\DropOperation;
 use Noctud\Collection\Operation\FilterOperation;
 use Noctud\Collection\Operation\FlatMapOperation;
 use Noctud\Collection\Operation\FlattenOperation;
+use Noctud\Collection\Operation\GroupOperation;
 use Noctud\Collection\Operation\MapKeyValueOperation;
 use Noctud\Collection\Operation\PartitionOperation;
-use Noctud\Collection\Map\HashMap\HashKeyValueStore;
 use Noctud\Collection\Operation\SetOperation;
 use Noctud\Collection\Operation\TakeOperation;
+use Noctud\Collection\Operation\UnzipOperation;
 use Noctud\Collection\Store\ReadWriteElementStore;
 use Noctud\Collection\Operation\WindowOperation;
 use Noctud\Collection\Operation\ZipOperation;
@@ -177,17 +177,7 @@ trait CollectionLogic
 	#[NoDiscard]
 	public function countBy(Closure $keySelector): ImmutableMap
 	{
-		/** @var HashKeyValueStore<string|int|bool|float|object, int> $store */
-		$store = HashKeyValueStore::empty();
-
-		foreach ($this as $i => $element) {
-			$key = $keySelector($element, $i);
-			/** @var int $count */
-			$count = $store->get($key) ?? 0;
-			$store->put($key, $count + 1);
-		}
-
-		return $this->newMapOf($store); // @phpstan-ignore return.type
+		return $this->newMapOf(new GroupOperation($this)->countByKey($keySelector)); // @phpstan-ignore return.type
 	}
 
 	// --- Transformation ---
@@ -567,23 +557,7 @@ trait CollectionLogic
 	#[NoDiscard]
 	public function unzip(): array
 	{
-		$first = [];
-		$second = [];
-		foreach ($this->store as $pair) {
-			if (!is_array($pair)) {
-				throw new UnsupportedOperationException('unzip() requires a collection of pairs (arrays with indices 0 and 1)');
-			}
-
-			$a = $pair[0] ?? null;
-			$b = $pair[1] ?? null;
-
-			if ($a === null && !array_key_exists(0, $pair) || $b === null && !array_key_exists(1, $pair)) {
-				throw new UnsupportedOperationException('unzip() requires a collection of pairs (arrays with indices 0 and 1)');
-			}
-
-			$first[] = $a;
-			$second[] = $b;
-		}
+		[$first, $second] = new UnzipOperation($this->store)->pairs();
 
 		return [$this->newListOf($first), $this->newListOf($second)];
 	}
@@ -607,22 +581,13 @@ trait CollectionLogic
 	#[NoDiscard]
 	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap
 	{
-		/** @var HashKeyValueStore<K, array<int, E|V>> $store */
-		$store = HashKeyValueStore::empty();
+		$groups = new GroupOperation($this)->byKey($keySelector, $valueTransform);
 
-		foreach ($this as $i => $v) {
-			$k = $keySelector($v, $i);
-			/** @var array<int, E|V> $bucket */
-			$bucket = $store->get($k) ?? [];
-			$bucket[] = $valueTransform !== null ? $valueTransform($v, $i) : $v;
-			$store->put($k, $bucket);
+		foreach ($groups as $k => $bucket) {
+			$groups->put($k, $this->newListOf($bucket)); // @phpstan-ignore argument.type
 		}
 
-		foreach ($store as $k => $bucket) {
-			$store->put($k, $this->newListOf($bucket)); // @phpstan-ignore argument.type
-		}
-
-		return $this->newMapOf($store); // @phpstan-ignore return.type
+		return $this->newMapOf($groups); // @phpstan-ignore return.type
 	}
 
 	/**

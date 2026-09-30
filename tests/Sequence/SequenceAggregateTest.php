@@ -11,9 +11,11 @@ namespace Noctud\Collection\Tests\Sequence;
 
 use Generator;
 use Noctud\Collection\Exception\ConversionException;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
+use Noctud\Collection\Collection;
 use Noctud\Collection\Sequence\Sequence;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -293,6 +295,157 @@ final class SequenceAggregateTest extends TestCase
 	private function emptied(): Sequence
 	{
 		return sequenceOf([1, 2])->filter(static fn (int $v): bool => $v > 9);
+	}
+
+	#[Test]
+	public function groupBy_collects_elements_into_lists_per_key(): void
+	{
+		$groups = sequenceOf(['a', 'bb', 'cc', 'd'])->groupBy(static fn (string $v): int => strlen($v));
+
+		$this->assertSame(['a', 'd'], $groups->get(1)->toArray());
+		$this->assertSame(['bb', 'cc'], $groups->get(2)->toArray());
+	}
+
+	#[Test]
+	public function groupBy_applies_the_value_transform(): void
+	{
+		$groups = sequenceOf(['a', 'bb'])->groupBy(
+			static fn (string $v): int => strlen($v),
+			static fn (string $v): string => strtoupper($v),
+		);
+
+		$this->assertSame(['A'], $groups->get(1)->toArray());
+		$this->assertSame(['BB'], $groups->get(2)->toArray());
+	}
+
+	#[Test]
+	public function groupBy_matches_its_collection_counterpart(): void
+	{
+		$data = ['a', 'bb', 'cc', 'd'];
+		$key = static fn (string $v): int => strlen($v);
+
+		$this->assertSame(
+			self::unwrapGroups(listOf($data)->groupBy($key)->toArray()),
+			self::unwrapGroups(sequenceOf($data)->groupBy($key)->toArray()),
+		);
+	}
+
+	#[Test]
+	public function countBy_counts_elements_per_key(): void
+	{
+		$counts = sequenceOf(['a', 'bb', 'cc', 'd'])->countBy(static fn (string $v): int => strlen($v));
+
+		$this->assertSame([1 => 2, 2 => 2], $counts->toArray());
+	}
+
+	#[Test]
+	public function groupBy_with_null_key_throws(): void
+	{
+		$this->expectException(InvalidKeyTypeException::class);
+
+		// @phpstan-ignore argument.type, argument.templateType
+		$_ = sequenceOf(['a', 'b'])->groupBy(static fn (string $v) => null); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function countBy_with_null_key_throws(): void
+	{
+		$this->expectException(InvalidKeyTypeException::class);
+
+		// @phpstan-ignore argument.type, argument.templateType
+		$_ = sequenceOf(['a', 'b'])->countBy(static fn (string $v) => null); // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+	}
+
+	#[Test]
+	public function countBy_matches_its_collection_counterpart(): void
+	{
+		$data = ['a', 'bb', 'cc', 'd'];
+		$key = static fn (string $v): int => strlen($v);
+
+		$this->assertSame(listOf($data)->countBy($key)->toArray(), sequenceOf($data)->countBy($key)->toArray());
+	}
+
+	#[Test]
+	public function partition_splits_the_matching_elements_from_the_rest(): void
+	{
+		[$even, $odd] = sequenceOf([1, 2, 3, 4])->partition(static fn (int $v): bool => $v % 2 === 0);
+
+		$this->assertSame([2, 4], $even->toArray());
+		$this->assertSame([1, 3], $odd->toArray());
+	}
+
+	#[Test]
+	public function partition_matches_its_collection_counterpart(): void
+	{
+		$data = [1, 2, 3, 4, 5];
+		$predicate = static fn (int $v): bool => $v > 2;
+
+		[$eagerMatching, $eagerRest] = listOf($data)->partition($predicate);
+		[$lazyMatching, $lazyRest] = sequenceOf($data)->partition($predicate);
+
+		$this->assertSame($eagerMatching->toArray(), $lazyMatching->toArray());
+		$this->assertSame($eagerRest->toArray(), $lazyRest->toArray());
+	}
+
+	#[Test]
+	public function unzip_splits_pairs_into_two_lists(): void
+	{
+		[$first, $second] = sequenceOf([[1, 'a'], [2, 'b']])->unzip();
+
+		$this->assertSame([1, 2], $first->toArray());
+		$this->assertSame(['a', 'b'], $second->toArray());
+	}
+
+	#[Test]
+	public function unzip_is_the_inverse_of_zip(): void
+	{
+		[$first, $second] = sequenceOf([1, 2, 3])->zip(['a', 'b', 'c'])->unzip();
+
+		$this->assertSame([1, 2, 3], $first->toArray());
+		$this->assertSame(['a', 'b', 'c'], $second->toArray());
+	}
+
+	#[Test]
+	public function unzip_throws_on_an_element_that_is_not_a_pair(): void
+	{
+		$this->expectException(UnsupportedOperationException::class);
+
+		// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = sequenceOf([[1, 'a'], 'nope'])->unzip();
+	}
+
+	#[Test]
+	public function unzip_throws_on_an_array_missing_one_side_of_the_pair(): void
+	{
+		$this->expectException(UnsupportedOperationException::class);
+
+		// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+		$_ = sequenceOf([[1, 'a'], [2]])->unzip();
+	}
+
+	#[Test]
+	public function unzip_keeps_a_pair_whose_components_are_null(): void
+	{
+		// A present null is a value, which is why the guard pairs ?? null with
+		// array_key_exists() instead of just testing for null.
+		[$first, $second] = sequenceOf([[null, null]])->unzip();
+
+		$this->assertSame([null], $first->toArray());
+		$this->assertSame([null], $second->toArray());
+	}
+
+	/**
+	 * @param array<int, Collection<string>> $groups
+	 * @return array<int, list<string>>
+	 */
+	private static function unwrapGroups(array $groups): array
+	{
+		$unwrapped = [];
+		foreach ($groups as $key => $bucket) {
+			$unwrapped[$key] = $bucket->toArray();
+		}
+
+		return $unwrapped;
 	}
 
 	/**

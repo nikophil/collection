@@ -25,8 +25,11 @@ use Noctud\Collection\Operation\DropOperation;
 use Noctud\Collection\Operation\FilterOperation;
 use Noctud\Collection\Operation\FlatMapKeyValueOperation;
 use Noctud\Collection\Operation\FlattenOperation;
+use Noctud\Collection\Operation\GroupOperation;
 use Noctud\Collection\Operation\MapKeyValueOperation;
+use Noctud\Collection\Operation\PartitionOperation;
 use Noctud\Collection\Operation\TakeOperation;
+use Noctud\Collection\Operation\UnzipOperation;
 use Noctud\Collection\Operation\WindowOperation;
 use Noctud\Collection\Operation\ZipOperation;
 use Noctud\Collection\Operation\ZipWithNextOperation;
@@ -479,6 +482,44 @@ trait SequenceLogic
 				yield $keySelector($v, $i) => $valueTransform === null ? $v : $valueTransform($v, $i);
 			}
 		})());
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap
+	{
+		$groups = new GroupOperation($this)->byKey($keySelector, $valueTransform);
+
+		foreach ($groups as $key => $bucket) {
+			$groups->put($key, listOf($bucket)); // @phpstan-ignore argument.type
+		}
+
+		return mapOf($groups); // @phpstan-ignore return.type
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function countBy(Closure $keySelector): ImmutableMap
+	{
+		return mapOf(new GroupOperation($this)->countByKey($keySelector)); // @phpstan-ignore return.type
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function partition(Closure $predicate): array
+	{
+		[$matching, $rest] = new PartitionOperation($this)->byPredicate($predicate);
+
+		return [listOf($matching), listOf($rest)];
+	}
+
+	/** {@inheritDoc} */
+	#[NoDiscard]
+	public function unzip(): array
+	{
+		[$first, $second] = new UnzipOperation($this)->pairs();
+
+		return [listOf($first), listOf($second)];
 	}
 
 	/**

@@ -11,6 +11,7 @@ namespace Noctud\Collection\List;
 
 use Closure;
 use Noctud\Collection\Exception\IndexOutOfBoundsException;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\Map\ImmutableMap;
 use Noctud\Collection\WritableCollection;
 use NoDiscard;
@@ -411,6 +412,7 @@ interface WritableList extends ListInterface, WritableCollection
 	 * @param Closure(E, int):K $keySelector
 	 * @param (Closure(E, int):V)|null $valueTransform
 	 * @return ($valueTransform is null ? ImmutableMap<K, ImmutableList<E>> : ImmutableMap<K, ImmutableList<V>>)
+	 * @throws InvalidKeyTypeException When the key selector returns a value that cannot be a map key (e.g. null or an array)
 	 */
 	#[NoDiscard]
 	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap;

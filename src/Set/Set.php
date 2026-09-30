@@ -11,6 +11,7 @@ namespace Noctud\Collection\Set;
 
 use Closure;
 use Noctud\Collection\Collection;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Map\ImmutableMap;
 use NoDiscard;
@@ -278,6 +279,7 @@ interface Set extends Collection
 	 * @param Closure(E, int):K $keySelector
 	 * @param (Closure(E, int):V)|null $valueTransform
 	 * @return ($valueTransform is null ? ImmutableMap<K, Set<E>> : ImmutableMap<K, ImmutableList<V>>)
+	 * @throws InvalidKeyTypeException When the key selector returns a value that cannot be a map key (e.g. null or an array)
 	 */
 	#[NoDiscard]
 	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap;

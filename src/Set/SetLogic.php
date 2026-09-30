@@ -17,7 +17,7 @@ use Noctud\Collection\Operation\DropOperation;
 use Noctud\Collection\Operation\FilterOperation;
 use Noctud\Collection\Operation\FlatMapOperation;
 use Noctud\Collection\Operation\FlattenOperation;
-use Noctud\Collection\Map\HashMap\HashKeyValueStore;
+use Noctud\Collection\Operation\GroupOperation;
 use Noctud\Collection\Operation\MapKeyValueOperation;
 use Noctud\Collection\Operation\SetOperation;
 use Noctud\Collection\Operation\TakeOperation;
@@ -340,16 +340,7 @@ trait SetLogic
 	#[NoDiscard]
 	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap
 	{
-		/** @var HashKeyValueStore<GK, array<int, E|GV>> $store */
-		$store = HashKeyValueStore::empty();
-
-		foreach ($this as $i => $v) {
-			$k = $keySelector($v, $i);
-			/** @var array<int, E|GV> $bucket */
-			$bucket = $store->get($k) ?? [];
-			$bucket[] = $valueTransform !== null ? $valueTransform($v, $i) : $v;
-			$store->put($k, $bucket);
-		}
+		$store = new GroupOperation($this)->byKey($keySelector, $valueTransform);
 
 		foreach ($store as $k => $bucket) {
 			if ($valueTransform !== null) {

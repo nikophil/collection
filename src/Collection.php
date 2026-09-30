@@ -15,6 +15,7 @@ use IteratorAggregate;
 use JsonSerializable;
 use Noctud\Collection\Exception\ConversionException;
 use Noctud\Collection\Exception\IndexOutOfBoundsException;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\Exception\NonReplayableSourceException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
@@ -371,6 +372,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * @template NK of string|int|bool|float|object
 	 * @param Closure(E, int):NK $keySelector
 	 * @return ImmutableMap<NK, int>
+	 * @throws InvalidKeyTypeException When the key selector returns a value that cannot be a map key (e.g. null or an array)
 	 */
 	#[NoDiscard]
 	public function countBy(Closure $keySelector): ImmutableMap;
@@ -612,6 +614,7 @@ interface Collection extends IteratorAggregate, Countable, JsonSerializable
 	 * @param Closure(E, int):K $keySelector
 	 * @param (Closure(E, int):V)|null $valueTransform
 	 * @return ($valueTransform is null ? ImmutableMap<K, Collection<E>> : ImmutableMap<K, ImmutableList<V>>)
+	 * @throws InvalidKeyTypeException When the key selector returns a value that cannot be a map key (e.g. null or an array)
 	 */
 	#[NoDiscard]
 	public function groupBy(Closure $keySelector, ?Closure $valueTransform = null): ImmutableMap;

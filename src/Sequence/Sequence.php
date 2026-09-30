@@ -13,6 +13,7 @@ use Closure;
 use IteratorAggregate;
 use Noctud\Collection\Exception\ConversionException;
 use Noctud\Collection\Exception\IndexOutOfBoundsException;
+use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\Exception\SourceException;
 use Noctud\Collection\Exception\UnsupportedOperationException;
@@ -690,6 +691,7 @@ interface Sequence extends IteratorAggregate
 	 * @param Closure(E, int):K $keySelector
 	 * @param (Closure(E, int):V)|null $valueTransform
 	 * @return ($valueTransform is null ? ImmutableMap<K, ImmutableList<E>> : ImmutableMap<K, ImmutableList<V>>)
+	 * @throws InvalidKeyTypeException If the key selector returns a value that cannot be a map key (e.g. null or an array)
 	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	#[NoDiscard]
@@ -702,6 +704,7 @@ interface Sequence extends IteratorAggregate
 	 * @template NK of string|int|bool|float|object
 	 * @param Closure(E, int):NK $keySelector
 	 * @return ImmutableMap<NK, int>
+	 * @throws InvalidKeyTypeException If the key selector returns a value that cannot be a map key (e.g. null or an array)
 	 * @throws SourceException If the source cannot produce a pass (already consumed, or not an iterable)
 	 */
 	#[NoDiscard]

@@ -363,6 +363,18 @@ final class IntKeyValueStore implements KeyValueStore
 		return $out;
 	}
 
+	/** @inheritDoc */
+	public function keys(): array
+	{
+		return array_keys($this->data);
+	}
+
+	/** @inheritDoc */
+	public function values(): array
+	{
+		return array_values($this->data);
+	}
+
 	/**
 	 * @inheritDoc
 	 */

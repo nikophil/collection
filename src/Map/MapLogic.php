@@ -493,13 +493,10 @@ trait MapLogic
 			return $this->newMapOf([]);
 		}
 
-		$pairs = $this->store->toPairs();
+		$store = clone $this->store;
+		$store->slice(0, $n);
 
-		return $this->newMapOf((function () use ($pairs, $n) {
-			foreach (array_slice($pairs, 0, $n) as [$k, $v]) {
-				yield $k => $v;
-			}
-		})());
+		return $this->newMapOf($store);
 	}
 
 	/**
@@ -513,13 +510,10 @@ trait MapLogic
 			return $this->newMapOf([]);
 		}
 
-		$pairs = $this->store->toPairs();
+		$store = clone $this->store;
+		$store->slice(-$n);
 
-		return $this->newMapOf((function () use ($pairs, $n) {
-			foreach (array_slice($pairs, -$n) as [$k, $v]) {
-				yield $k => $v;
-			}
-		})());
+		return $this->newMapOf($store);
 	}
 
 	/**
@@ -533,13 +527,10 @@ trait MapLogic
 			return $this->newMapOf($this->store);
 		}
 
-		$pairs = $this->store->toPairs();
+		$store = clone $this->store;
+		$store->slice($n);
 
-		return $this->newMapOf((function () use ($pairs, $n) {
-			foreach (array_slice($pairs, $n) as [$k, $v]) {
-				yield $k => $v;
-			}
-		})());
+		return $this->newMapOf($store);
 	}
 
 	/**
@@ -553,18 +544,10 @@ trait MapLogic
 			return $this->newMapOf($this->store);
 		}
 
-		$pairs = $this->store->toPairs();
-		$length = count($pairs) - $n;
+		$store = clone $this->store;
+		$store->slice(0, max(0, $store->count() - $n));
 
-		if ($length <= 0) {
-			return $this->newMapOf([]);
-		}
-
-		return $this->newMapOf((function () use ($pairs, $length) {
-			foreach (array_slice($pairs, 0, $length) as [$k, $v]) {
-				yield $k => $v;
-			}
-		})());
+		return $this->newMapOf($store);
 	}
 
 	/**

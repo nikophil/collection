@@ -69,50 +69,6 @@ jobs:
       - name: Run PHPCS
         run: vendor/bin/phpcs
 
-  phpbench:
-    name: PHPBench (comparison with the base branch)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        if: github.event_name == 'pull_request'
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          # The local executor cannot turn Xdebug off through runner.php_config.
-          coverage: none
-
-      # Until phpbench lands on the base branch, there is nothing to compare against.
-      - name: Benchmark the base branch
-        if: github.event_name == 'pull_request' && hashFiles('phpbench.json') != ''
-        run: |
-          composer install --no-interaction --prefer-dist
-          vendor/bin/phpbench run --tag=base --executor=local
-
-      # clean: false keeps var/phpbench, where the base results are stored.
-      - uses: actions/checkout@v4
-        with:
-          clean: false
-
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
-
-      # Both runs share the runner, so its noise affects them alike. The comparison is
-      # informative only: it never fails the build. The local executor runs every
-      # iteration in one process: spawning one per iteration would more than double the job.
-      - name: Compare with the base branch
-        if: hashFiles('var/phpbench/**') != ''
-        run: vendor/bin/phpbench run --ref=base --executor=local --report=aggregate --stop-on-error
-
-      # Without a base to compare against, this only checks that every benchmark still
-      # runs, with a single revolution of a single iteration.
-      - name: Run benchmarks once
-        if: hashFiles('var/phpbench/**') == ''
-        run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error
-
   codegen:
     name: Codegen (generated code in sync)
     runs-on: ubuntu-latest

@@ -13,5 +13,19 @@
 	"runner.revs": 5,
 	"runner.warmup": 1,
 	"runner.time_unit": "microseconds",
-	"storage.xml_storage_path": "var/phpbench"
+	"storage.xml_storage_path": "var/phpbench",
+	"report.generators": {
+		"compare": {
+			"extends": "aggregate",
+			"cols": [
+				"benchmark",
+				"subject",
+				"set",
+				"revs",
+				"its",
+				"mode",
+				"rstdev"
+			]
+		}
+	}
 }

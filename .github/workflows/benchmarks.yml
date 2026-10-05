@@ -28,7 +28,7 @@ jobs:
         if: github.event_name == 'pull_request' && hashFiles('phpbench.json') != ''
         run: |
           composer install --no-interaction --prefer-dist
-          vendor/bin/phpbench run --tag=base --executor=local
+          vendor/bin/phpbench run --tag=base --executor=local --iterations=5 --ansi
 
       # clean: false keeps var/phpbench, where the base results are stored.
       - uses: actions/checkout@v4
@@ -41,12 +41,15 @@ jobs:
       # Both runs share the runner, so its noise affects them alike. The comparison is
       # informative only: it never fails the build. The local executor runs every
       # iteration in one process: spawning one per iteration would more than double the job.
+      # Five iterations rather than three steady the comparison; --revs is left alone, since it
+      # would override the revolutions of the constant-time subjects. --ansi keeps the colours,
+      # which tell faster from slower at a glance.
       - name: Compare with the base branch
         if: hashFiles('var/phpbench/**') != ''
-        run: vendor/bin/phpbench run --ref=base --executor=local --report=aggregate --stop-on-error
+        run: vendor/bin/phpbench run --ref=base --executor=local --iterations=5 --report=compare --stop-on-error --ansi
 
       # Without a base to compare against, this only checks that every benchmark still
       # runs, with a single revolution of a single iteration.
       - name: Run benchmarks once
         if: hashFiles('var/phpbench/**') == ''
-        run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error
+        run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error --ansi

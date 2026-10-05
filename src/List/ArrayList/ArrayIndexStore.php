@@ -127,7 +127,8 @@ final class ArrayIndexStore extends AbstractElementStore implements ReadWriteInd
 
 	/**
 	 * Finds every occurrence in C and reindexes once: splicing each one out shifted the rest
-	 * of the list every time, which was quadratic when many elements matched.
+	 * of the list every time, which was quadratic when many elements matched. Unsetting them
+	 * from a copy allocates no more than the single splice it replaces when one matches.
 	 */
 	public function removeEvery(mixed $element): void
 	{
@@ -136,7 +137,12 @@ final class ArrayIndexStore extends AbstractElementStore implements ReadWriteInd
 			return;
 		}
 
-		$this->elements = array_values(array_diff_key($this->elements, array_flip($indexes)));
+		$elements = $this->elements;
+		foreach ($indexes as $index) {
+			unset($elements[$index]);
+		}
+
+		$this->elements = array_values($elements);
 	}
 
 	public function contains(mixed $element): bool

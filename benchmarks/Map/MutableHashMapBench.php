@@ -21,7 +21,7 @@ use function Noctud\Collection\mutableMapOf;
  *
  * @extends AbstractMapBenchCase<string, MutableMap<string, int>>
  */
-#[Groups(['map', 'mutation'])]
+#[Groups(['map', 'mutation', 'guard'])]
 #[BeforeMethods('setUpTracking')]
 #[ParamProviders('provideTracking')]
 final class MutableHashMapBench extends AbstractMapBenchCase

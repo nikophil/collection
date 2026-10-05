@@ -18,7 +18,7 @@ use function Noctud\Collection\mapOf;
  *
  * @extends AbstractMapBenchCase<string, ImmutableMap<string, int>>
  */
-#[Groups(['map', 'mutation'])]
+#[Groups(['map', 'mutation', 'guard'])]
 final class ImmutableHashMapBench extends AbstractMapBenchCase
 {
 	use MapImmutableWrite;

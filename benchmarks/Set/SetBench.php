@@ -30,7 +30,7 @@ use function Noctud\Collection\setOf;
  *
  * @extends AbstractCollectionBenchCase<ImmutableSet<int>>
  */
-#[Groups(['set'])]
+#[Groups(['set', 'guard'])]
 final class SetBench extends AbstractCollectionBenchCase
 {
 	use CollectionAccess;

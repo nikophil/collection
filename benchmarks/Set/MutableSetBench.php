@@ -23,7 +23,7 @@ use function Noctud\Collection\mutableSetOf;
  *
  * @extends AbstractCollectionBenchCase<MutableSet<int>>
  */
-#[Groups(['set', 'mutation'])]
+#[Groups(['set', 'mutation', 'guard'])]
 #[BeforeMethods('setUpTracking')]
 #[ParamProviders('provideTracking')]
 final class MutableSetBench extends AbstractCollectionBenchCase

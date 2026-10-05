@@ -30,7 +30,7 @@ use function Noctud\Collection\listOf;
  *
  * @extends AbstractCollectionBenchCase<ImmutableList<int>>
  */
-#[Groups(['list'])]
+#[Groups(['list', 'guard'])]
 final class ListBench extends AbstractCollectionBenchCase
 {
 	use CollectionAccess;

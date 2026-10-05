@@ -18,7 +18,7 @@ use function Noctud\Collection\mapOf;
  *
  * @extends AbstractMapBenchCase<string, ImmutableMap<string, int>>
  */
-#[Groups(['map'])]
+#[Groups(['map', 'guard'])]
 final class HashMapBench extends AbstractMapBenchCase
 {
 	use MapAccess;

@@ -19,7 +19,7 @@ use function Noctud\Collection\sequenceOf;
  * Lazy intermediate operations. Each subject drains the resulting sequence with toArray(),
  * whose own cost is measured by SequenceTerminalBench::benchToArray().
  */
-#[Groups(['sequence'])]
+#[Groups(['sequence', 'guard'])]
 final class SequenceIntermediateBench extends AbstractSequenceBenchCase
 {
 	/** @var Sequence<array{int, int}> */

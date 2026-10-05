@@ -28,7 +28,7 @@ use function Noctud\Collection\setOf;
  *
  * @phpstan-import-type ElementType from ProvidesElementTypes
  */
-#[Groups(['set', 'hashing'])]
+#[Groups(['set', 'hashing', 'guard'])]
 #[BeforeMethods('setUp')]
 #[ParamProviders(['provideSizes', 'provideElementTypes'])]
 final class SetElementTypeBench

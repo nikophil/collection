@@ -41,7 +41,7 @@ use function Noctud\Collection\stringMapOf;
  * Construction through the factory functions, from an array unless stated otherwise.
  * Lazy variants include the first access, which materializes the collection.
  */
-#[Groups(['factory'])]
+#[Groups(['factory', 'guard'])]
 #[BeforeMethods('setUp')]
 #[ParamProviders('provideSizes')]
 final class FactoryBench

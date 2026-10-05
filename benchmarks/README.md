@@ -14,6 +14,9 @@ composer bench -- --filter='SetBench::benchAdd' # one subject
 
 Groups: `list`, `set`, `map`, `mutation`, `hashing`, `sequence`, `factory`, `pipeline`, `native`.
 
+`guard` holds the subjects that run on the collections, the ones a change to `src/` can slow down: the CI
+compares only those. The native references never change with the code, so they would only add noise there.
+
 ## Comparing against a baseline
 
 ```shell

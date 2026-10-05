@@ -62,7 +62,7 @@ jobs:
       # Until phpbench lands on the base branch, there is nothing to compare against.
       - name: Compare with the base branch
         if: hashFiles('base/phpbench.json') != ''
-        run: THRESHOLD=10 bin/compare-benchmarks.sh base
+        run: GROUP=guard THRESHOLD=10 bin/compare-benchmarks.sh base
 
       - uses: actions/upload-artifact@v7
         if: hashFiles('var/compare.tsv') != ''

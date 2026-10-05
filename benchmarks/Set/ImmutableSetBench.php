@@ -20,7 +20,7 @@ use function Noctud\Collection\setOf;
  *
  * @extends AbstractCollectionBenchCase<ImmutableSet<int>>
  */
-#[Groups(['set', 'mutation'])]
+#[Groups(['set', 'mutation', 'guard'])]
 final class ImmutableSetBench extends AbstractCollectionBenchCase
 {
 	use CollectionImmutableWrite;

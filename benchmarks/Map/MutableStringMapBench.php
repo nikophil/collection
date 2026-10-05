@@ -19,7 +19,7 @@ use function Noctud\Collection\mutableStringMapOf;
  *
  * @extends AbstractMapBenchCase<string, MutableMap<string, int>>
  */
-#[Groups(['map', 'mutation'])]
+#[Groups(['map', 'mutation', 'guard'])]
 final class MutableStringMapBench extends AbstractMapBenchCase
 {
 	use MapMutate;

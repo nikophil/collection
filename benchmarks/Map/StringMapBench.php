@@ -19,7 +19,7 @@ use function Noctud\Collection\stringMapOf;
  *
  * @extends AbstractMapBenchCase<string, ImmutableMap<string, int>>
  */
-#[Groups(['map'])]
+#[Groups(['map', 'guard'])]
 final class StringMapBench extends AbstractMapBenchCase
 {
 	use MapAccess;

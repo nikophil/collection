@@ -26,7 +26,7 @@ use function Noctud\Collection\mutableMapOf;
  *
  * @phpstan-import-type KeyType from ProvidesElementTypes
  */
-#[Groups(['map', 'hashing'])]
+#[Groups(['map', 'hashing', 'guard'])]
 #[BeforeMethods('setUp')]
 #[ParamProviders(['provideSizes', 'provideKeyTypes'])]
 final class MapKeyTypeBench

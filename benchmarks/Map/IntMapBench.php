@@ -19,7 +19,7 @@ use function Noctud\Collection\intMapOf;
  *
  * @extends AbstractMapBenchCase<int, ImmutableMap<int, int>>
  */
-#[Groups(['map'])]
+#[Groups(['map', 'guard'])]
 final class IntMapBench extends AbstractMapBenchCase
 {
 	use MapAccess;

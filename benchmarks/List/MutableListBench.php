@@ -23,7 +23,7 @@ use function Noctud\Collection\mutableListOf;
  *
  * @extends AbstractCollectionBenchCase<MutableList<int>>
  */
-#[Groups(['list', 'mutation'])]
+#[Groups(['list', 'mutation', 'guard'])]
 #[BeforeMethods('setUpTracking')]
 #[ParamProviders('provideTracking')]
 final class MutableListBench extends AbstractCollectionBenchCase

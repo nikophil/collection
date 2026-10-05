@@ -22,7 +22,7 @@ use function Noctud\Collection\sequenceOf;
  * Terminal operations, draining the sequence or stopping as soon as the answer is known.
  * Predicates target the element in the middle of the sequence.
  */
-#[Groups(['sequence'])]
+#[Groups(['sequence', 'guard'])]
 final class SequenceTerminalBench extends AbstractSequenceBenchCase
 {
 	/** @var Sequence<int> */

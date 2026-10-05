@@ -54,6 +54,7 @@ final class PipelineBench
 	/**
 	 * @return list<int>
 	 */
+	#[Groups(['guard'])]
 	public function benchListFull(): array
 	{
 		return $this->list
@@ -65,6 +66,7 @@ final class PipelineBench
 	/**
 	 * @return list<int>
 	 */
+	#[Groups(['guard'])]
 	public function benchSequenceFull(): array
 	{
 		return $this->list->asSequence()
@@ -95,6 +97,7 @@ final class PipelineBench
 	/**
 	 * @return list<int>
 	 */
+	#[Groups(['guard'])]
 	public function benchListTakeFirst(): array
 	{
 		return $this->list
@@ -107,6 +110,7 @@ final class PipelineBench
 	/**
 	 * @return list<int>
 	 */
+	#[Groups(['guard'])]
 	public function benchSequenceTakeFirst(): array
 	{
 		return $this->list->asSequence()

@@ -18,6 +18,11 @@ export LC_ALL=C
 
 base=$1
 threshold=${THRESHOLD:-20}
+# GROUP restricts the comparison to a phpbench group, such as guard.
+group=()
+if [ -n "${GROUP:-}" ]; then
+	group=(--group="$GROUP")
+fi
 root=$PWD
 mkdir -p var
 
@@ -31,17 +36,21 @@ compare() {
 	local bench=$1 tsv=$2
 	shift 2
 	local baseline=()
+	# A file may hold no subject of the group: no result must be taken for the previous file's.
+	rm -f var/base.xml var/last.tsv
 	if [ -f "$base/$bench" ]; then
-		(cd "$base" && vendor/bin/phpbench run "$bench" --executor=local --iterations=4 --progress=none \
+		(cd "$base" && vendor/bin/phpbench run "$bench" "${group[@]}" --executor=local --iterations=4 --progress=none \
 			--dump-file="$root/var/base.xml" "$@")
 		baseline=(--file=var/base.xml)
 	fi
 	# The delimited renderer also echoes its file: its lines are the only ones with tabs.
-	vendor/bin/phpbench run "$bench" "${baseline[@]}" --executor=local --iterations=4 --stop-on-error \
+	vendor/bin/phpbench run "$bench" "${baseline[@]}" "${group[@]}" --executor=local --iterations=4 --stop-on-error \
 		--ansi --progress=plain --report=compare --output=console \
 		--output='{"renderer": "delimited", "delimiter": "\t", "file": "var/last.tsv"}' "$@" \
 		| awk '!/\t/ && !/^Dumped delimited file:$/ && $0 != "var/last.tsv"'
-	tail -n +2 var/last.tsv >> "$tsv"
+	if [ -f var/last.tsv ]; then
+		tail -n +2 var/last.tsv >> "$tsv"
+	fi
 }
 
 # Prints "benchmark <tab> subject <tab> set" for each variant that moved by more than the threshold.

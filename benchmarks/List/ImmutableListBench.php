@@ -20,7 +20,7 @@ use function Noctud\Collection\listOf;
  *
  * @extends AbstractCollectionBenchCase<ImmutableList<int>>
  */
-#[Groups(['list', 'mutation'])]
+#[Groups(['list', 'mutation', 'guard'])]
 final class ImmutableListBench extends AbstractCollectionBenchCase
 {
 	use CollectionImmutableWrite;

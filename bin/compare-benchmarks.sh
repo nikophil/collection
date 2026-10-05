@@ -67,9 +67,10 @@ fi
 echo
 echo "Measuring once more the variants that moved by more than $threshold%"
 : > var/confirm.tsv
-for benchmark in $(moved var/compare.tsv | cut -f1 | sort -u); do
-	subjects=$(moved var/compare.tsv | awk -F'\t' -v b="$benchmark" '$1 == b { print $2 }' | paste -sd'|')
-	compare "$(find benchmarks -name "$benchmark.php")" var/confirm.tsv --filter="::($subjects)\$"
+# Each subject runs alone: within a class, the subjects share one process, and a change to one
+# of them can slow down the next ones through the state it leaves behind.
+moved var/compare.tsv | while IFS=$'\t' read -r benchmark subject; do
+	compare "$(find benchmarks -name "$benchmark.php")" var/confirm.tsv --filter="::$subject\$" < /dev/null
 done
 
 echo

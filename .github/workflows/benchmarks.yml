@@ -1,10 +1,23 @@
 name: Benchmarks
 
+# Only changes that can move a measurement run the benchmarks.
 on:
   push:
     branches: [0.2.x]
+    paths:
+      - 'src/**'
+      - 'benchmarks/**'
+      - 'composer.json'
+      - 'phpbench.json'
+      - '.github/workflows/benchmarks.yml'
   # Every base branch, so that stacked pull requests are checked too.
   pull_request:
+    paths:
+      - 'src/**'
+      - 'benchmarks/**'
+      - 'composer.json'
+      - 'phpbench.json'
+      - '.github/workflows/benchmarks.yml'
 
 jobs:
   phpbench:

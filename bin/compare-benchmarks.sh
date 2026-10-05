@@ -64,13 +64,30 @@ if [ -z "$(moved var/compare.tsv)" ]; then
 	exit 0
 fi
 
+# Measures the given subjects of a benchmark file once more, the pull request first this time, so
+# that going second does not favour the same side twice. The remote executor runs every iteration
+# in a fresh process: a subject no longer inherits the state the subjects before it left behind.
+# The comparison is made from the base side, so the TSV holds the base against the pull request.
+remeasure() {
+	local bench=$1 filter=$2
+	[ -f "$base/$bench" ] || return 0
+	# phpbench tells on stderr where it dumped the results.
+	vendor/bin/phpbench run "$bench" --filter="$filter" --executor=remote --iterations=4 --progress=none \
+		--dump-file="$root/var/pr.xml" 2>&1 > /dev/null | awk '!/^Dumped result to /'
+	(cd "$base" && vendor/bin/phpbench run "$bench" --filter="$filter" --executor=remote --iterations=4 \
+		--progress=none --file="$root/var/pr.xml" \
+		--report='{"extends": "aggregate", "cols": ["benchmark", "subject", "set", "revs", "its", "mode", "rstdev"]}' \
+		--output="{\"renderer\": \"delimited\", \"delimiter\": \"\\t\", \"file\": \"$root/var/last.tsv\"}" > /dev/null)
+	tail -n +2 var/last.tsv >> var/confirm.tsv
+}
+
 echo
 echo "Measuring once more the variants that moved by more than $threshold%"
 : > var/confirm.tsv
-# Each subject runs alone: within a class, the subjects share one process, and a change to one
-# of them can slow down the next ones through the state it leaves behind.
-moved var/compare.tsv | while IFS=$'\t' read -r benchmark subject; do
-	compare "$(find benchmarks -name "$benchmark.php")" var/confirm.tsv --filter="::$subject\$" < /dev/null
+for benchmark in $(moved var/compare.tsv | cut -f1 | sort -u); do
+	subjects=$(moved var/compare.tsv | awk -F'\t' -v b="$benchmark" '$1 == b { print $2 }' | paste -sd'|')
+	echo "  $benchmark: ${subjects//|/, }"
+	remeasure "$(find benchmarks -name "$benchmark.php")" "::($subjects)\$"
 done
 
 echo
@@ -79,7 +96,8 @@ awk -F'\t' -v threshold="$threshold" '
 	{ gsub(/"/, "", $6); split($6, mode, " "); key = $1 " " $2 " " $3 }
 	FNR == NR { first[key] = mode[2] + 0; next }
 	(key in first) && (first[key] > threshold || first[key] < -threshold) {
-		second = mode[2] + 0
+		# The second measure compares the base against the pull request: turn it around.
+		second = 100 / (1 + mode[2] / 100) - 100
 		real = (second > threshold && first[key] > 0) || (second < -threshold && first[key] < 0)
 		printf "  %-60s %+8.1f%% %+8.1f%%  %s\n", key, first[key], second, real ? "confirmed" : "noise"
 	}

@@ -150,6 +150,21 @@ trait StringMapKeyEnforcement
 	}
 
 	#[Test]
+	public function sortedBy_hands_numeric_keys_as_strings(): void
+	{
+		// PHP turns the key '1' into an int: the selector must still be given a string.
+		$map = $this->mapOf(['b' => 2, 'a' => 1])->put('1', 3);
+		$selector = static fn (int $v, string $k): int => $v;
+
+		$this->assertSame(['a' => 1, 'b' => 2, '1' => 3], $map->sortedBy($selector)->toArray());
+		$this->assertSame(['1' => 3, 'b' => 2, 'a' => 1], $map->sortedByDesc($selector)->toArray());
+
+		if ($map instanceof MutableMap) {
+			$this->assertSame(['a' => 1, 'b' => 2, '1' => 3], $map->sortBy($selector)->toArray());
+		}
+	}
+
+	#[Test]
 	public function random_via_keys_view(): void
 	{
 		$map = $this->mapOf(['a' => 1, 'b' => 2, 'c' => 3]);

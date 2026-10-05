@@ -181,6 +181,14 @@ interface KeyValueStore extends IteratorAggregate
 	public function sortByPairs(callable $comparator): void;
 
 	/**
+	 * Sorts entries in-place by the value the selector returns for each of them, compared with <=>.
+	 * Entries with equal values keep their order. The selector runs once per entry.
+	 *
+	 * @param callable(V,K):mixed $selector
+	 */
+	public function sortBy(callable $selector, bool $descending = false): void;
+
+	/**
 	 * Reverses the order of entries in-place.
 	 */
 	public function reverse(): void;

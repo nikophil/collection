@@ -176,7 +176,7 @@ trait MutableTrackedSetLogic
 	public function sortBy(Closure $selector): MutableTrackedSet&TrackedResult
 	{
 		$prevItems = $this->store->toArray();
-		$this->store->sort(static fn ($a, $b) => $selector($a) <=> $selector($b));
+		$this->store->sortBy($selector);
 		$this->_changed = $this->store->toArray() !== $prevItems;
 		return $this;
 	}
@@ -185,7 +185,7 @@ trait MutableTrackedSetLogic
 	public function sortByDesc(Closure $selector): MutableTrackedSet&TrackedResult
 	{
 		$prevItems = $this->store->toArray();
-		$this->store->sort(static fn ($a, $b) => $selector($b) <=> $selector($a));
+		$this->store->sortBy($selector, descending: true);
 		$this->_changed = $this->store->toArray() !== $prevItems;
 		return $this;
 	}

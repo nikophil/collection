@@ -393,7 +393,7 @@ trait MapLogic
 	public function sortedBy(Closure $selector): ImmutableMap
 	{
 		$store = clone $this->store;
-		$store->sortByPairs(static fn ($x, $y) => $selector($x[1], $x[0]) <=> $selector($y[1], $y[0]));
+		$store->sortBy($selector);
 		return $this->newMapOf($store);
 	}
 
@@ -406,7 +406,7 @@ trait MapLogic
 	public function sortedByDesc(Closure $selector): ImmutableMap
 	{
 		$store = clone $this->store;
-		$store->sortByPairs(static fn ($x, $y) => $selector($y[1], $y[0]) <=> $selector($x[1], $x[0]));
+		$store->sortBy($selector, descending: true);
 		return $this->newMapOf($store);
 	}
 

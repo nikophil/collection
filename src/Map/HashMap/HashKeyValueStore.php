@@ -347,6 +347,28 @@ final class HashKeyValueStore implements KeyValueStore
 	}
 
 	/** @inheritDoc */
+	public function sortBy(callable $selector, bool $descending = false): void
+	{
+		$selected = [];
+		foreach ($this->values as $nk => $v) {
+			$selected[$nk] = $selector($v, $this->keys[$nk]);
+		}
+
+		if ($descending) {
+			arsort($selected);
+		} else {
+			asort($selected);
+		}
+
+		/** @var array<int|string,K> $keys */
+		$keys = array_replace($selected, $this->keys);
+		/** @var array<int|string,V> $values */
+		$values = array_replace($selected, $this->values);
+		$this->keys = $keys;
+		$this->values = $values;
+	}
+
+	/** @inheritDoc */
 	public function reverse(): void
 	{
 		$this->keys = array_reverse($this->keys, true);

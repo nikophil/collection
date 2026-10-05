@@ -25,9 +25,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+
+      # The base branch goes to its own directory, so that both versions can be benchmarked
+      # in turn.
+      - uses: actions/checkout@v7
         if: github.event_name == 'pull_request'
         with:
           ref: ${{ github.event.pull_request.base.sha }}
+          path: base
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -36,35 +41,38 @@ jobs:
           # The local executor cannot turn Xdebug off through runner.php_config.
           coverage: none
 
-      # Until phpbench lands on the base branch, there is nothing to compare against.
-      - name: Benchmark the base branch
-        if: github.event_name == 'pull_request' && hashFiles('phpbench.json') != ''
+      - name: Install dependencies
         run: |
           composer install --no-interaction --prefer-dist
-          vendor/bin/phpbench run --tag=base --executor=local --iterations=4 --progress=none
+          if [ -f base/phpbench.json ]; then
+            composer install --no-interaction --prefer-dist --working-dir=base
+          fi
 
-      # clean: false keeps var/phpbench, where the base results are stored.
-      - uses: actions/checkout@v7
-        with:
-          clean: false
-
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
-
-      # Both runs share the runner, so its noise affects them alike. The comparison is
-      # informative only: it never fails the build. The local executor runs every
-      # iteration in one process: spawning one per iteration would more than double the job.
-      # Four iterations rather than three steady the comparison; --revs is left alone, since it
-      # would override the revolutions of the constant-time subjects. --ansi keeps the colours,
-      # which tell faster from slower at a glance.
-      # The plain progress writes one line per variant: the default one rewrites its line
-      # with carriage returns, which the job log does not render.
+      # Each benchmark class runs on the base branch, then right away on the pull request,
+      # so that a slowdown of the shared runner hits both sides alike: benchmarking the whole
+      # base branch before the whole pull request let it skew entire classes one way.
+      # The comparison is informative only: it never fails the build.
+      # The local executor runs every iteration in one process: spawning one per iteration
+      # would more than double the job. --revs is left alone, since it would override the
+      # revolutions of the constant-time subjects. --ansi keeps the colours, which tell faster
+      # from slower at a glance. The plain progress writes one line per variant: the default
+      # one rewrites its line with carriage returns, which the job log does not render.
+      # Until phpbench lands on the base branch, there is nothing to compare against.
       - name: Compare with the base branch
-        if: hashFiles('var/phpbench/**') != ''
-        run: vendor/bin/phpbench run --ref=base --executor=local --iterations=4 --report=compare --stop-on-error --ansi --progress=plain
+        if: hashFiles('base/phpbench.json') != ''
+        run: |
+          mkdir -p var
+          for bench in $(find benchmarks -name '*Bench.php' | sort); do
+            baseline=()
+            if [ -f "base/$bench" ]; then
+              (cd base && vendor/bin/phpbench run "$bench" --executor=local --iterations=4 --progress=none --dump-file="$GITHUB_WORKSPACE/var/base.xml")
+              baseline=(--file=var/base.xml)
+            fi
+            vendor/bin/phpbench run "$bench" "${baseline[@]}" --executor=local --iterations=4 --report=compare --stop-on-error --ansi --progress=plain
+          done
 
       # Without a base to compare against, this only checks that every benchmark still
       # runs, with a single revolution of a single iteration.
       - name: Run benchmarks once
-        if: hashFiles('var/phpbench/**') == ''
+        if: hashFiles('base/phpbench.json') == ''
         run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error --ansi --progress=plain

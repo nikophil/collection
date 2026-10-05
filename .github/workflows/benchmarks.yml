@@ -10,6 +10,7 @@ on:
       - 'composer.json'
       - 'phpbench.json'
       - 'bin/compare-benchmarks.sh'
+      - 'bin/aggregate-benchmarks.php'
       - '.github/workflows/benchmarks.yml'
   # Every base branch, so that stacked pull requests are checked too.
   pull_request:
@@ -19,12 +20,19 @@ on:
       - 'composer.json'
       - 'phpbench.json'
       - 'bin/compare-benchmarks.sh'
+      - 'bin/aggregate-benchmarks.php'
       - '.github/workflows/benchmarks.yml'
 
 jobs:
   phpbench:
-    name: PHPBench (comparison with the base branch)
+    name: PHPBench (machine ${{ matrix.machine }})
     runs-on: ubuntu-latest
+    # A pull request is compared on five machines at once: the summary job keeps the changes
+    # that most of them agree on.
+    strategy:
+      fail-fast: false
+      matrix:
+        machine: ${{ github.event_name == 'pull_request' && fromJSON('[1, 2, 3, 4, 5]') || fromJSON('[1]') }}
     steps:
       - uses: actions/checkout@v7
 
@@ -54,10 +62,48 @@ jobs:
       # Until phpbench lands on the base branch, there is nothing to compare against.
       - name: Compare with the base branch
         if: hashFiles('base/phpbench.json') != ''
-        run: bin/compare-benchmarks.sh base
+        run: THRESHOLD=10 bin/compare-benchmarks.sh base
+
+      - uses: actions/upload-artifact@v7
+        if: hashFiles('var/compare.tsv') != ''
+        with:
+          name: comparison-${{ matrix.machine }}
+          path: |
+            var/compare.tsv
+            var/confirm.tsv
+          if-no-files-found: ignore
 
       # Without a base to compare against, this only checks that every benchmark still
       # runs, with a single revolution of a single iteration.
       - name: Run benchmarks once
         if: hashFiles('base/phpbench.json') == ''
         run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error --ansi --progress=plain
+
+  summary:
+    name: PHPBench (summary over the machines)
+    needs: phpbench
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: comparison-*
+          path: comparisons
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      # The summary also goes to the run page.
+      - name: Summarize the comparisons
+        run: |
+          if [ ! -d comparisons ]; then
+            echo "Nothing was compared."
+            exit 0
+          fi
+          php bin/aggregate-benchmarks.php 10 comparisons/* | tee summary.txt
+          { echo '```'; cat summary.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

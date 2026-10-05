@@ -215,6 +215,20 @@ interface KeyValueStore extends IteratorAggregate
 	 */
 	public function toPairs(): array;
 
+	/**
+	 * Returns all keys, in order.
+	 *
+	 * @return list<K>
+	 */
+	public function keys(): array;
+
+	/**
+	 * Returns all values, in order.
+	 *
+	 * @return list<V>
+	 */
+	public function values(): array;
+
 	// --- Internal ---
 
 	/**

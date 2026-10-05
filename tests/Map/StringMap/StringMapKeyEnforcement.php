@@ -165,6 +165,15 @@ trait StringMapKeyEnforcement
 	}
 
 	#[Test]
+	public function keys_view_hands_numeric_keys_as_strings(): void
+	{
+		$map = $this->mapOf(['b' => 2])->put('1', 3);
+
+		$this->assertSame(['b', '1'], $map->keys->toArray());
+		$this->assertSame([2, 3], $map->values->toArray());
+	}
+
+	#[Test]
 	public function random_via_keys_view(): void
 	{
 		$map = $this->mapOf(['a' => 1, 'b' => 2, 'c' => 3]);

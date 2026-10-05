@@ -403,6 +403,18 @@ final class HashKeyValueStore implements KeyValueStore
 		return $out;
 	}
 
+	/** @inheritDoc */
+	public function keys(): array
+	{
+		return array_values($this->keys);
+	}
+
+	/** @inheritDoc */
+	public function values(): array
+	{
+		return array_values($this->values);
+	}
+
 	/**
 	 * @inheritDoc
 	 */

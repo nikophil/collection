@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Noctud\Collection;
 
 use Closure;
-use Traversable;
 
 /**
  * Mutation methods for mutable collections.
@@ -72,8 +71,7 @@ trait MutableCollectionLogic
 	/** {@inheritDoc} */
 	public function removeAll(iterable $elements): static
 	{
-		$itemsArray = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-		$this->store->removeIf(fn ($v) => in_array($v, $itemsArray, true));
+		$this->store->removeIf(new StrictElementLookup($elements, $this->store->count())->predicate());
 		return $this;
 	}
 
@@ -101,8 +99,7 @@ trait MutableCollectionLogic
 	/** {@inheritDoc} */
 	public function retainAll(iterable $elements): static
 	{
-		$itemsArray = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-		$this->store->removeIf(fn ($v) => !in_array($v, $itemsArray, true));
+		$this->store->removeIf(new StrictElementLookup($elements, $this->store->count())->predicate(negate: true));
 		return $this;
 	}
 

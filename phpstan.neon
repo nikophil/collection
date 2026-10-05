@@ -57,3 +57,4 @@ parameters:
 			path: src/CollectionLogic.php
 includes:
 	- phpstan-tests.neon
+	- phpstan-benchmarks.neon

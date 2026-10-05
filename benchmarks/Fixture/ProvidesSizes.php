@@ -22,6 +22,6 @@ trait ProvidesSizes
 	public function provideSizes(): Generator
 	{
 		yield '100' => ['size' => 100];
-		yield '10k' => ['size' => 10_000];
+		yield '1k' => ['size' => 1_000];
 	}
 }

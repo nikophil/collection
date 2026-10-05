@@ -135,7 +135,7 @@ trait SetLogic
 	#[NoDiscard]
 	public function takeFirst(int $n = 1): ImmutableSet
 	{
-		return $this->newCollectionOf($n > 0 ? array_slice($this->store->toArray(), 0, $n) : []);
+		return $this->newCollectionOf(new TakeOperation($this->store->toArray())->first($n));
 	}
 
 	/**
@@ -146,7 +146,7 @@ trait SetLogic
 	#[NoDiscard]
 	public function dropFirst(int $n = 1): ImmutableSet
 	{
-		return $this->newCollectionOf(array_slice($this->store->toArray(), max(0, $n)));
+		return $this->newCollectionOf(new DropOperation($this->store->toArray())->first($n));
 	}
 
 	/**

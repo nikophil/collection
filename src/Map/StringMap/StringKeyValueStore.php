@@ -98,7 +98,7 @@ final class StringKeyValueStore implements KeyValueStore
 	 */
 	public function contains(mixed $value): bool
 	{
-		return array_any($this->data, fn ($v) => $v === $value);
+		return in_array($value, $this->data, true);
 	}
 
 	/**

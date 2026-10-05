@@ -17,7 +17,7 @@ set -euo pipefail
 export LC_ALL=C
 
 base=$1
-threshold=${THRESHOLD:-10}
+threshold=${THRESHOLD:-20}
 root=$PWD
 mkdir -p var
 

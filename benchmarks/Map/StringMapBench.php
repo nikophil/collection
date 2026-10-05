@@ -37,7 +37,7 @@ final class StringMapBench extends AbstractMapBenchCase
 	 *
 	 * @return array<string, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToArray(): array
 	{
 		return $this->map->toArray();

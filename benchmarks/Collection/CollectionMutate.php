@@ -125,7 +125,7 @@ trait CollectionMutate
 	/**
 	 * @return MutableCollection<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchClear(): MutableCollection
 	{
 		return $this->mutable()->clear();
@@ -174,6 +174,7 @@ trait CollectionMutate
 	/**
 	 * @return MutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchReverse(): MutableCollection
 	{
 		return $this->mutable()->reverse();
@@ -182,6 +183,7 @@ trait CollectionMutate
 	/**
 	 * @return MutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchShuffle(): MutableCollection
 	{
 		return $this->mutable()->shuffle();

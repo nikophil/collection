@@ -76,6 +76,7 @@ trait CollectionConvert
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToArray(): array
 	{
 		return $this->collection->toArray();
@@ -84,7 +85,7 @@ trait CollectionConvert
 	/**
 	 * @return MutableCollection<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToMutable(): MutableCollection
 	{
 		return $this->collection->toMutable();
@@ -93,12 +94,13 @@ trait CollectionConvert
 	/**
 	 * @return Collection<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToImmutable(): Collection
 	{
 		return $this->collection->toImmutable();
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchJsonEncode(): string
 	{
 		return json_encode($this->collection, JSON_THROW_ON_ERROR);

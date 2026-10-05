@@ -37,7 +37,7 @@ final class IntMapBench extends AbstractMapBenchCase
 	 *
 	 * @return array<int, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToArray(): array
 	{
 		return $this->map->toArray();

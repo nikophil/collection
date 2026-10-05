@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Benchmarks\Map;
 
 use Noctud\Collection\Map\ImmutableMap;
+use PhpBench\Attributes\Revs;
 
 /**
  * Writes on an immutable map, each returning a modified copy.
@@ -19,6 +20,7 @@ trait MapImmutableWrite
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchPut(): ImmutableMap
 	{
 		return $this->map->put($this->newKeys[0], -1);
@@ -27,6 +29,7 @@ trait MapImmutableWrite
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchPutFirst(): ImmutableMap
 	{
 		return $this->map->putFirst($this->newKeys[0], -1);
@@ -35,6 +38,7 @@ trait MapImmutableWrite
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchPutIfAbsent(): ImmutableMap
 	{
 		return $this->map->putIfAbsent($this->newKeys[0], -1);
@@ -59,6 +63,7 @@ trait MapImmutableWrite
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemove(): ImmutableMap
 	{
 		return $this->map->remove($this->probeKey);
@@ -67,6 +72,7 @@ trait MapImmutableWrite
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemoveFirst(): ImmutableMap
 	{
 		return $this->map->removeFirst();
@@ -75,6 +81,7 @@ trait MapImmutableWrite
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemoveLast(): ImmutableMap
 	{
 		return $this->map->removeLast();

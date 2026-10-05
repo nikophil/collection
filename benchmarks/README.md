@@ -46,6 +46,7 @@ turns a regression into a failure.
 - Subjects return their result, so that `#[NoDiscard]` methods are not flagged and the result is not optimized away.
 - Attributes on a trait are ignored by PHPBench: put them on the class or on the methods.
 - Operations that are too cheap to measure (a lookup, an insertion) run over a batch of calls spread across the
-  collection. Constant-time subjects use `#[Revs(self::ConstantTimeRevs)]`.
+  collection. Subjects that take a couple of microseconds or less on every size use
+  `#[Revs(self::FastSubjectRevs)]`: with the default revolutions, an iteration is too short to be measured reliably.
 - In-place mutations start from a copy of the fixture, taken inside the subject: the copy shares the source array
   until its first write, so every revolution works on the same state.

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Benchmarks\Collection;
 
 use Noctud\Collection\Collection;
+use PhpBench\Attributes\Revs;
 
 /**
  * Sorting a collection given in a shuffled order.
@@ -59,6 +60,7 @@ trait CollectionSort
 	/**
 	 * @return Collection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchReversed(): Collection
 	{
 		return $this->collection->reversed();
@@ -67,6 +69,7 @@ trait CollectionSort
 	/**
 	 * @return Collection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchShuffled(): Collection
 	{
 		return $this->collection->shuffled();

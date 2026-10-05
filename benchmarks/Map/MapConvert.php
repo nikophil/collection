@@ -77,7 +77,7 @@ trait MapConvert
 	/**
 	 * @return MutableMap<covariant int|string, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToMutable(): MutableMap
 	{
 		return $this->map->toMutable();
@@ -86,7 +86,7 @@ trait MapConvert
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToImmutable(): ImmutableMap
 	{
 		return $this->map->toImmutable();

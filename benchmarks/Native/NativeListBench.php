@@ -16,13 +16,13 @@ use PhpBench\Attributes\Revs;
  */
 final class NativeListBench extends AbstractNativeBenchCase
 {
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchFirst(): int
 	{
 		return $this->elements[0];
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchLast(): int
 	{
 		return $this->elements[count($this->elements) - 1];
@@ -55,11 +55,13 @@ final class NativeListBench extends AbstractNativeBenchCase
 		return array_diff($this->elements, $this->elements) === [];
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIndexOf(): int|false
 	{
 		return array_search($this->probe, $this->elements, true);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchFind(): ?int
 	{
 		foreach ($this->elements as $v) {
@@ -71,6 +73,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 		return null;
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchAll(): bool
 	{
 		foreach ($this->elements as $v) {
@@ -92,26 +95,31 @@ final class NativeListBench extends AbstractNativeBenchCase
 		return array_reduce($this->elements, static fn (int $acc, int $v): int => $acc + $v, 0);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSum(): int
 	{
 		return array_sum($this->elements);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchAvg(): float
 	{
 		return array_sum($this->elements) / count($this->elements);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchMin(): int
 	{
 		return min($this->elements);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchMax(): int
 	{
 		return max($this->elements);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchJoinToString(): string
 	{
 		return implode(', ', $this->elements);
@@ -150,6 +158,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchTakeFirst(): array
 	{
 		return array_slice($this->elements, 0, $this->half);
@@ -158,6 +167,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchDropFirst(): array
 	{
 		return array_slice($this->elements, $this->half);
@@ -182,6 +192,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<list<int>>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchChunked(): array
 	{
 		return array_chunk($this->elements, 10);
@@ -293,6 +304,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchReversed(): array
 	{
 		return array_reverse($this->elements);
@@ -301,6 +313,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchShuffled(): array
 	{
 		$shuffled = $this->elements;
@@ -308,6 +321,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 		return $shuffled;
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIterate(): int
 	{
 		$sum = 0;
@@ -321,11 +335,13 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSlice(): array
 	{
 		return array_slice($this->elements, $this->half >> 1, $this->half);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchJsonEncode(): string
 	{
 		return json_encode($this->elements, JSON_THROW_ON_ERROR);
@@ -334,6 +350,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchAdd(): array
 	{
 		$list = $this->elements;
@@ -387,6 +404,7 @@ final class NativeListBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemoveLast(): array
 	{
 		$list = $this->elements;

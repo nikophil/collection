@@ -48,8 +48,8 @@ final class FactoryBench
 {
 	use ProvidesSizes;
 
-	/** Revolutions for constant-time subjects, too fast to be measured reliably with the default. */
-	private const int ConstantTimeRevs = 1000;
+	/** Revolutions for subjects of a few microseconds at most, too fast to be measured reliably with the default. */
+	private const int FastSubjectRevs = 1000;
 
 	/** @var list<int> */
 	private array $elements;
@@ -81,7 +81,7 @@ final class FactoryBench
 	/**
 	 * @return ImmutableList<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchListOf(): ImmutableList
 	{
 		return listOf($this->elements);
@@ -95,7 +95,7 @@ final class FactoryBench
 		return listOf($this->generate());
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchListOfLazy(): int
 	{
 		$elements = $this->elements;
@@ -105,7 +105,7 @@ final class FactoryBench
 	/**
 	 * @return MutableList<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchMutableListOf(): MutableList
 	{
 		return mutableListOf($this->elements);
@@ -182,7 +182,7 @@ final class FactoryBench
 	/**
 	 * @return ImmutableMap<string, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchStringMapOf(): ImmutableMap
 	{
 		return stringMapOf($this->stringEntries);
@@ -191,7 +191,7 @@ final class FactoryBench
 	/**
 	 * @return MutableMap<string, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchMutableStringMapOf(): MutableMap
 	{
 		return mutableStringMapOf($this->stringEntries);

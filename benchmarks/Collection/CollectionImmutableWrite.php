@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Benchmarks\Collection;
 
 use Noctud\Collection\ImmutableCollection;
+use PhpBench\Attributes\Revs;
 
 /**
  * Writes on an immutable collection, each returning a modified copy.
@@ -19,6 +20,7 @@ trait CollectionImmutableWrite
 	/**
 	 * @return ImmutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchAdd(): ImmutableCollection
 	{
 		return $this->collection->add(-1);
@@ -27,6 +29,7 @@ trait CollectionImmutableWrite
 	/**
 	 * @return ImmutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchAddFirst(): ImmutableCollection
 	{
 		return $this->collection->addFirst(-1);
@@ -35,6 +38,7 @@ trait CollectionImmutableWrite
 	/**
 	 * @return ImmutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchAddAll(): ImmutableCollection
 	{
 		return $this->collection->addAll($this->other);
@@ -43,6 +47,7 @@ trait CollectionImmutableWrite
 	/**
 	 * @return ImmutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemoveElement(): ImmutableCollection
 	{
 		return $this->collection->removeElement($this->probe);
@@ -75,6 +80,7 @@ trait CollectionImmutableWrite
 	/**
 	 * @return ImmutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemoveFirst(): ImmutableCollection
 	{
 		return $this->collection->removeFirst();
@@ -83,6 +89,7 @@ trait CollectionImmutableWrite
 	/**
 	 * @return ImmutableCollection<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemoveLast(): ImmutableCollection
 	{
 		return $this->collection->removeLast();

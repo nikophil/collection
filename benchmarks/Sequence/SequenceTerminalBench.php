@@ -53,13 +53,13 @@ final class SequenceTerminalBench extends AbstractSequenceBenchCase
 		return $sum;
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchFirst(): int
 	{
 		return $this->sequence->first();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchFirstOrNull(): ?int
 	{
 		return $this->sequence->firstOrNull();
@@ -76,14 +76,14 @@ final class SequenceTerminalBench extends AbstractSequenceBenchCase
 	}
 
 	#[BeforeMethods('setUpSingleton')]
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSingle(): int
 	{
 		return $this->singleton->single();
 	}
 
 	#[BeforeMethods('setUpSingleton')]
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSingleOrNull(): ?int
 	{
 		return $this->singleton->singleOrNull();
@@ -123,13 +123,13 @@ final class SequenceTerminalBench extends AbstractSequenceBenchCase
 		return $this->sequence->expectLast(static fn (int $v): bool => $v === $probe);
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIsEmpty(): bool
 	{
 		return $this->sequence->isEmpty();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIsNotEmpty(): bool
 	{
 		return $this->sequence->isNotEmpty();

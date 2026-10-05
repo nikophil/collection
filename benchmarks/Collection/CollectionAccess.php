@@ -27,39 +27,39 @@ trait CollectionAccess
 		$this->singleton = $this->collectionOf([$this->probe]);
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchFirst(): int
 	{
 		return $this->collection->first();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchFirstOrNull(): ?int
 	{
 		return $this->collection->firstOrNull();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchLast(): int
 	{
 		return $this->collection->last();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchLastOrNull(): ?int
 	{
 		return $this->collection->lastOrNull();
 	}
 
 	#[BeforeMethods('setUpSingleton')]
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSingle(): int
 	{
 		return $this->singleton->single();
 	}
 
 	#[BeforeMethods('setUpSingleton')]
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSingleOrNull(): ?int
 	{
 		return $this->singleton->singleOrNull();
@@ -89,13 +89,13 @@ trait CollectionAccess
 		return $this->collection->expectLast(static fn (int $v): bool => $v === $probe);
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRandom(): int
 	{
 		return $this->collection->random();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRandomOrNull(): ?int
 	{
 		return $this->collection->randomOrNull();

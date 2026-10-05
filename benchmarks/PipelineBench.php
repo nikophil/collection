@@ -33,8 +33,8 @@ final class PipelineBench
 
 	private const int Take = 10;
 
-	/** Revolutions for constant-time subjects, too fast to be measured reliably with the default. */
-	private const int ConstantTimeRevs = 1000;
+	/** Revolutions for subjects of a few microseconds at most, too fast to be measured reliably with the default. */
+	private const int FastSubjectRevs = 1000;
 
 	/** @var list<int> */
 	private array $elements;
@@ -130,7 +130,7 @@ final class PipelineBench
 	/**
 	 * @return list<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchNativeGeneratorTakeFirst(): array
 	{
 		$result = [];

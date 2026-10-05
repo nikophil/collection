@@ -17,19 +17,19 @@ use PhpBench\Attributes\Revs;
  */
 trait CollectionQuery
 {
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIsEmpty(): bool
 	{
 		return $this->collection->isEmpty();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIsNotEmpty(): bool
 	{
 		return $this->collection->isNotEmpty();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchCount(): int
 	{
 		return $this->collection->count();

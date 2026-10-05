@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Noctud\Collection\Benchmarks\Native;
 
+use PhpBench\Attributes\Revs;
+
 /**
  * An array keyed by the elements, the usual native set, as the reference for SetBench and MutableSetBench.
  */
@@ -34,6 +36,7 @@ final class NativeSetBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, true>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSetOf(): array
 	{
 		return array_fill_keys($this->elements, true);
@@ -53,6 +56,7 @@ final class NativeSetBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, true>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchAdd(): array
 	{
 		$set = $this->set;
@@ -80,6 +84,7 @@ final class NativeSetBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, true>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIntersect(): array
 	{
 		return array_intersect_key($this->set, $this->otherSet);
@@ -88,6 +93,7 @@ final class NativeSetBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, true>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchUnion(): array
 	{
 		return $this->set + $this->otherSet;
@@ -96,6 +102,7 @@ final class NativeSetBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, true>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSubtract(): array
 	{
 		return array_diff_key($this->set, $this->otherSet);
@@ -104,6 +111,7 @@ final class NativeSetBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, true>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRemoveAll(): array
 	{
 		return array_diff_key($this->set, $this->otherSet);
@@ -112,11 +120,13 @@ final class NativeSetBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, true>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchRetainAll(): array
 	{
 		return array_intersect_key($this->set, $this->otherSet);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIterate(): int
 	{
 		$sum = 0;

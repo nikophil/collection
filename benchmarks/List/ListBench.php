@@ -46,22 +46,11 @@ final class ListBench extends AbstractCollectionBenchCase
 	use ListAccess;
 
 	/**
-	 * Constant-time here: the List storage already is the array.
-	 *
-	 * @return list<int>
-	 */
-	#[Revs(self::ConstantTimeRevs)]
-	public function benchToArray(): array
-	{
-		return $this->collection->toArray();
-	}
-
-	/**
 	 * Constant-time here: an immutable List is its own toList().
 	 *
 	 * @return ImmutableList<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToList(): ImmutableList
 	{
 		return $this->collection->toList();

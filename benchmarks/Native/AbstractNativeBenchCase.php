@@ -26,8 +26,8 @@ abstract class AbstractNativeBenchCase
 {
 	use ProvidesSizes;
 
-	/** Revolutions for constant-time subjects, too fast to be measured reliably with the default. */
-	protected const int ConstantTimeRevs = 1000;
+	/** Revolutions for subjects of a few microseconds at most, too fast to be measured reliably with the default. */
+	protected const int FastSubjectRevs = 1000;
 
 	protected const int Batch = 100;
 

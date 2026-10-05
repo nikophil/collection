@@ -101,19 +101,19 @@ trait MapAccess
 		return $this->map->containsValue($this->probeValue);
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIsEmpty(): bool
 	{
 		return $this->map->isEmpty();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIsNotEmpty(): bool
 	{
 		return $this->map->isNotEmpty();
 	}
 
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchCount(): int
 	{
 		return $this->map->count();

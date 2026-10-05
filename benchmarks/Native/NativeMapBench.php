@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Benchmarks\Native;
 
 use Noctud\Collection\Benchmarks\Fixture\Data;
+use PhpBench\Attributes\Revs;
 
 /**
  * An array with string keys, as the reference for the Map benchmarks.
@@ -64,6 +65,7 @@ final class NativeMapBench extends AbstractNativeBenchCase
 		return $found;
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchContainsValue(): bool
 	{
 		return in_array($this->probe, $this->map, true);
@@ -88,6 +90,7 @@ final class NativeMapBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<int, string>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchFlip(): array
 	{
 		return array_flip($this->map);
@@ -96,6 +99,7 @@ final class NativeMapBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchTakeFirst(): array
 	{
 		return array_slice($this->map, 0, $this->half, true);
@@ -134,11 +138,13 @@ final class NativeMapBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchReversed(): array
 	{
 		return array_reverse($this->map, true);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIterate(): int
 	{
 		$sum = 0;
@@ -152,6 +158,7 @@ final class NativeMapBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<string>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchKeysToArray(): array
 	{
 		return array_keys($this->map);
@@ -160,6 +167,7 @@ final class NativeMapBench extends AbstractNativeBenchCase
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchValuesToArray(): array
 	{
 		return array_values($this->map);
@@ -173,6 +181,7 @@ final class NativeMapBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchPut(): array
 	{
 		$map = $this->map;
@@ -199,6 +208,7 @@ final class NativeMapBench extends AbstractNativeBenchCase
 	/**
 	 * @return array<string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchPutAll(): array
 	{
 		return array_merge($this->map, $this->otherMap);

@@ -11,6 +11,7 @@ namespace Noctud\Collection\Benchmarks\Map;
 
 use Noctud\Collection\Map\Map;
 use Noctud\Collection\Map\MapEntry;
+use PhpBench\Attributes\Revs;
 
 /**
  * Sorting a map given in a shuffled order, by key, by value or by entry.
@@ -108,6 +109,7 @@ trait MapSort
 	/**
 	 * @return Map<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchReversed(): Map
 	{
 		return $this->map->reversed();

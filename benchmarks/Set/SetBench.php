@@ -49,7 +49,7 @@ final class SetBench extends AbstractCollectionBenchCase
 	 *
 	 * @return ImmutableSet<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToSet(): ImmutableSet
 	{
 		return $this->collection->toSet();
@@ -60,7 +60,7 @@ final class SetBench extends AbstractCollectionBenchCase
 	 *
 	 * @return ImmutableSet<int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchDistinct(): ImmutableSet
 	{
 		return $this->collection->distinct();

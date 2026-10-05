@@ -74,11 +74,13 @@ trait ListAccess
 		return $sum;
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchIndexOf(): int
 	{
 		return $this->collection->indexOf($this->probe);
 	}
 
+	#[Revs(self::FastSubjectRevs)]
 	public function benchLastIndexOf(): int
 	{
 		return $this->collection->lastIndexOf($this->probe);
@@ -99,6 +101,7 @@ trait ListAccess
 	/**
 	 * @return ImmutableList<int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchSlice(): ImmutableList
 	{
 		return $this->collection->slice($this->half >> 1, $this->half + ($this->half >> 1));
@@ -107,7 +110,7 @@ trait ListAccess
 	/**
 	 * @return ImmutableMap<int, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchToIndexedMap(): ImmutableMap
 	{
 		return $this->collection->toIndexedMap();

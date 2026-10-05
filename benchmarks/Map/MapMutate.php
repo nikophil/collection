@@ -202,7 +202,7 @@ trait MapMutate
 	/**
 	 * @return MutableMap<covariant int|string, int>
 	 */
-	#[Revs(self::ConstantTimeRevs)]
+	#[Revs(self::FastSubjectRevs)]
 	public function benchClear(): MutableMap
 	{
 		return $this->mutable()->clear();
@@ -283,6 +283,7 @@ trait MapMutate
 	/**
 	 * @return MutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::FastSubjectRevs)]
 	public function benchReverse(): MutableMap
 	{
 		return $this->mutable()->reverse();

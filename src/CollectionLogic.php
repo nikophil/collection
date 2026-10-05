@@ -34,6 +34,7 @@ use Noctud\Collection\Store\ReadWriteElementStore;
 use Noctud\Collection\Operation\WindowOperation;
 use Noctud\Collection\Operation\ZipOperation;
 use Noctud\Collection\Operation\ZipWithNextOperation;
+use Noctud\Collection\Store\AbstractElementStore;
 use Noctud\Collection\Store\ReadOnlyElementStore;
 use Traversable;
 use NoDiscard;
@@ -359,12 +360,12 @@ trait CollectionLogic
 	{
 		if ($this->store instanceof ReadWriteElementStore) { // @phpstan-ignore instanceof.alwaysTrue
 			$store = clone $this->store;
-			$store->sort(static fn ($a, $b) => $selector($a) <=> $selector($b));
+			$store->sortBy($selector);
 			return $this->newCollectionOf($store);
 		}
 
 		$arr = $this->store->toArray();
-		usort($arr, static fn ($a, $b) => $selector($a) <=> $selector($b));
+		$arr = array_values(AbstractElementStore::orderedBy($arr, $selector));
 		return $this->newCollectionOf($arr);
 	}
 
@@ -374,12 +375,12 @@ trait CollectionLogic
 	{
 		if ($this->store instanceof ReadWriteElementStore) { // @phpstan-ignore instanceof.alwaysTrue
 			$store = clone $this->store;
-			$store->sort(static fn ($a, $b) => $selector($b) <=> $selector($a));
+			$store->sortBy($selector, descending: true);
 			return $this->newCollectionOf($store);
 		}
 
 		$arr = $this->store->toArray();
-		usort($arr, static fn ($a, $b) => $selector($b) <=> $selector($a));
+		$arr = array_values(AbstractElementStore::orderedBy($arr, $selector, descending: true));
 		return $this->newCollectionOf($arr);
 	}
 

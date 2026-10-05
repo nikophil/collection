@@ -197,7 +197,7 @@ trait MutableTrackedListLogic
 	public function sortBy(Closure $selector): MutableTrackedList&TrackedResult
 	{
 		$prevItems = $this->store->toArray();
-		$this->store->sort(static fn ($a, $b) => $selector($a) <=> $selector($b));
+		$this->store->sortBy($selector);
 		$this->_changed = $this->store->toArray() !== $prevItems;
 		return $this;
 	}
@@ -206,7 +206,7 @@ trait MutableTrackedListLogic
 	public function sortByDesc(Closure $selector): MutableTrackedList&TrackedResult
 	{
 		$prevItems = $this->store->toArray();
-		$this->store->sort(static fn ($a, $b) => $selector($b) <=> $selector($a));
+		$this->store->sortBy($selector, descending: true);
 		$this->_changed = $this->store->toArray() !== $prevItems;
 		return $this;
 	}

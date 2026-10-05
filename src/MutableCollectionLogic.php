@@ -129,14 +129,14 @@ trait MutableCollectionLogic
 	/** {@inheritDoc} */
 	public function sortBy(Closure $selector): static
 	{
-		$this->store->sort(static fn ($a, $b) => $selector($a) <=> $selector($b));
+		$this->store->sortBy($selector);
 		return $this;
 	}
 
 	/** {@inheritDoc} */
 	public function sortByDesc(Closure $selector): static
 	{
-		$this->store->sort(static fn ($a, $b) => $selector($b) <=> $selector($a));
+		$this->store->sortBy($selector, descending: true);
 		return $this;
 	}
 

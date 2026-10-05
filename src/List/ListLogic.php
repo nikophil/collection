@@ -413,7 +413,7 @@ trait ListLogic
 	{
 		/** @var ReadWriteElementStore<E> $store */
 		$store = clone $this->store;
-		$store->sort(static fn ($a, $b) => $selector($a) <=> $selector($b));
+		$store->sortBy($selector);
 		return $this->newCollectionOf($store);
 	}
 
@@ -427,7 +427,7 @@ trait ListLogic
 	{
 		/** @var ReadWriteElementStore<E> $store */
 		$store = clone $this->store;
-		$store->sort(static fn ($a, $b) => $selector($b) <=> $selector($a));
+		$store->sortBy($selector, descending: true);
 		return $this->newCollectionOf($store);
 	}
 

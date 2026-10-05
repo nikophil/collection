@@ -153,6 +153,22 @@ trait MapOrdering
 	}
 
 	#[Test]
+	public function sortedBy_keeps_equal_entries_in_their_order(): void
+	{
+		$map = $this->mapOfPairs([['a', 1], ['b', 2], ['c', 1], ['d', 2]]);
+		$selector = static fn (int $v): int => $v;
+
+		$this->assertSame(['a' => 1, 'c' => 1, 'b' => 2, 'd' => 2], $map->sortedBy($selector)->toArray());
+		$this->assertSame(['b' => 2, 'd' => 2, 'a' => 1, 'c' => 1], $map->sortedByDesc($selector)->toArray());
+
+		$mutable = self::asMutableMap($map);
+		if ($mutable !== null) {
+			$this->assertSame(['a' => 1, 'c' => 1, 'b' => 2, 'd' => 2], $mutable->sortBy($selector)->toArray());
+			$this->assertSame(['b' => 2, 'd' => 2, 'a' => 1, 'c' => 1], $mutable->sortByDesc($selector)->toArray());
+		}
+	}
+
+	#[Test]
 	public function sortedWith_sorts_with_comparator(): void
 	{
 		$map = $this->mapOfPairs([['ax', 2], ['b', 10], ['ccc', 3], ['1', 4]]);

@@ -308,6 +308,23 @@ final class StringKeyValueStore implements KeyValueStore
 	}
 
 	/** @inheritDoc */
+	public function sortBy(callable $selector, bool $descending = false): void
+	{
+		$selected = [];
+		foreach ($this->data as $k => $v) {
+			$selected[$k] = $selector($v, (string) $k);
+		}
+
+		if ($descending) {
+			arsort($selected);
+		} else {
+			asort($selected);
+		}
+
+		$this->data = array_replace($selected, $this->data);
+	}
+
+	/** @inheritDoc */
 	public function reverse(): void
 	{
 		$this->data = array_reverse($this->data, true);

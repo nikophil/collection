@@ -148,7 +148,7 @@ final class HashKeyValueStore implements KeyValueStore
 	 */
 	public function contains(mixed $value): bool
 	{
-		return array_any($this->values, fn ($v) => $v === $value);
+		return in_array($value, $this->values, true);
 	}
 
 	/**

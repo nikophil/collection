@@ -28,7 +28,7 @@ jobs:
         if: github.event_name == 'pull_request' && hashFiles('phpbench.json') != ''
         run: |
           composer install --no-interaction --prefer-dist
-          vendor/bin/phpbench run --tag=base --executor=local --iterations=4 --ansi --progress=plain
+          vendor/bin/phpbench run --tag=base --executor=local --iterations=4 --progress=none
 
       # clean: false keeps var/phpbench, where the base results are stored.
       - uses: actions/checkout@v7

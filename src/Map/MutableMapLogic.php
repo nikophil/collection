@@ -194,7 +194,7 @@ trait MutableMapLogic
 	/** {@inheritDoc} */
 	public function sortBy(Closure $selector): MutableMap
 	{
-		$this->store->sortByPairs(static fn ($x, $y) => $selector($x[1], $x[0]) <=> $selector($y[1], $y[0]));
+		$this->store->sortBy($selector);
 
 		return $this;
 	}
@@ -202,7 +202,7 @@ trait MutableMapLogic
 	/** {@inheritDoc} */
 	public function sortByDesc(Closure $selector): MutableMap
 	{
-		$this->store->sortByPairs(static fn ($x, $y) => $selector($y[1], $y[0]) <=> $selector($x[1], $x[0]));
+		$this->store->sortBy($selector, descending: true);
 
 		return $this;
 	}

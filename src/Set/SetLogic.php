@@ -21,6 +21,7 @@ use Noctud\Collection\Operation\GroupOperation;
 use Noctud\Collection\Operation\MapKeyValueOperation;
 use Noctud\Collection\Operation\SetOperation;
 use Noctud\Collection\Operation\TakeOperation;
+use Noctud\Collection\Store\AbstractElementStore;
 use NoDiscard;
 use function Noctud\Collection\mutableSetOf;
 use function Noctud\Collection\setOf;
@@ -273,7 +274,7 @@ trait SetLogic
 	public function sortedBy(Closure $selector): ImmutableSet
 	{
 		$arr = $this->store->toArray();
-		usort($arr, static fn ($a, $b) => $selector($a) <=> $selector($b));
+		$arr = array_values(AbstractElementStore::orderedBy($arr, $selector));
 		return $this->newCollectionOf($arr);
 	}
 
@@ -286,7 +287,7 @@ trait SetLogic
 	public function sortedByDesc(Closure $selector): ImmutableSet
 	{
 		$arr = $this->store->toArray();
-		usort($arr, static fn ($a, $b) => $selector($b) <=> $selector($a));
+		$arr = array_values(AbstractElementStore::orderedBy($arr, $selector, descending: true));
 		return $this->newCollectionOf($arr);
 	}
 

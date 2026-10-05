@@ -94,6 +94,11 @@ final class HashElementStore extends AbstractElementStore implements ReadWriteEl
 		}
 	}
 
+	public function sortBy(callable $selector, bool $descending = false): void
+	{
+		$this->elements = self::orderedBy($this->elements, $selector, $descending);
+	}
+
 	public function reverse(): void
 	{
 		$this->elements = array_reverse($this->elements, true);

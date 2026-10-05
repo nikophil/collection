@@ -525,7 +525,7 @@ trait CollectionLogic
 	public function chunked(int $size): ImmutableList
 	{
 		return $this->newListOf((function () use ($size) {
-			$chunks = new ChunkOperation($this->store)->ofSize($size);
+			$chunks = new ChunkOperation($this->store->toArray())->ofSize($size);
 			foreach ($chunks as $chunk) {
 				yield $this->newListOf($chunk);
 			}

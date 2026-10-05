@@ -50,3 +50,4 @@ turns a regression into a failure.
   `#[Revs(self::FastSubjectRevs)]`: with the default revolutions, an iteration is too short to be measured reliably.
 - In-place mutations start from a copy of the fixture, taken inside the subject: the copy shares the source array
   until its first write, so every revolution works on the same state.
+

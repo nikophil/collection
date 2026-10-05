@@ -10,7 +10,8 @@
  *
  * Each directory holds the compare.tsv and confirm.tsv of one machine. A variant measured again
  * on a machine counts with its second measure, the first one otherwise. A variant is reported when
- * the median of its changes over the machines exceeds the threshold: a slow machine or an unlucky
+ * the median of its changes over the machines exceeds the threshold, and when all the machines but
+ * one at most moved it by more than half the threshold the same way: a slow machine or an unlucky
  * measure no longer decides alone.
  *
  * Usage: php aggregate-benchmarks.php <threshold> <directory>...
@@ -55,7 +56,8 @@ foreach ($byVariant as $variant => $changes) {
 	sort($changes);
 	$middle = intdiv(count($changes), 2);
 	$median = count($changes) % 2 === 1 ? $changes[$middle] : ($changes[$middle - 1] + $changes[$middle]) / 2;
-	if (abs($median) > $threshold) {
+	$agreeing = count(array_filter($changes, static fn (float $change): bool => $change * $median > 0 && abs($change) > $threshold / 2));
+	if (abs($median) > $threshold && $agreeing >= count($changes) - 1) {
 		$moved[$variant] = [$median, $changes];
 	}
 }

@@ -153,6 +153,25 @@ trait MapOrdering
 	}
 
 	#[Test]
+	public function sortedByKey_and_sortedByValue_keep_equal_entries_in_their_order(): void
+	{
+		// strlen(...) takes a single argument: the selector must be handed the key or the value alone.
+		$map = $this->mapOfPairs([['aa', 'bb'], ['b', 'c'], ['cc', 'dd'], ['d', 'e']]);
+
+		$this->assertSame(['b', 'd', 'aa', 'cc'], $map->sortedByKey(strlen(...))->keys->toArray());
+		$this->assertSame(['aa', 'cc', 'b', 'd'], $map->sortedByKeyDesc(strlen(...))->keys->toArray());
+		$this->assertSame(['b', 'd', 'aa', 'cc'], $map->sortedByValue(strlen(...))->keys->toArray());
+		$this->assertSame(['aa', 'cc', 'b', 'd'], $map->sortedByValueDesc(strlen(...))->keys->toArray());
+
+		$mutable = self::asMutableMap($map);
+		if ($mutable !== null) {
+			$this->assertSame(['b', 'd', 'aa', 'cc'], $mutable->sortByKey(strlen(...))->keys->toArray());
+			$this->assertSame(['aa', 'cc', 'b', 'd'], $mutable->sortByValueDesc(strlen(...))->keys->toArray());
+			$this->assertSame(['b', 'd', 'aa', 'cc'], $mutable->tracked()->sortByValue(strlen(...))->keys->toArray());
+		}
+	}
+
+	#[Test]
 	public function sortedBy_keeps_equal_entries_in_their_order(): void
 	{
 		$map = $this->mapOfPairs([['a', 1], ['b', 2], ['c', 1], ['d', 2]]);

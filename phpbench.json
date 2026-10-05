@@ -9,8 +9,8 @@
 		"opcache.enable_cli": 1,
 		"memory_limit": "1G"
 	},
-	"runner.iterations": 5,
-	"runner.revs": 20,
+	"runner.iterations": 3,
+	"runner.revs": 5,
 	"runner.warmup": 1,
 	"runner.time_unit": "microseconds",
 	"storage.xml_storage_path": "var/phpbench"

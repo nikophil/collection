@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Benchmarks\Collection;
 
 use Noctud\Collection\MutableCollection;
+use PhpBench\Attributes\Revs;
 
 /**
  * In-place mutations. Each subject works on its own copy, from mutable(): the copy is
@@ -124,6 +125,7 @@ trait CollectionMutate
 	/**
 	 * @return MutableCollection<int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchClear(): MutableCollection
 	{
 		return $this->mutable()->clear();

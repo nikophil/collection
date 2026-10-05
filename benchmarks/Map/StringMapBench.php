@@ -11,6 +11,7 @@ namespace Noctud\Collection\Benchmarks\Map;
 
 use Noctud\Collection\Map\ImmutableMap;
 use PhpBench\Attributes\Groups;
+use PhpBench\Attributes\Revs;
 use function Noctud\Collection\stringMapOf;
 
 /**
@@ -30,6 +31,17 @@ final class StringMapBench extends AbstractMapBenchCase
 	use MapConvert;
 	use MapViews;
 	use StringKeys;
+
+	/**
+	 * Constant-time here: the StringMap storage already is the array.
+	 *
+	 * @return array<string, int>
+	 */
+	#[Revs(self::ConstantTimeRevs)]
+	public function benchToArray(): array
+	{
+		return $this->map->toArray();
+	}
 
 	protected function mapOf(array $entries): ImmutableMap
 	{

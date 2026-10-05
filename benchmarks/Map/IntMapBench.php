@@ -11,6 +11,7 @@ namespace Noctud\Collection\Benchmarks\Map;
 
 use Noctud\Collection\Map\ImmutableMap;
 use PhpBench\Attributes\Groups;
+use PhpBench\Attributes\Revs;
 use function Noctud\Collection\intMapOf;
 
 /**
@@ -30,6 +31,17 @@ final class IntMapBench extends AbstractMapBenchCase
 	use MapConvert;
 	use MapViews;
 	use IntKeys;
+
+	/**
+	 * Constant-time here: the IntMap storage already is the array.
+	 *
+	 * @return array<int, int>
+	 */
+	#[Revs(self::ConstantTimeRevs)]
+	public function benchToArray(): array
+	{
+		return $this->map->toArray();
+	}
 
 	protected function mapOf(array $entries): ImmutableMap
 	{

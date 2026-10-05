@@ -11,6 +11,7 @@ namespace Noctud\Collection\Benchmarks\Map;
 
 use Noctud\Collection\Map\MapEntry;
 use Noctud\Collection\Map\MutableMap;
+use PhpBench\Attributes\Revs;
 
 /**
  * In-place mutations. Each subject works on its own copy, from mutable(): the copy is
@@ -201,6 +202,7 @@ trait MapMutate
 	/**
 	 * @return MutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchClear(): MutableMap
 	{
 		return $this->mutable()->clear();

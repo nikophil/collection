@@ -16,6 +16,7 @@ use Noctud\Collection\List\ImmutableList;
 use PhpBench\Attributes\BeforeMethods;
 use PhpBench\Attributes\Groups;
 use PhpBench\Attributes\ParamProviders;
+use PhpBench\Attributes\Revs;
 use function Noctud\Collection\listOf;
 
 /**
@@ -31,6 +32,9 @@ final class PipelineBench
 	use ProvidesSizes;
 
 	private const int Take = 10;
+
+	/** Revolutions for constant-time subjects, too fast to be measured reliably with the default. */
+	private const int ConstantTimeRevs = 1000;
 
 	/** @var list<int> */
 	private array $elements;
@@ -126,6 +130,7 @@ final class PipelineBench
 	/**
 	 * @return list<int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchNativeGeneratorTakeFirst(): array
 	{
 		$result = [];

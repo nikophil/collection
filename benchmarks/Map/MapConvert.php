@@ -11,6 +11,7 @@ namespace Noctud\Collection\Benchmarks\Map;
 
 use Noctud\Collection\Map\ImmutableMap;
 use Noctud\Collection\Map\MutableMap;
+use PhpBench\Attributes\Revs;
 
 /**
  * Iteration and conversion to other structures.
@@ -76,6 +77,7 @@ trait MapConvert
 	/**
 	 * @return MutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchToMutable(): MutableMap
 	{
 		return $this->map->toMutable();
@@ -84,6 +86,7 @@ trait MapConvert
 	/**
 	 * @return ImmutableMap<covariant int|string, int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchToImmutable(): ImmutableMap
 	{
 		return $this->map->toImmutable();

@@ -14,6 +14,7 @@ use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Map\ImmutableMap;
 use Noctud\Collection\MutableCollection;
 use Noctud\Collection\Set\ImmutableSet;
+use PhpBench\Attributes\Revs;
 
 /**
  * Iteration and conversion to other structures.
@@ -83,6 +84,7 @@ trait CollectionConvert
 	/**
 	 * @return MutableCollection<int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchToMutable(): MutableCollection
 	{
 		return $this->collection->toMutable();
@@ -91,6 +93,7 @@ trait CollectionConvert
 	/**
 	 * @return Collection<int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchToImmutable(): Collection
 	{
 		return $this->collection->toImmutable();

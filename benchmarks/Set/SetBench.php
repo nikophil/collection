@@ -22,6 +22,7 @@ use Noctud\Collection\Benchmarks\Collection\CollectionSort;
 use Noctud\Collection\Benchmarks\Collection\CollectionTransform;
 use Noctud\Collection\Set\ImmutableSet;
 use PhpBench\Attributes\Groups;
+use PhpBench\Attributes\Revs;
 use function Noctud\Collection\setOf;
 
 /**
@@ -42,6 +43,28 @@ final class SetBench extends AbstractCollectionBenchCase
 	use CollectionSetOperations;
 	use CollectionSort;
 	use CollectionConvert;
+
+	/**
+	 * Constant-time here: an immutable Set is its own toSet().
+	 *
+	 * @return ImmutableSet<int>
+	 */
+	#[Revs(self::ConstantTimeRevs)]
+	public function benchToSet(): ImmutableSet
+	{
+		return $this->collection->toSet();
+	}
+
+	/**
+	 * Constant-time here: a Set is already distinct.
+	 *
+	 * @return ImmutableSet<int>
+	 */
+	#[Revs(self::ConstantTimeRevs)]
+	public function benchDistinct(): ImmutableSet
+	{
+		return $this->collection->distinct();
+	}
 
 	protected function collectionOf(array $elements): ImmutableSet
 	{

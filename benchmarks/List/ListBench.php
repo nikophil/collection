@@ -22,6 +22,7 @@ use Noctud\Collection\Benchmarks\Collection\CollectionSort;
 use Noctud\Collection\Benchmarks\Collection\CollectionTransform;
 use Noctud\Collection\List\ImmutableList;
 use PhpBench\Attributes\Groups;
+use PhpBench\Attributes\Revs;
 use function Noctud\Collection\listOf;
 
 /**
@@ -43,6 +44,28 @@ final class ListBench extends AbstractCollectionBenchCase
 	use CollectionSort;
 	use CollectionConvert;
 	use ListAccess;
+
+	/**
+	 * Constant-time here: the List storage already is the array.
+	 *
+	 * @return list<int>
+	 */
+	#[Revs(self::ConstantTimeRevs)]
+	public function benchToArray(): array
+	{
+		return $this->collection->toArray();
+	}
+
+	/**
+	 * Constant-time here: an immutable List is its own toList().
+	 *
+	 * @return ImmutableList<int>
+	 */
+	#[Revs(self::ConstantTimeRevs)]
+	public function benchToList(): ImmutableList
+	{
+		return $this->collection->toList();
+	}
 
 	protected function collectionOf(array $elements): ImmutableList
 	{

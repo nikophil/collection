@@ -11,6 +11,7 @@ namespace Noctud\Collection\Benchmarks\List;
 
 use Noctud\Collection\List\ImmutableList;
 use Noctud\Collection\Map\ImmutableMap;
+use PhpBench\Attributes\Revs;
 
 /**
  * Index-based reads. Constant-time lookups run over a batch of indexes spread across the list,
@@ -106,6 +107,7 @@ trait ListAccess
 	/**
 	 * @return ImmutableMap<int, int>
 	 */
+	#[Revs(self::ConstantTimeRevs)]
 	public function benchToIndexedMap(): ImmutableMap
 	{
 		return $this->collection->toIndexedMap();

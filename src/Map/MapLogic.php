@@ -338,7 +338,7 @@ trait MapLogic
 	{
 		$store = clone $this->store;
 		$sel = $selector ?? static fn ($k) => $k;
-		$store->sortByPairs(static fn ($x, $y) => $sel($x[0]) <=> $sel($y[0]));
+		$store->sortBy(static fn ($v, $k) => $sel($k));
 		return $this->newMapOf($store);
 	}
 
@@ -352,7 +352,7 @@ trait MapLogic
 	{
 		$store = clone $this->store;
 		$sel = $selector ?? static fn ($k) => $k;
-		$store->sortByPairs(static fn ($x, $y) => $sel($y[0]) <=> $sel($x[0]));
+		$store->sortBy(static fn ($v, $k) => $sel($k), descending: true);
 		return $this->newMapOf($store);
 	}
 
@@ -366,7 +366,7 @@ trait MapLogic
 	{
 		$store = clone $this->store;
 		$sel = $selector ?? static fn ($v) => $v;
-		$store->sortByPairs(static fn ($x, $y) => $sel($x[1]) <=> $sel($y[1]));
+		$store->sortBy(static fn ($v) => $sel($v));
 		return $this->newMapOf($store);
 	}
 
@@ -380,7 +380,7 @@ trait MapLogic
 	{
 		$store = clone $this->store;
 		$sel = $selector ?? static fn ($v) => $v;
-		$store->sortByPairs(static fn ($x, $y) => $sel($y[1]) <=> $sel($x[1]));
+		$store->sortBy(static fn ($v) => $sel($v), descending: true);
 		return $this->newMapOf($store);
 	}
 

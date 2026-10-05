@@ -71,6 +71,16 @@ trait SequenceLogic
 	private ?WeakReference $lastProduced = null;
 
 	/**
+	 * A sequence is walked once per terminal, through its own iterator.
+	 *
+	 * @return iterable<int, E>
+	 */
+	protected function terminalElements(): iterable
+	{
+		return $this;
+	}
+
+	/**
 	 * @return Generator<int, E>
 	 */
 	public function getIterator(): Generator

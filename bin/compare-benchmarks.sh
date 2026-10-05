@@ -24,6 +24,9 @@ if [ -n "${GROUP:-}" ]; then
 	group=(--group="$GROUP")
 fi
 root=$PWD
+# The JIT stays off, as in runner.php_config, which the local executor does not apply: when it
+# compiles a function depends on how hot it is, which would add to the noise.
+phpbench=(php -d opcache.jit=disable vendor/bin/phpbench)
 mkdir -p var
 
 # Runs the given benchmark file on both sides, prints the comparison and appends it to a TSV file.
@@ -39,12 +42,12 @@ compare() {
 	# A file may hold no subject of the group: no result must be taken for the previous file's.
 	rm -f var/base.xml var/last.tsv
 	if [ -f "$base/$bench" ]; then
-		(cd "$base" && vendor/bin/phpbench run "$bench" "${group[@]}" --executor=local --iterations=4 --progress=none \
+		(cd "$base" && "${phpbench[@]}" run "$bench" "${group[@]}" --executor=local --iterations=4 --progress=none \
 			--dump-file="$root/var/base.xml" "$@")
 		baseline=(--file=var/base.xml)
 	fi
 	# The delimited renderer also echoes its file: its lines are the only ones with tabs.
-	vendor/bin/phpbench run "$bench" "${baseline[@]}" "${group[@]}" --executor=local --iterations=4 --stop-on-error \
+	"${phpbench[@]}" run "$bench" "${baseline[@]}" "${group[@]}" --executor=local --iterations=4 --stop-on-error \
 		--ansi --progress=plain --report=compare --output=console \
 		--output='{"renderer": "delimited", "delimiter": "\t", "file": "var/last.tsv"}' "$@" \
 		| awk '!/\t/ && !/^Dumped delimited file:$/ && $0 != "var/last.tsv"'
@@ -81,9 +84,9 @@ remeasure() {
 	local bench=$1 filter=$2 variant=$3
 	[ -f "$base/$bench" ] || return 0
 	# phpbench tells on stderr where it dumped the results.
-	vendor/bin/phpbench run "$bench" --filter="$filter" --variant="$variant" --executor=remote --iterations=3 --progress=none \
+	"${phpbench[@]}" run "$bench" --filter="$filter" --variant="$variant" --executor=remote --iterations=3 --progress=none \
 		--dump-file="$root/var/pr.xml" 2>&1 > /dev/null | awk '!/^Dumped result to /'
-	(cd "$base" && vendor/bin/phpbench run "$bench" --filter="$filter" --variant="$variant" --executor=remote --iterations=3 \
+	(cd "$base" && "${phpbench[@]}" run "$bench" --filter="$filter" --variant="$variant" --executor=remote --iterations=3 \
 		--progress=none --file="$root/var/pr.xml" \
 		--report='{"generator": "expression", "cols": ["benchmark", "subject", "set", "revs", "its", "mode", "rstdev"]}' \
 		--output="{\"renderer\": \"delimited\", \"delimiter\": \"\\t\", \"file\": \"$root/var/last.tsv\"}" > /dev/null)

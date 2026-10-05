@@ -7,6 +7,7 @@
 	"runner.php_config": {
 		"xdebug.mode": "off",
 		"opcache.enable_cli": 1,
+		"opcache.jit": "disable",
 		"memory_limit": "1G"
 	},
 	"runner.iterations": 3,

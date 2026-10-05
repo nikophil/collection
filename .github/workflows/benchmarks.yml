@@ -28,7 +28,7 @@ jobs:
         if: github.event_name == 'pull_request' && hashFiles('phpbench.json') != ''
         run: |
           composer install --no-interaction --prefer-dist
-          vendor/bin/phpbench run --tag=base --executor=local --iterations=4 --ansi
+          vendor/bin/phpbench run --tag=base --executor=local --iterations=4 --ansi --progress=plain
 
       # clean: false keeps var/phpbench, where the base results are stored.
       - uses: actions/checkout@v4
@@ -44,12 +44,14 @@ jobs:
       # Four iterations rather than three steady the comparison; --revs is left alone, since it
       # would override the revolutions of the constant-time subjects. --ansi keeps the colours,
       # which tell faster from slower at a glance.
+      # The plain progress writes one line per variant: the default one rewrites its line
+      # with carriage returns, which the job log does not render.
       - name: Compare with the base branch
         if: hashFiles('var/phpbench/**') != ''
-        run: vendor/bin/phpbench run --ref=base --executor=local --iterations=4 --report=compare --stop-on-error --ansi
+        run: vendor/bin/phpbench run --ref=base --executor=local --iterations=4 --report=compare --stop-on-error --ansi --progress=plain
 
       # Without a base to compare against, this only checks that every benchmark still
       # runs, with a single revolution of a single iteration.
       - name: Run benchmarks once
         if: hashFiles('var/phpbench/**') == ''
-        run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error --ansi
+        run: vendor/bin/phpbench run --iterations=1 --revs=1 --stop-on-error --ansi --progress=plain

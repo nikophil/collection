@@ -687,6 +687,23 @@ trait CollectionLogic
 
 	// --- Internal ---
 
+	/**
+	 * A store backed by an array hands it out as is. The views over a map keep walking their
+	 * iterator: building all of their elements would cost a terminal that stops early.
+	 *
+	 * @return iterable<int, E>
+	 */
+	protected function terminalElements(): iterable
+	{
+		if (!$this->store instanceof AbstractElementStore) {
+			return $this;
+		}
+
+		/** @var AbstractElementStore<E> $store */
+		$store = $this->store;
+		return $store->toArray();
+	}
+
 	public function getIterator(): Traversable
 	{
 		return $this->store->getIterator();

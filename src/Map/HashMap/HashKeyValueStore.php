@@ -369,6 +369,13 @@ final class HashKeyValueStore implements KeyValueStore
 	}
 
 	/** @inheritDoc */
+	public function slice(int $offset, ?int $length = null): void
+	{
+		$this->keys = array_slice($this->keys, $offset, $length, preserve_keys: true);
+		$this->values = array_slice($this->values, $offset, $length, preserve_keys: true);
+	}
+
+	/** @inheritDoc */
 	public function reverse(): void
 	{
 		$this->keys = array_reverse($this->keys, true);

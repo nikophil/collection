@@ -271,7 +271,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function takeFirst(int $n = 1): ImmutableList
 	{
-		return $this->newCollectionOf(new TakeOperation($this->store)->first($n));
+		return $this->newCollectionOf($n > 0 ? array_slice($this->store->toArray(), 0, $n) : []);
 	}
 
 	/**
@@ -282,7 +282,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function dropFirst(int $n = 1): ImmutableList
 	{
-		return $this->newCollectionOf(new DropOperation($this->store)->first($n));
+		return $this->newCollectionOf(array_slice($this->store->toArray(), max(0, $n)));
 	}
 
 	/**
@@ -293,7 +293,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function takeLast(int $n = 1): ImmutableList
 	{
-		return $this->newCollectionOf(new TakeOperation($this->store)->last($n));
+		return $this->newCollectionOf(new TakeOperation($this->store->toArray())->last($n));
 	}
 
 	/**
@@ -304,7 +304,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function dropLast(int $n = 1): ImmutableList
 	{
-		return $this->newCollectionOf(new DropOperation($this->store)->last($n));
+		return $this->newCollectionOf(new DropOperation($this->store->toArray())->last($n));
 	}
 
 	/**
@@ -337,7 +337,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function takeLastWhile(Closure $predicate): ImmutableList
 	{
-		return $this->newCollectionOf(new TakeOperation($this->store)->lastByPredicate($predicate));
+		return $this->newCollectionOf(new TakeOperation($this->store->toArray())->lastByPredicate($predicate));
 	}
 
 	/**
@@ -348,7 +348,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function dropLastWhile(Closure $predicate): ImmutableList
 	{
-		return $this->newCollectionOf(new DropOperation($this->store)->lastByPredicate($predicate));
+		return $this->newCollectionOf(new DropOperation($this->store->toArray())->lastByPredicate($predicate));
 	}
 
 	/**

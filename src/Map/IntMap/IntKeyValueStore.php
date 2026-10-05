@@ -333,6 +333,12 @@ final class IntKeyValueStore implements KeyValueStore
 	}
 
 	/** @inheritDoc */
+	public function slice(int $offset, ?int $length = null): void
+	{
+		$this->data = array_slice($this->data, $offset, $length, preserve_keys: true);
+	}
+
+	/** @inheritDoc */
 	public function reverse(): void
 	{
 		$this->data = array_reverse($this->data, true);

@@ -16,7 +16,7 @@
 	"storage.xml_storage_path": "var/phpbench",
 	"report.generators": {
 		"compare": {
-			"extends": "aggregate",
+			"generator": "expression",
 			"cols": [
 				"benchmark",
 				"subject",

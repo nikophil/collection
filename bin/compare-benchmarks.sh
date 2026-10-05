@@ -44,13 +44,13 @@ compare() {
 	tail -n +2 var/last.tsv >> "$tsv"
 }
 
-# Prints "benchmark <tab> subject" for each subject with a variant that moved by more than the threshold.
+# Prints "benchmark <tab> subject <tab> set" for each variant that moved by more than the threshold.
 moved() {
 	awk -F'\t' -v threshold="$threshold" '{
 		gsub(/"/, "", $6)
 		split($6, mode, " ")
 		diff = mode[2] + 0
-		if (mode[2] != "" && (diff > threshold || diff < -threshold)) print $1 "\t" $2
+		if (mode[2] != "" && (diff > threshold || diff < -threshold)) print $1 "\t" $2 "\t" $3
 	}' "$1" | sort -u
 }
 
@@ -64,19 +64,19 @@ if [ -z "$(moved var/compare.tsv)" ]; then
 	exit 0
 fi
 
-# Measures the given subjects of a benchmark file once more, the pull request first this time, so
+# Measures the given variants of a benchmark file once more, the pull request first this time, so
 # that going second does not favour the same side twice. The remote executor runs every iteration
 # in a fresh process: a subject no longer inherits the state the subjects before it left behind.
 # The comparison is made from the base side, so the TSV holds the base against the pull request.
 remeasure() {
-	local bench=$1 filter=$2
+	local bench=$1 filter=$2 variant=$3
 	[ -f "$base/$bench" ] || return 0
 	# phpbench tells on stderr where it dumped the results.
-	vendor/bin/phpbench run "$bench" --filter="$filter" --executor=remote --iterations=4 --progress=none \
+	vendor/bin/phpbench run "$bench" --filter="$filter" --variant="$variant" --executor=remote --iterations=3 --progress=none \
 		--dump-file="$root/var/pr.xml" 2>&1 > /dev/null | awk '!/^Dumped result to /'
-	(cd "$base" && vendor/bin/phpbench run "$bench" --filter="$filter" --executor=remote --iterations=4 \
+	(cd "$base" && vendor/bin/phpbench run "$bench" --filter="$filter" --variant="$variant" --executor=remote --iterations=3 \
 		--progress=none --file="$root/var/pr.xml" \
-		--report='{"extends": "aggregate", "cols": ["benchmark", "subject", "set", "revs", "its", "mode", "rstdev"]}' \
+		--report='{"generator": "expression", "cols": ["benchmark", "subject", "set", "revs", "its", "mode", "rstdev"]}' \
 		--output="{\"renderer\": \"delimited\", \"delimiter\": \"\\t\", \"file\": \"$root/var/last.tsv\"}" > /dev/null)
 	tail -n +2 var/last.tsv >> var/confirm.tsv
 }
@@ -85,9 +85,10 @@ echo
 echo "Measuring once more the variants that moved by more than $threshold%"
 : > var/confirm.tsv
 for benchmark in $(moved var/compare.tsv | cut -f1 | sort -u); do
-	subjects=$(moved var/compare.tsv | awk -F'\t' -v b="$benchmark" '$1 == b { print $2 }' | paste -sd'|')
+	subjects=$(moved var/compare.tsv | awk -F'\t' -v b="$benchmark" '$1 == b { print $2 }' | sort -u | paste -sd'|')
+	sets=$(moved var/compare.tsv | awk -F'\t' -v b="$benchmark" '$1 == b { print $3 }' | sort -u | paste -sd'|')
 	echo "  $benchmark: ${subjects//|/, }"
-	remeasure "$(find benchmarks -name "$benchmark.php")" "::($subjects)\$"
+	remeasure "$(find benchmarks -name "$benchmark.php")" "::($subjects)\$" "^($sets)\$"
 done
 
 echo

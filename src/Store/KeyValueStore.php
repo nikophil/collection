@@ -189,6 +189,11 @@ interface KeyValueStore extends IteratorAggregate
 	public function sortBy(callable $selector, bool $descending = false): void;
 
 	/**
+	 * Keeps only the entries array_slice() would keep with the same offset and length.
+	 */
+	public function slice(int $offset, ?int $length = null): void;
+
+	/**
 	 * Reverses the order of entries in-place.
 	 */
 	public function reverse(): void;

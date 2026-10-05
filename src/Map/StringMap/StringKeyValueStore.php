@@ -356,6 +356,22 @@ final class StringKeyValueStore implements KeyValueStore
 	}
 
 	/**
+	 * PHP turns numeric string keys into ints: they are cast back.
+	 *
+	 * @inheritDoc
+	 */
+	public function keys(): array
+	{
+		return array_map(strval(...), array_keys($this->data));
+	}
+
+	/** @inheritDoc */
+	public function values(): array
+	{
+		return array_values($this->data);
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function toArray(KeyCollisionStrategy $onCollision = KeyCollisionStrategy::Throw): array

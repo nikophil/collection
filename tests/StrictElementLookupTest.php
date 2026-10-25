@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Noctud\Collection\Tests;
 
 use Generator;
+use LogicException;
+use Noctud\Collection\Hashable;
 use Noctud\Collection\StrictElementLookup;
 use Noctud\Collection\Tests\Collection\Fixture\HashableUser;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -91,6 +93,23 @@ final class StrictElementLookupTest extends TestCase
 		$this->assertTrue($lookup->contains($user));
 		$this->assertFalse($lookup->contains(new stdClass()));
 		$this->assertFalse($lookup->contains(new HashableUser('1')), 'same identity(), but another instance');
+	}
+
+	#[Test]
+	#[DataProvider('modeProvider')]
+	public function objects_are_not_asked_their_identity(int $padding, int $expectedLookups): void
+	{
+		$entity = new class implements Hashable {
+			public function identity(): string
+			{
+				throw new LogicException('An entity without an id has no identity yet.');
+			}
+		};
+		$lookup = self::lookupOf([$entity], $padding, $expectedLookups);
+
+		$this->assertTrue($lookup->contains($entity));
+		$lookup->remove($entity);
+		$this->assertFalse($lookup->contains($entity));
 	}
 
 	#[Test]

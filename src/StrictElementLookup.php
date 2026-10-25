@@ -142,11 +142,18 @@ final class StrictElementLookup
 	}
 
 	/**
+	 * An object is only identical to itself, so hashing its instance is enough: Hashable::identity()
+	 * is user code, which must not start running once the elements get indexed.
+	 *
 	 * @throws InvalidKeyTypeException
 	 */
 	private static function hash(mixed $element): int|string
 	{
-		return is_array($element) ? 'a' : KeyHasher::hashSetKey($element);
+		return match (true) {
+			is_object($element) => 'o:' . spl_object_id($element),
+			is_array($element) => 'a',
+			default => KeyHasher::hashSetKey($element),
+		};
 	}
 
 	/**

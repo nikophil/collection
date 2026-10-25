@@ -255,7 +255,7 @@ trait CollectionLogic
 	#[NoDiscard]
 	public function takeFirst(int $n = 1): ImmutableCollection
 	{
-		return $this->newCollectionOf(new TakeOperation($this->store->toArray())->first($n));
+		return $this->newCollectionOf(new TakeOperation($this->terminalElements())->first($n));
 	}
 
 	/** {@inheritDoc} */
@@ -688,7 +688,7 @@ trait CollectionLogic
 
 	/**
 	 * A store backed by an array hands it out as is. The views over a map keep walking their
-	 * iterator: building all of their elements would cost a terminal that stops early.
+	 * iterator: building all of their elements would cost a terminal, or takeFirst(), that stops early.
 	 *
 	 * @return iterable<int, E>
 	 */

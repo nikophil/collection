@@ -271,7 +271,7 @@ trait ListLogic
 	#[NoDiscard]
 	public function takeFirst(int $n = 1): ImmutableList
 	{
-		return $this->newCollectionOf(new TakeOperation($this->store->toArray())->first($n));
+		return $this->newCollectionOf(new TakeOperation($this->terminalElements())->first($n));
 	}
 
 	/**

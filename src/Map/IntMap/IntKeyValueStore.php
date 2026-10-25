@@ -14,6 +14,7 @@ use Noctud\Collection\Exception\InvalidKeyTypeException;
 use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\Map\SimpleMapEntry;
 use Noctud\Collection\Map\KeyCollisionStrategy;
+use Noctud\Collection\Operation\SortOperation;
 use Noctud\Collection\Store\KeyValueStore;
 use Traversable;
 
@@ -323,13 +324,7 @@ final class IntKeyValueStore implements KeyValueStore
 			$selected[$k] = $selector($v, $k);
 		}
 
-		if ($descending) {
-			arsort($selected);
-		} else {
-			asort($selected);
-		}
-
-		$this->data = array_replace($selected, $this->data);
+		$this->data = array_replace(SortOperation::order($selected, $descending), $this->data);
 	}
 
 	/** @inheritDoc */

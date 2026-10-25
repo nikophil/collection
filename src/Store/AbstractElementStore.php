@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Noctud\Collection\Store;
 
 use Noctud\Collection\Exception\NoSuchElementException;
+use Noctud\Collection\Operation\SortOperation;
 
 /**
  * Base class for collection stores.
@@ -132,10 +133,6 @@ abstract class AbstractElementStore implements ReadWriteElementStore
 	/**
 	 * Orders the elements by the value the selector returns for each of them, keeping their keys.
 	 *
-	 * The selector runs once per element and asort() compares the selected values in C: a usort()
-	 * comparator calling the selector would run it twice per comparison. asort() compares like <=>
-	 * and keeps equal values in their order, as usort() does.
-	 *
 	 * @template T
 	 * @template TKey of array-key
 	 * @param array<TKey,T> $elements
@@ -144,14 +141,7 @@ abstract class AbstractElementStore implements ReadWriteElementStore
 	 */
 	public static function orderedBy(array $elements, callable $selector, bool $descending = false): array
 	{
-		$selected = array_map($selector, $elements);
-		if ($descending) {
-			arsort($selected);
-		} else {
-			asort($selected);
-		}
-
-		return array_replace($selected, $elements);
+		return array_replace(SortOperation::order(array_map($selector, $elements), $descending), $elements);
 	}
 
 	public function reverse(): void

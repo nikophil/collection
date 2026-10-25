@@ -14,6 +14,7 @@ use Noctud\Collection\Exception\NoSuchElementException;
 use Noctud\Collection\KeyHasher;
 use Noctud\Collection\Map\KeyCollisionStrategy;
 use Noctud\Collection\Map\SimpleMapEntry;
+use Noctud\Collection\Operation\SortOperation;
 use Noctud\Collection\Store\KeyValueStore;
 use Traversable;
 
@@ -354,16 +355,11 @@ final class HashKeyValueStore implements KeyValueStore
 			$selected[$nk] = $selector($v, $this->keys[$nk]);
 		}
 
-		if ($descending) {
-			arsort($selected);
-		} else {
-			asort($selected);
-		}
-
+		$order = SortOperation::order($selected, $descending);
 		/** @var array<int|string,K> $keys */
-		$keys = array_replace($selected, $this->keys);
+		$keys = array_replace($order, $this->keys);
 		/** @var array<int|string,V> $values */
-		$values = array_replace($selected, $this->values);
+		$values = array_replace($order, $this->values);
 		$this->keys = $keys;
 		$this->values = $values;
 	}

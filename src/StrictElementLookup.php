@@ -62,17 +62,8 @@ final class StrictElementLookup
 		}
 
 		$hash = self::hashOrNull($element);
-		if ($hash === null) {
-			return false;
-		}
 
-		foreach ($this->buckets[$hash] ?? [] as $candidate) {
-			if ($candidate === $element) {
-				return true;
-			}
-		}
-
-		return false;
+		return $hash !== null && in_array($element, $this->buckets[$hash] ?? [], true);
 	}
 
 	/**

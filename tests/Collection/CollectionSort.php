@@ -202,6 +202,26 @@ trait CollectionSort
 	}
 
 	#[Test]
+	public function sortedBy_compares_like_the_spaceship_operator(): void
+	{
+		// The selected values compare with <=>, which NAN is not ordered by the same way asort() orders it.
+		$values = ['three' => 3.0, 'nan' => NAN, 'one' => 1.0, 'two' => 2.0];
+		$selector = static fn (string $label): float => $values[$label];
+		$collection = $this->collectionOf(array_keys($values));
+
+		$this->assertSame(['nan', 'one', 'two', 'three'], $collection->sortedBy($selector)->toArray());
+		$this->assertSame(['nan', 'three', 'two', 'one'], $collection->sortedByDesc($selector)->toArray());
+
+		if ($collection instanceof MutableCollection) {
+			// NAN orders by where it starts: each sort starts from the same order.
+			$this->assertSame(['nan', 'one', 'two', 'three'], $collection->sortBy($selector)->toArray());
+			$collection = $this->collectionOf(array_keys($values));
+			$this->assertInstanceOf(MutableCollection::class, $collection);
+			$this->assertSame(['nan', 'three', 'two', 'one'], $collection->sortByDesc($selector)->toArray());
+		}
+	}
+
+	#[Test]
 	public function sortedBy_on_objects(): void
 	{
 		$a = new stdClass();

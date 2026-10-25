@@ -172,6 +172,28 @@ trait MapOrdering
 	}
 
 	#[Test]
+	public function sortedBy_compares_like_the_spaceship_operator(): void
+	{
+		// The selected values compare with <=>, which NAN is not ordered by the same way arsort() orders it.
+		$pairs = [['three', 3.0], ['nan', NAN], ['one', 1.0], ['two', 2.0]];
+		$map = $this->mapOfPairs($pairs);
+		$selector = static fn (float $v): float => $v;
+
+		$this->assertSame(['nan', 'one', 'two', 'three'], $map->sortedBy($selector)->keys->toArray());
+		$this->assertSame(['nan', 'three', 'two', 'one'], $map->sortedByDesc($selector)->keys->toArray());
+		$this->assertSame(['nan', 'three', 'two', 'one'], $map->sortedByValueDesc()->keys->toArray());
+
+		$mutable = self::asMutableMap($map);
+		if ($mutable !== null) {
+			// NAN orders by where it starts: each sort starts from the same order.
+			$this->assertSame(['nan', 'three', 'two', 'one'], $mutable->sortByDesc($selector)->keys->toArray());
+			$mutable = self::asMutableMap($this->mapOfPairs($pairs));
+			$this->assertNotNull($mutable);
+			$this->assertSame(['nan', 'one', 'two', 'three'], $mutable->sortByValue()->keys->toArray());
+		}
+	}
+
+	#[Test]
 	public function sortedBy_keeps_equal_entries_in_their_order(): void
 	{
 		$map = $this->mapOfPairs([['a', 1], ['b', 2], ['c', 1], ['d', 2]]);

@@ -23,29 +23,46 @@ final class StrictElementLookupTest extends TestCase
 {
 	/**
 	 * Both strategies must answer the same: scanning with in_array() and looking up hash buckets.
-	 * Past 128 elements and lookups, the elements are indexed.
+	 * Past 128 elements, the elements are indexed once 128 lookups have scanned them.
 	 *
-	 * @return Generator<string, array{int, int}>
+	 * @return Generator<string, array{bool}>
 	 */
 	public static function modeProvider(): Generator
 	{
-		yield 'scanned' => [0, 1];
-		yield 'indexed' => [200, PHP_INT_MAX];
+		yield 'scanned' => [false];
+		yield 'indexed' => [true];
 	}
 
 	/**
 	 * @param list<mixed> $elements
 	 */
-	private static function lookupOf(array $elements, int $padding, int $expectedLookups): StrictElementLookup
+	private static function lookupOf(array $elements, bool $indexed): StrictElementLookup
 	{
-		return new StrictElementLookup([...$elements, ...range(1000, 1000 + $padding - 1)], $expectedLookups);
+		if (!$indexed) {
+			return new StrictElementLookup($elements);
+		}
+
+		$lookup = new StrictElementLookup([...$elements, ...self::padding()]);
+		for ($i = 0; $i < 128; $i++) {
+			$lookup->contains('absent');
+		}
+
+		return $lookup;
+	}
+
+	/**
+	 * @return list<int>
+	 */
+	private static function padding(): array
+	{
+		return range(1000, 1199);
 	}
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function scalars_match_only_identical_values(int $padding, int $expectedLookups): void
+	public function scalars_match_only_identical_values(bool $indexed): void
 	{
-		$lookup = self::lookupOf([1, 'a', true, null], $padding, $expectedLookups);
+		$lookup = self::lookupOf([1, 'a', true, null], $indexed);
 
 		$this->assertTrue($lookup->contains(1));
 		$this->assertTrue($lookup->contains('a'));
@@ -59,9 +76,9 @@ final class StrictElementLookupTest extends TestCase
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function floats_match_only_identical_values(int $padding, int $expectedLookups): void
+	public function floats_match_only_identical_values(bool $indexed): void
 	{
-		$lookup = self::lookupOf([0.3, -0.0, NAN], $padding, $expectedLookups);
+		$lookup = self::lookupOf([0.3, -0.0, NAN], $indexed);
 
 		$this->assertTrue($lookup->contains(0.3));
 		$this->assertTrue($lookup->contains(0.0), '0.0 === -0.0');
@@ -71,9 +88,9 @@ final class StrictElementLookupTest extends TestCase
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function arrays_match_only_identical_values(int $padding, int $expectedLookups): void
+	public function arrays_match_only_identical_values(bool $indexed): void
 	{
-		$lookup = self::lookupOf([[1, 2], [0.0]], $padding, $expectedLookups);
+		$lookup = self::lookupOf([[1, 2], [0.0]], $indexed);
 
 		$this->assertTrue($lookup->contains([1, 2]));
 		$this->assertTrue($lookup->contains([-0.0]), '[0.0] === [-0.0] although their serializations differ');
@@ -83,11 +100,11 @@ final class StrictElementLookupTest extends TestCase
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function objects_match_only_the_same_instance(int $padding, int $expectedLookups): void
+	public function objects_match_only_the_same_instance(bool $indexed): void
 	{
 		$object = new stdClass();
 		$user = new HashableUser('1');
-		$lookup = self::lookupOf([$object, $user], $padding, $expectedLookups);
+		$lookup = self::lookupOf([$object, $user], $indexed);
 
 		$this->assertTrue($lookup->contains($object));
 		$this->assertTrue($lookup->contains($user));
@@ -97,7 +114,7 @@ final class StrictElementLookupTest extends TestCase
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function objects_are_not_asked_their_identity(int $padding, int $expectedLookups): void
+	public function objects_are_not_asked_their_identity(bool $indexed): void
 	{
 		$entity = new class implements Hashable {
 			public function identity(): string
@@ -105,7 +122,7 @@ final class StrictElementLookupTest extends TestCase
 				throw new LogicException('An entity without an id has no identity yet.');
 			}
 		};
-		$lookup = self::lookupOf([$entity], $padding, $expectedLookups);
+		$lookup = self::lookupOf([$entity], $indexed);
 
 		$this->assertTrue($lookup->contains($entity));
 		$lookup->remove($entity);
@@ -114,9 +131,9 @@ final class StrictElementLookupTest extends TestCase
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function predicate_answers_like_contains(int $padding, int $expectedLookups): void
+	public function predicate_answers_like_contains(bool $indexed): void
 	{
-		$lookup = self::lookupOf([1, [0.0]], $padding, $expectedLookups);
+		$lookup = self::lookupOf([1, [0.0]], $indexed);
 
 		$this->assertTrue($lookup->predicate()(1));
 		$this->assertTrue($lookup->predicate()([-0.0]));
@@ -127,13 +144,13 @@ final class StrictElementLookupTest extends TestCase
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function unhashable_elements_are_looked_up_without_error(int $padding, int $expectedLookups): void
+	public function unhashable_elements_are_looked_up_without_error(bool $indexed): void
 	{
 		$closed = fopen('php://memory', 'r');
 		$this->assertNotFalse($closed);
 		fclose($closed);
 
-		$lookup = self::lookupOf([1], $padding, $expectedLookups);
+		$lookup = self::lookupOf([1], $indexed);
 		$this->assertFalse($lookup->contains($closed));
 
 		$lookup->remove($closed);
@@ -147,17 +164,17 @@ final class StrictElementLookupTest extends TestCase
 		$this->assertNotFalse($closed);
 		fclose($closed);
 
-		$lookup = new StrictElementLookup([$closed, ...range(1, 200)], PHP_INT_MAX);
+		$lookup = self::lookupOf([$closed], indexed: true);
 
 		$this->assertTrue($lookup->contains($closed));
-		$this->assertTrue($lookup->contains(200));
+		$this->assertTrue($lookup->contains(1199));
 	}
 
 	#[Test]
 	#[DataProvider('modeProvider')]
-	public function remove_drops_every_identical_element(int $padding, int $expectedLookups): void
+	public function remove_drops_every_identical_element(bool $indexed): void
 	{
-		$lookup = self::lookupOf([1, '1', 1, 2], $padding, $expectedLookups);
+		$lookup = self::lookupOf([1, '1', 1, 2], $indexed);
 
 		$lookup->remove(1);
 		$this->assertFalse($lookup->contains(1));
@@ -168,7 +185,7 @@ final class StrictElementLookupTest extends TestCase
 		$lookup->remove(2);
 		$this->assertFalse($lookup->contains(2));
 
-		foreach (range(1000, 1000 + $padding - 1) as $element) {
+		foreach ($indexed ? self::padding() : [] as $element) {
 			$this->assertFalse($lookup->isEmpty());
 			$lookup->remove($element);
 		}
@@ -180,7 +197,7 @@ final class StrictElementLookupTest extends TestCase
 	public function remove_on_an_index_empties_it(): void
 	{
 		$elements = range(1, 300);
-		$lookup = new StrictElementLookup([...$elements, ...$elements], PHP_INT_MAX);
+		$lookup = new StrictElementLookup([...$elements, ...$elements]);
 
 		foreach ($elements as $element) {
 			$this->assertFalse($lookup->isEmpty());
@@ -198,10 +215,10 @@ final class StrictElementLookupTest extends TestCase
 			yield 'b' => 2;
 		})();
 
-		$lookup = new StrictElementLookup($generator, 1);
+		$lookup = new StrictElementLookup($generator);
 
 		$this->assertTrue($lookup->contains(2));
-		$this->assertTrue(new StrictElementLookup(['x' => 1], 1)->contains(1));
-		$this->assertTrue(new StrictElementLookup([], 1)->isEmpty());
+		$this->assertTrue(new StrictElementLookup(['x' => 1])->contains(1));
+		$this->assertTrue(new StrictElementLookup([])->isEmpty());
 	}
 }

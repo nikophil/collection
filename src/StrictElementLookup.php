@@ -17,7 +17,7 @@ use Traversable;
  * Strict (===) membership test against a list of elements.
  *
  * Scanning with in_array() costs O(elements) per lookup, which turns bulk operations like
- * removeAll() into O(n * m). Once enough lookups are expected, the elements are indexed by
+ * removeAll() into O(n * m). Once enough lookups have scanned them, the elements are indexed by
  * KeyHasher::hashSetKey() instead: identical values share a hash, so comparing with === inside
  * a hash bucket gives the same answers in O(1) per lookup. Arrays are the exception, since
  * [0.0] === [-0.0] while their serializations differ: they all share one bucket.
@@ -27,8 +27,9 @@ use Traversable;
 final class StrictElementLookup
 {
 	/**
-	 * Indexing hashes every element in PHP, while in_array() compares in C: the index only
-	 * pays off when elements * lookups / (elements + lookups) exceeds this factor.
+	 * Indexing hashes every element in PHP, while in_array() compares in C, about this factor
+	 * faster: the elements are indexed once that many lookups have scanned them, by then costing
+	 * about as much as indexing them. Fewer elements than that are always scanned.
 	 */
 	private const int IndexingFactor = 128;
 
@@ -40,24 +41,22 @@ final class StrictElementLookup
 
 	private int $count;
 
+	/** 0 once the elements are indexed, or are to be scanned for good. */
+	private int $scansBeforeIndexing;
+
 	/**
 	 * @param iterable<mixed> $elements
-	 * @param int $expectedLookups How many times contains() or remove() is going to be called,
-	 *                             PHP_INT_MAX when unknown
 	 */
-	public function __construct(iterable $elements, int $expectedLookups)
+	public function __construct(iterable $elements)
 	{
 		$this->elements = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-
-		$this->count = $count = count($this->elements);
-		if ($count * $expectedLookups > self::IndexingFactor * ($count + $expectedLookups)) {
-			$this->buckets = self::index($this->elements);
-		}
+		$this->count = count($this->elements);
+		$this->scansBeforeIndexing = $this->count > self::IndexingFactor ? self::IndexingFactor : 0;
 	}
 
 	public function contains(mixed $element): bool
 	{
-		if ($this->buckets === null) {
+		if ($this->scanning()) {
 			return in_array($element, $this->elements, true);
 		}
 
@@ -67,14 +66,15 @@ final class StrictElementLookup
 	}
 
 	/**
-	 * The same test as contains(), or its negation, as a closure to hand to a filter: in the
-	 * scanning mode it calls in_array() directly, sparing a method call per tested element.
+	 * The same test as contains(), or its negation, as a closure to hand to a filter: when the
+	 * elements are scanned for good, it calls in_array() directly, sparing a method call per
+	 * tested element.
 	 *
 	 * @return Closure(mixed): bool
 	 */
 	public function predicate(bool $negate = false): Closure
 	{
-		if ($this->buckets === null) {
+		if ($this->buckets === null && $this->scansBeforeIndexing === 0) {
 			$elements = $this->elements;
 			return $negate
 				? static fn (mixed $v): bool => !in_array($v, $elements, true)
@@ -91,7 +91,7 @@ final class StrictElementLookup
 	 */
 	public function remove(mixed $element): void
 	{
-		if ($this->buckets === null) {
+		if ($this->scanning()) {
 			foreach (array_keys($this->elements, $element, true) as $key) {
 				unset($this->elements[$key]);
 				$this->count--;
@@ -118,6 +118,18 @@ final class StrictElementLookup
 	public function isEmpty(): bool
 	{
 		return $this->count === 0;
+	}
+
+	/**
+	 * Counts one more lookup, indexing the elements when it is the one that makes it worth it.
+	 */
+	private function scanning(): bool
+	{
+		if ($this->buckets === null && $this->scansBeforeIndexing > 0 && --$this->scansBeforeIndexing === 0) {
+			$this->buckets = self::index($this->elements);
+		}
+
+		return $this->buckets === null;
 	}
 
 	/**

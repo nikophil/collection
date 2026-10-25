@@ -71,7 +71,7 @@ trait MutableCollectionLogic
 	/** {@inheritDoc} */
 	public function removeAll(iterable $elements): static
 	{
-		$this->store->removeIf(new StrictElementLookup($elements, $this->store->count())->predicate());
+		$this->store->removeIf(new StrictElementLookup($elements)->predicate());
 		return $this;
 	}
 
@@ -99,7 +99,7 @@ trait MutableCollectionLogic
 	/** {@inheritDoc} */
 	public function retainAll(iterable $elements): static
 	{
-		$this->store->removeIf(new StrictElementLookup($elements, $this->store->count())->predicate(negate: true));
+		$this->store->removeIf(new StrictElementLookup($elements)->predicate(negate: true));
 		return $this;
 	}
 

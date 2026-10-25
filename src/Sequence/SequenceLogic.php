@@ -408,7 +408,7 @@ trait SequenceLogic
 	 */
 	public function containsAll(iterable $elements): bool
 	{
-		$missing = new StrictElementLookup($elements, PHP_INT_MAX);
+		$missing = new StrictElementLookup($elements);
 		if ($missing->isEmpty()) {
 			return true;
 		}

@@ -74,7 +74,7 @@ trait ImmutableSetLogic
 	/** {@inheritDoc} */
 	public function removeAll(iterable $elements): ImmutableSet
 	{
-		$lookup = new StrictElementLookup($elements, $this->store->count());
+		$lookup = new StrictElementLookup($elements);
 		return $this->newCollectionOf(new FilterOperation($this->store->toArray())->byValue($lookup->predicate(negate: true)));
 	}
 
@@ -105,7 +105,7 @@ trait ImmutableSetLogic
 	/** {@inheritDoc} */
 	public function retainAll(iterable $elements): ImmutableSet
 	{
-		$lookup = new StrictElementLookup($elements, $this->store->count());
+		$lookup = new StrictElementLookup($elements);
 		return $this->newCollectionOf(new FilterOperation($this->store->toArray())->byValue($lookup->predicate()));
 	}
 }

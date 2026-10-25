@@ -156,10 +156,9 @@ trait CollectionLogic
 			return true;
 		}
 
-		// contains() scans the whole store here: look the elements up in it once instead.
-		$wanted = $elements instanceof Traversable ? iterator_to_array($elements, false) : array_values($elements);
-		$lookup = new StrictElementLookup($this->store->toArray(), count($wanted));
-		foreach ($wanted as $x) {
+		// contains() scans the whole store here: a lookup indexes it once that gets costlier.
+		$lookup = new StrictElementLookup($this->store->toArray());
+		foreach ($elements as $x) {
 			if (!$lookup->contains($x)) {
 				return false;
 			}

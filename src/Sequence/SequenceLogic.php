@@ -51,6 +51,13 @@ trait SequenceLogic
 	/** @use IterableTerminalsLogic<E> */
 	use IterableTerminalsLogic;
 
+	/**
+	 * containsAll() scans the wanted elements with in_array() up to this many, and looks them up
+	 * in a StrictElementLookup past it: every walked value then costs a method call and a hash
+	 * instead of a scan in C, which is measured to pay off from about this count.
+	 */
+	private const int ContainsAllLookupThreshold = 320;
+
 	/** @var iterable<E>|Closure():iterable<E> */
 	private iterable|Closure $source;
 
@@ -408,14 +415,41 @@ trait SequenceLogic
 	 */
 	public function containsAll(iterable $elements): bool
 	{
-		$missing = new StrictElementLookup($elements);
-		if ($missing->isEmpty()) {
+		$missing = [];
+		foreach ($elements as $element) {
+			$missing[] = $element;
+		}
+
+		if ($missing === []) {
 			return true;
 		}
 
+		if (count($missing) > self::ContainsAllLookupThreshold) {
+			return $this->containsAllOf(new StrictElementLookup($missing));
+		}
+
 		foreach ($this as $v) {
+			if (!in_array($v, $missing, true)) {
+				continue;
+			}
+
 			// Every equal entry drops, not just the first: containsAll([1, 1]) asks whether 1 is
 			// there, not whether it is there twice - the same answer the eager side gives.
+			foreach (array_keys($missing, $v, true) as $key) {
+				unset($missing[$key]);
+			}
+
+			if ($missing === []) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function containsAllOf(StrictElementLookup $missing): bool
+	{
+		foreach ($this as $v) {
 			$missing->remove($v);
 
 			if ($missing->isEmpty()) {

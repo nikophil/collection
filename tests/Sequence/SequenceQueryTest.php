@@ -76,14 +76,14 @@ final class SequenceQueryTest extends TestCase
 	public function containsAll_with_many_wanted_values_compares_strictly(): void
 	{
 		// Enough wanted values for them to be indexed by hash, repeats included.
-		$data = range(0, 299);
+		$data = range(0, 499);
 		$this->assertTrue(sequenceOf($data)->containsAll([...$data, ...$data]));
 
-		// '299' and 299.0 are not 299, and only a sequence that could hold them can even be asked.
+		// '499' and 499.0 are not 499, and only a sequence that could hold them can even be asked.
 		/** @var Sequence<int|string|float> $mixed */
 		$mixed = sequenceOf($data);
-		$this->assertFalse($mixed->containsAll([...range(0, 298), '299']));
-		$this->assertFalse($mixed->containsAll([...range(0, 298), 299.0]));
+		$this->assertFalse($mixed->containsAll([...range(0, 498), '499']));
+		$this->assertFalse($mixed->containsAll([...range(0, 498), 499.0]));
 	}
 
 	#[Test]

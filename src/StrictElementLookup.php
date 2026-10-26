@@ -153,6 +153,8 @@ final class StrictElementLookup
 	private static function hash(mixed $element): int|string
 	{
 		return match (true) {
+			// Unlike a hash set, a bucket compares with ===, so 1 and '1' may share one.
+			is_string($element), is_int($element) => $element,
 			is_object($element) => 'o:' . spl_object_id($element),
 			is_array($element) => 'a',
 			default => KeyHasher::hashSetKey($element),

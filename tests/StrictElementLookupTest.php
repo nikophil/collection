@@ -96,6 +96,7 @@ final class StrictElementLookupTest extends TestCase
 		$this->assertTrue($lookup->contains([-0.0]), '[0.0] === [-0.0] although their serializations differ');
 		$this->assertFalse($lookup->contains([2, 1]));
 		$this->assertFalse($lookup->contains(['1', '2']));
+		$this->assertFalse($lookup->contains('a'), 'shares the bucket of the arrays');
 	}
 
 	#[Test]
